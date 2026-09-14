@@ -8,6 +8,7 @@ import { CommentIcon } from "@/components/blog/blog-icons";
 import { CommentList } from "@/components/blog/comment-list";
 import { LikeButton } from "@/components/blog/like-button";
 import { ShareButton } from "@/components/blog/share-button";
+import { ViewCounter } from "@/components/blog/view-counter";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getBlogComments, getBlogEngagement, getPublishedBlogPageBySlug } from "@/lib/blog/queries";
 import { formatBlogDate, getBlogMedia, parseBlogTags } from "@/lib/blog/presentation";
@@ -69,7 +70,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[blogSlu
     <article className="blog-detail-card">
       <header><BlogAuthor date={formatBlogDate(post.publishedAt)} /><span className="blog-card-more" aria-hidden="true">•••</span></header>
       <BlogMedia images={gallery} alt={post.title} priority />
-      <div className="blog-detail-actions"><LikeButton blogPageId={post.id} slug={post.slug} initialCount={engagement.likeCount} initialLiked={engagement.liked} /><a className="blog-action" href="#comments" aria-label={`${engagement.commentCount} comments`}><CommentIcon /><span>{engagement.commentCount.toLocaleString()}</span></a><ShareButton path={`/blog/${post.slug}`} title={post.title} /></div>
+      <div className="blog-detail-actions"><LikeButton blogPageId={post.id} slug={post.slug} initialCount={engagement.likeCount} initialLiked={engagement.liked} /><a className="blog-action" href="#comments" aria-label={`${engagement.commentCount} comments`}><CommentIcon /><span>{engagement.commentCount.toLocaleString()}</span></a><ShareButton path={`/blog/${post.slug}`} title={post.title} /><ViewCounter blogPageId={post.id} slug={post.slug} initialCount={engagement.viewCount} track /></div>
       <div className="blog-detail-intro" id="article"><p className="eyebrow">{formatBlogDate(post.publishedAt)} · Field note</p><h1>{post.title}</h1><p>{post.excerpt}</p>{tags.length ? <div className="blog-tags" aria-label="Article tags">{tags.map((tag) => <span key={tag}>#{tag}</span>)}</div> : null}</div>
       <div className="blog-article-content"><ContentBlock content={post.content} />{post.secondaryContent ? <section><ContentBlock content={post.secondaryContent} /></section> : null}{post.thirdContent ? <section><ContentBlock content={post.thirdContent} /></section> : null}</div>
       <section className="blog-comments" id="comments"><div className="blog-comments-heading"><div><p className="eyebrow">Conversation</p><h2>{engagement.commentCount ? `${engagement.commentCount} ${engagement.commentCount === 1 ? "comment" : "comments"}` : "Join the conversation"}</h2></div><span>Login-free</span></div><CommentList comments={comments} /><CommentForm blogPageId={post.id} slug={post.slug} /></section>

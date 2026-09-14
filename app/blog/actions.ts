@@ -3,7 +3,7 @@
 import { and, desc, eq, gt, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/db";
-import { blogComments, blogLikes, blogPages } from "@/db/schema";
+import { blogComments, blogLikes, blogPages, blogViews } from "@/db/schema";
 import { ensureVisitorId } from "@/lib/blog/visitor";
 
 export type CommentFormState = { error?: string; success?: boolean };
@@ -38,6 +38,21 @@ export async function toggleBlogLikeAction(blogPageId: string, slug: string) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   return { liked: !existing, count: result.count };
+}
+
+export async function registerBlogViewAction(blogPageId: string, slug: string) {
+  await assertPublishedPage(blogPageId, slug);
+  const db = getDb();
+  const visitorId = await ensureVisitorId();
+  const inserted = await db.insert(blogViews).values({ blogPageId, visitorId }).onConflictDoNothing().returning({ id: blogViews.id });
+  const [result] = await db.select({ count: sql<number>`count(*)::int` }).from(blogViews).where(eq(blogViews.blogPageId, blogPageId));
+
+  if (inserted.length) {
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${slug}`);
+  }
+
+  return { count: result.count };
 }
 
 export async function createBlogCommentAction(blogPageId: string, slug: string, _state: CommentFormState, formData: FormData): Promise<CommentFormState> {

@@ -71,4 +71,18 @@ export const blogComments = pgTable(
   ],
 );
 
+export const blogViews = pgTable(
+  "blog_views",
+  {
+    id: text("id").primaryKey().$defaultFn(() => `view_${randomUUID()}`),
+    blogPageId: text("blog_page_id").notNull().references(() => blogPages.id, { onDelete: "cascade" }),
+    visitorId: text("visitor_id").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("blog_views_page_visitor_unique").on(table.blogPageId, table.visitorId),
+    index("blog_views_page_created_at_idx").on(table.blogPageId, table.createdAt),
+  ],
+);
+
 export type BlogComment = typeof blogComments.$inferSelect;

@@ -25,6 +25,11 @@ export function formatBlogDate(date: Date | null) {
   return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
 
+export function formatCompactCount(count: number) {
+  if (count < 1_000) return count.toLocaleString("en");
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(count);
+}
+
 export function initials(name: string) {
   return name.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }

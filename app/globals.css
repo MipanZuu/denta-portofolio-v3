@@ -586,6 +586,8 @@ body.dark-portfolio .blog-table td:first-child strong { color: #f1f3ed; }
 .blog-share-action { position: relative; color: inherit; font: inherit; }
 .blog-share-feedback { position: absolute; z-index: 4; left: 50%; bottom: calc(100% + 7px); width: max-content; max-width: 120px; padding: 0; overflow: hidden; border-radius: 999px; color: #fff; background: rgba(17,20,18,.86); box-shadow: 0 8px 24px rgba(0,0,0,.16); font-family: var(--mono); font-size: 9px; line-height: 0; opacity: 0; transform: translate(-50%, 4px); transition: opacity .2s, transform .2s, padding .2s, line-height .2s; pointer-events: none; }
 .blog-share-feedback:not(:empty) { padding: 7px 9px; line-height: 1; opacity: 1; transform: translate(-50%, 0); }
+.blog-view-count { min-height: 40px; margin-left: auto; padding: 0 8px; display: inline-flex; align-items: center; gap: 6px; color: #626962; font-size: 12px; font-weight: 650; }
+.blog-view-count svg { width: 23px; height: 23px; }
 .blog-caption { margin-top: 10px; display: block; font-size: 14px; line-height: 1.55; }
 .blog-caption strong { margin-right: 7px; }
 .blog-caption span { color: #555c55; }

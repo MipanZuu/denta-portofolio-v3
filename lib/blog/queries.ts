@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import { getDb } from "@/db";
-import { blogComments, blogLikes, blogPages, type BlogPageStatus } from "@/db/schema";
+import { blogComments, blogLikes, blogPages, blogViews, type BlogPageStatus } from "@/db/schema";
 
 export async function listBlogPages(search = "", status = "ALL") {
   const db = getDb();
@@ -56,7 +56,7 @@ export async function listPublishedBlogPages() {
 
   if (!posts.length) return [];
   const pageIds = posts.map((post) => post.id);
-  const [likeCounts, commentCounts] = await Promise.all([
+  const [likeCounts, commentCounts, viewCounts] = await Promise.all([
     db
       .select({ blogPageId: blogLikes.blogPageId, count: sql<number>`count(*)::int` })
       .from(blogLikes)
@@ -67,14 +67,21 @@ export async function listPublishedBlogPages() {
       .from(blogComments)
       .where(and(inArray(blogComments.blogPageId, pageIds), isNull(blogComments.deletedAt)))
       .groupBy(blogComments.blogPageId),
+    db
+      .select({ blogPageId: blogViews.blogPageId, count: sql<number>`count(*)::int` })
+      .from(blogViews)
+      .where(inArray(blogViews.blogPageId, pageIds))
+      .groupBy(blogViews.blogPageId),
   ]);
   const likesByPage = new Map(likeCounts.map((row) => [row.blogPageId, row.count]));
   const commentsByPage = new Map(commentCounts.map((row) => [row.blogPageId, row.count]));
+  const viewsByPage = new Map(viewCounts.map((row) => [row.blogPageId, row.count]));
 
   return posts.map((post) => ({
     ...post,
     likeCount: likesByPage.get(post.id) ?? 0,
     commentCount: commentsByPage.get(post.id) ?? 0,
+    viewCount: viewsByPage.get(post.id) ?? 0,
   }));
 }
 
@@ -99,14 +106,15 @@ export async function getBlogComments(blogPageId: string) {
 
 export async function getBlogEngagement(blogPageId: string, visitorId?: string) {
   const db = getDb();
-  const [[likes], [comments], visitorLike] = await Promise.all([
+  const [[likes], [comments], [views], visitorLike] = await Promise.all([
     db.select({ count: sql<number>`count(*)::int` }).from(blogLikes).where(eq(blogLikes.blogPageId, blogPageId)),
     db.select({ count: sql<number>`count(*)::int` }).from(blogComments).where(and(eq(blogComments.blogPageId, blogPageId), isNull(blogComments.deletedAt))),
+    db.select({ count: sql<number>`count(*)::int` }).from(blogViews).where(eq(blogViews.blogPageId, blogPageId)),
     visitorId
       ? db.select({ id: blogLikes.id }).from(blogLikes).where(and(eq(blogLikes.blogPageId, blogPageId), eq(blogLikes.visitorId, visitorId))).limit(1)
       : Promise.resolve([]),
   ]);
-  return { likeCount: likes.count, commentCount: comments.count, liked: visitorLike.length > 0 };
+  return { likeCount: likes.count, commentCount: comments.count, viewCount: views.count, liked: visitorLike.length > 0 };
 }
 
 export async function getLikedBlogPageIds(visitorId: string | undefined, blogPageIds: string[]) {
