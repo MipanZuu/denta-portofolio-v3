@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
+import { getBlogMedia } from "@/lib/blog/presentation";
+import { listPublishedBlogPagesForSitemap } from "@/lib/blog/queries";
 import { seo } from "@/statics/seo";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 const routes = [
   { path: "", priority: 1, changeFrequency: "monthly" as const },
@@ -13,6 +15,21 @@ const routes = [
   { path: "/contact", priority: 0.6, changeFrequency: "yearly" as const },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return routes.map((route) => ({ url: `${seo.siteUrl}${route.path}`, lastModified: new Date("2026-09-14"), changeFrequency: route.changeFrequency, priority: route.priority }));
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await listPublishedBlogPagesForSitemap();
+  const staticPages: MetadataRoute.Sitemap = routes.map((route) => ({
+    url: `${seo.siteUrl}${route.path}`,
+    lastModified: new Date("2026-09-14"),
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
+  }));
+  const blogPosts: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${seo.siteUrl}/blog/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.7,
+    images: getBlogMedia(post.coverImageUrl, post.images),
+  }));
+
+  return [...staticPages, ...blogPosts];
 }

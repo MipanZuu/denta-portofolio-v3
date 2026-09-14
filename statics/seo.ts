@@ -5,9 +5,12 @@ import { personal } from "@/statics/personal";
 import { projects } from "@/statics/projects";
 import { technologyGroups } from "@/statics/technologies";
 
+const deploymentHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const siteUrl = (process.env.SITE_URL ?? (deploymentHost ? `https://${deploymentHost}` : "https://denta-bramasta-portfolio.dingus2129.chatgpt.site")).replace(/\/$/, "");
+
 export const seo = {
   siteName: "Denta Bramasta — Portfolio",
-  siteUrl: "https://denta-bramasta-portfolio.dingus2129.chatgpt.site",
+  siteUrl,
   title: "Denta Bramasta — Software Engineer",
   description:
     "Portfolio of Denta Bramasta Hidayat, a Software Engineer at ParkMundo building scalable multilingual products with Next.js, React, TypeScript, GraphQL, and Express.",
@@ -30,6 +33,11 @@ export function createPageMetadata(title: string, description: string, path: str
   return {
     title,
     description,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+    },
     alternates: { canonical: path },
     openGraph: { title: socialTitle, description, url: path },
     twitter: { title: socialTitle, description },

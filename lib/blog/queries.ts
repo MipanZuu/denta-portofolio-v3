@@ -85,6 +85,19 @@ export async function listPublishedBlogPages() {
   }));
 }
 
+export async function listPublishedBlogPagesForSitemap() {
+  return getDb()
+    .select({
+      slug: blogPages.slug,
+      coverImageUrl: blogPages.coverImageUrl,
+      images: blogPages.images,
+      updatedAt: blogPages.updatedAt,
+    })
+    .from(blogPages)
+    .where(and(eq(blogPages.status, "PUBLISHED"), eq(blogPages.published, true), isNull(blogPages.deletedAt)))
+    .orderBy(desc(blogPages.updatedAt));
+}
+
 export async function getPublishedBlogPageBySlug(slug: string) {
   const db = getDb();
   const [page] = await db

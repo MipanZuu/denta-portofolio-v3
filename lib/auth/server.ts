@@ -7,9 +7,9 @@ export function getAuth() {
   const baseUrl = process.env.DB_NEON_AUTH_BASE_URL ?? process.env.NEON_AUTH_BASE_URL;
   const secret = process.env.NEON_AUTH_COOKIE_SECRET;
 
-  if (!baseUrl || !secret) {
-    throw new Error("Neon Auth is not configured. Add NEON_AUTH_COOKIE_SECRET and a Neon Auth base URL.");
-  }
+  if (!baseUrl) throw new Error("AUTH_CONFIG: Missing NEON_AUTH_BASE_URL (or DB_NEON_AUTH_BASE_URL) in this deployment.");
+  if (!secret) throw new Error("AUTH_CONFIG: Missing NEON_AUTH_COOKIE_SECRET in this deployment.");
+  if (secret.length < 32) throw new Error("AUTH_CONFIG: NEON_AUTH_COOKIE_SECRET must contain at least 32 characters.");
 
   authInstance ??= createNeonAuth({
     baseUrl,

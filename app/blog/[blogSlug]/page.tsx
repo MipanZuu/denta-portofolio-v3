@@ -29,6 +29,11 @@ export async function generateMetadata({ params }: PageProps<"/blog/[blogSlug]">
     title: post.seoMetaTitle,
     description: post.seoMetaDescription,
     keywords: tags,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+    },
     alternates: { canonical: path },
     openGraph: { type: "article", url: path, title: post.seoMetaTitle, description: post.seoMetaDescription, publishedTime: post.publishedAt?.toISOString(), modifiedTime: post.updatedAt.toISOString(), authors: [personal.fullName], images: image },
     twitter: { card: "summary_large_image", title: post.seoMetaTitle, description: post.seoMetaDescription, images: image.map((item) => item.url) },

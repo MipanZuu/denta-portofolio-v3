@@ -3,7 +3,7 @@ import { DashboardNav } from "@/components/dashboard/dashboard-nav";
 import { requireAdmin } from "@/lib/auth/admin";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Blog studio", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Blog studio", robots: { index: false, follow: false, noarchive: true, nocache: true } };
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const user = await requireAdmin();
