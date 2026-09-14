@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { contact } from "@/statics/contact";
 import { navigation } from "@/statics/navigation";
 
@@ -29,13 +29,24 @@ function GitHubIcon() {
 export function Header() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const active = pathname === "/" ? "home" : pathname.split("/")[1];
+  const activeLabel = navigation.find((item) => item.section === active)?.label ?? "Home";
+  const primaryNavigation = navigation.filter((item) => ["home", "about", "projects"].includes(item.section));
+  const moreNavigation = navigation.filter((item) => ["experience", "technologies"].includes(item.section));
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) setOpen(false);
+    };
     window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    window.addEventListener("pointerdown", closeOnOutsidePress);
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("pointerdown", closeOnOutsidePress);
+    };
   }, []);
 
   const toggleTheme = () => {
@@ -45,19 +56,39 @@ export function Header() {
     });
   };
 
-  return <header className={`dynamic-header ${open ? "is-expanded" : ""}`}>
-    <div className="dynamic-collapsed">
-      <button className="dynamic-logo-island" type="button" onClick={() => setOpen(true)} aria-label="Open navigation"><Image src="/images/logo.png" alt="Denta Bramasta" width={94} height={48} priority /></button>
-      <button className="dynamic-route-island" type="button" onClick={() => setOpen(true)} aria-label={`Open navigation. Current section: ${active}`}><RouteIcon route={active} /></button>
+  return <header ref={headerRef} className={`dynamic-header ${open ? "is-expanded" : ""}`}>
+    <div className="apple-nav-bar">
+      <Link className="apple-brand" href="/" aria-label="Denta Bramasta, home" onClick={() => setOpen(false)}><Image src="/images/logo.png" alt="" width={94} height={48} priority /></Link>
+      <span className="apple-mobile-label"><RouteIcon route={active} />{activeLabel}</span>
+      <nav className="apple-primary-nav" aria-label="Primary navigation">
+        {primaryNavigation.map((item) => <Link className={active === item.section ? "is-active" : ""} key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>)}
+      </nav>
+      <span className="apple-nav-separator" aria-hidden="true" />
+      <button className="apple-more-button" type="button" onClick={() => setOpen((current) => !current)} aria-expanded={open} aria-controls="more-navigation">
+        More <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg>
+      </button>
     </div>
-    <div className="dynamic-panel" aria-hidden={!open}>
-      <button className="dynamic-close" type="button" onClick={() => setOpen(false)} aria-label="Close navigation"><span/><span/></button>
-      <nav aria-label="Primary navigation">{navigation.map((item) => <Link className={active === item.section ? "is-active" : ""} key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>)}</nav>
-      <div className="dynamic-divider" />
-      <div className="dynamic-controls">
-        <a href={contact.socials[0].href} target="_blank" rel="noreferrer" aria-label="LinkedIn"><LinkedInIcon /></a>
-        <a href={contact.socials[1].href} target="_blank" rel="noreferrer" aria-label="GitHub"><GitHubIcon /></a>
-        <button type="button" onClick={toggleTheme} aria-label={dark ? "Use light theme" : "Use dark theme"}>{dark ? "☀️" : "🌙"}</button>
+
+    <div className="apple-mega-menu" id="more-navigation" aria-hidden={!open}>
+      <div className="apple-mega-heading"><div><span>Explore more</span><strong>The rest of my portfolio</strong></div><button type="button" onClick={() => setOpen(false)} aria-label="Close expanded navigation">×</button></div>
+      <div className="apple-mega-grid">
+        {moreNavigation.map((item) => <Link className={`apple-mega-card ${active === item.section ? "is-active" : ""}`} href={item.href} key={item.href} onClick={() => setOpen(false)}>
+          <span className="apple-mega-icon"><RouteIcon route={item.section} /></span>
+          <span><strong>{item.label}</strong><small>{item.section === "experience" ? "Roles, impact, and the journey so far" : "Languages, frameworks, and everyday tools"}</small></span>
+          <b aria-hidden="true">↗</b>
+        </Link>)}
+        <Link className={`apple-mega-card ${active === "contact" ? "is-active" : ""}`} href="/contact" onClick={() => setOpen(false)}>
+          <span className="apple-mega-icon"><RouteIcon route="contact" /></span>
+          <span><strong>Contact</strong><small>Start a conversation or collaboration</small></span>
+          <b aria-hidden="true">↗</b>
+        </Link>
+      </div>
+      <div className="apple-quick-actions">
+        <span>Quick actions</span>
+        <a href={contact.socials[0].href} target="_blank" rel="noreferrer"><LinkedInIcon />LinkedIn</a>
+        <a href={contact.socials[1].href} target="_blank" rel="noreferrer"><GitHubIcon />GitHub</a>
+        <a href="/documents/denta-bramasta-cv.pdf" target="_blank" rel="noreferrer"><span className="apple-file-icon">↓</span>Résumé</a>
+        <button type="button" onClick={toggleTheme}><span>{dark ? "☀" : "☾"}</span>{dark ? "Light mode" : "Dark mode"}</button>
       </div>
     </div>
   </header>;
