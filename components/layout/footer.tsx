@@ -4,7 +4,7 @@ import { personal } from "@/statics/personal";
 
 export function Footer() {
   return <footer className="site-footer page-shell">
-    <Link href="/" className="footer-brand"><strong>{personal.name}</strong><span>Full-stack developer</span></Link>
+    <Link href="/" className="footer-brand"><strong>{personal.name}</strong><span>{personal.role}</span></Link>
     <div className="footer-socials">{contact.socials.map((item) => <a key={item.label} href={item.href} target="_blank" rel="noreferrer">{item.label}</a>)}</div>
     <p>© {new Date().getFullYear()} Denta Bramasta.<br/>Designed &amp; built with care.</p>
   </footer>;

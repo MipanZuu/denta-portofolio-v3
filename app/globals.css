@@ -49,6 +49,8 @@ button { color: inherit; font: inherit; }
 
 body.dark-portfolio { color: #eff1e9; background: #161916; }
 body.dark-portfolio .hero-intro, body.dark-portfolio .section-title-row p, body.dark-portfolio .about-details p, body.dark-portfolio .timeline-role p, body.dark-portfolio .timeline-meta span, body.dark-portfolio .timeline-row time, body.dark-portfolio .education-grid p { color: #aeb5ad; }
+body.dark-portfolio .timeline-role > a, body.dark-portfolio .education-grade { color: var(--lime); }
+body.dark-portfolio .timeline-role ul { color: #b9c0b8; }
 body.dark-portfolio .section-heading, body.dark-portfolio .timeline, body.dark-portfolio .timeline-row, body.dark-portfolio .education-grid, body.dark-portfolio .education-grid article, body.dark-portfolio .toolkit-groups, body.dark-portfolio .toolkit-group { border-color: #424842; }
 body.dark-portfolio .timeline-row:hover, body.dark-portfolio .tech-item { background: rgba(255,255,255,.06); }
 body.dark-portfolio .tech-item, body.dark-portfolio .hobby-list small { border-color: #424842; }
@@ -165,6 +167,11 @@ body.dark-portfolio .home-snapshot, body.dark-portfolio .home-snapshot > div, bo
 .timeline-number { align-self: start; color: var(--orange); font-family: var(--mono); font-size: 9px; }
 .timeline-role h3 { margin: 0 0 8px; font-size: 19px; font-weight: 650; letter-spacing: -.02em; }
 .timeline-role p, .timeline-meta span { margin: 0; color: #656b64; font-size: 13px; }
+.timeline-role > a { color: #3f5540; font-size: 14px; font-weight: 650; text-decoration: underline; text-underline-offset: 4px; }
+.timeline-role ul { max-width: 720px; margin: 22px 0 0; padding: 0; display: grid; gap: 9px; color: #555c55; font-size: 14px; line-height: 1.6; list-style: none; }
+.timeline-role li { position: relative; padding-left: 17px; }
+.timeline-role li::before { content: "↳"; position: absolute; left: 0; color: var(--orange); }
+.timeline-row-featured { min-height: 230px; align-items: start; }
 .timeline-meta { display: grid; gap: 7px; }
 .timeline-meta small { width: fit-content; padding: 4px 8px; border-radius: 20px; color: #334019; background: #dff7ad; font-family: var(--mono); font-size: 8px; text-transform: uppercase; }
 .timeline-row time { justify-self: end; color: #60665f; font-family: var(--mono); font-size: 10px; text-align: right; }
@@ -174,6 +181,7 @@ body.dark-portfolio .home-snapshot, body.dark-portfolio .home-snapshot > div, bo
 .education-grid article > span { min-height: 42px; color: var(--orange); font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
 .education-grid h4 { margin: 20px 0 10px; font-size: 18px; line-height: 1.35; }
 .education-grid p { margin: 0; color: #656b64; font-size: 12px; line-height: 1.6; }
+.education-grade { margin-top: 20px; color: #385022; font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
 .education-grid small { margin-top: auto; font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
 
 /* Work */

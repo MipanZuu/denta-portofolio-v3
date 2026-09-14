@@ -1,13 +1,44 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { JsonLd } from "@/components/seo/json-ld";
+import { personJsonLd, seo, websiteJsonLd } from "@/statics/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Denta Bramasta — Full-stack Developer",
-  description: "Portfolio of Denta Bramasta Hidayat, a full-stack developer and creative technologist building thoughtful digital products.",
+  metadataBase: new URL(seo.siteUrl),
+  title: { default: seo.title, template: "%s — Denta Bramasta" },
+  description: seo.description,
+  applicationName: seo.siteName,
+  authors: [{ name: "Denta Bramasta Hidayat", url: seo.siteUrl }],
+  creator: "Denta Bramasta Hidayat",
+  publisher: "Denta Bramasta Hidayat",
+  keywords: [...seo.keywords],
+  category: "technology",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: seo.siteName,
+    title: seo.title,
+    description: seo.description,
+    images: [{ url: "/images/profile.jpg", width: 1200, height: 1200, alt: "Denta Bramasta Hidayat" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: seo.title,
+    description: seo.description,
+    images: ["/images/profile.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en"><body><Header />{children}<Footer /></body></html>;
+  return <html lang="en"><body><JsonLd data={[websiteJsonLd, personJsonLd]} /><Header />{children}<Footer /></body></html>;
 }
