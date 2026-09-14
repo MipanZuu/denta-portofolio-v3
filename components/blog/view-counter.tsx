@@ -24,7 +24,7 @@ export function ViewCounter({ blogPageId, slug, initialCount, track = false }: V
       .catch(() => { registered.current = false; });
   }, [blogPageId, slug, track]);
 
-  return <span className="blog-view-count" aria-label={`${count.toLocaleString("en")} unique views`} title={`${count.toLocaleString("en")} unique views`}>
+  return <span className="blog-view-count" aria-label={`${count.toLocaleString("en")} views`} title={`${count.toLocaleString("en")} views`}>
     <EyeIcon />
     <span>{formatCompactCount(count)}</span>
   </span>;

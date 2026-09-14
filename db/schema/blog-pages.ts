@@ -80,7 +80,6 @@ export const blogViews = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true, mode: "date" }).notNull().defaultNow(),
   },
   (table) => [
-    uniqueIndex("blog_views_page_visitor_unique").on(table.blogPageId, table.visitorId),
     index("blog_views_page_created_at_idx").on(table.blogPageId, table.createdAt),
   ],
 );

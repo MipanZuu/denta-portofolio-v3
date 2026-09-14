@@ -107,7 +107,7 @@ export const projectsJsonLd = {
       "@type": "CreativeWork",
       name: project.title,
       description: project.description,
-      image: `${seo.siteUrl}${project.image}`,
+      ...(project.image ? { image: `${seo.siteUrl}${project.image}` } : {}),
       url: project.preview ?? project.source ?? `${seo.siteUrl}/projects`,
       creator: { "@id": `${seo.siteUrl}/#person` },
       keywords: project.stack.join(", "),

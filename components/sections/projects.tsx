@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ProjectVisual } from "@/components/projects/project-visual";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { projects } from "@/statics/projects";
@@ -18,11 +18,10 @@ export function Projects() {
           <article className="project-row" key={project.title}>
             <span className="project-index">{String(index + 1).padStart(2, "0")}</span>
 
-            <div className="project-thumbnail">
-              <Image
-                src={project.image}
-                alt={`${project.title} interface preview`}
-                fill
+            <div className={`project-thumbnail${project.image ? "" : " project-thumbnail-placeholder"}`}>
+              <ProjectVisual
+                image={project.image}
+                title={project.title}
                 sizes="(max-width: 700px) 86vw, 280px"
               />
             </div>

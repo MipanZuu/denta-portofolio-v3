@@ -44,13 +44,11 @@ export async function registerBlogViewAction(blogPageId: string, slug: string) {
   await assertPublishedPage(blogPageId, slug);
   const db = getDb();
   const visitorId = await ensureVisitorId();
-  const inserted = await db.insert(blogViews).values({ blogPageId, visitorId }).onConflictDoNothing().returning({ id: blogViews.id });
+  await db.insert(blogViews).values({ blogPageId, visitorId });
   const [result] = await db.select({ count: sql<number>`count(*)::int` }).from(blogViews).where(eq(blogViews.blogPageId, blogPageId));
 
-  if (inserted.length) {
-    revalidatePath("/blog");
-    revalidatePath(`/blog/${slug}`);
-  }
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
 
   return { count: result.count };
 }

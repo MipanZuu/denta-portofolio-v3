@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ProjectVisual } from "@/components/projects/project-visual";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { experiences } from "@/statics/experience";
 import { projects } from "@/statics/projects";
@@ -18,7 +18,10 @@ export function HomePaths() {
     <section className="home-featured page-shell">
       <div className="home-section-heading"><p><span>01</span>Featured work</p><h2>A few things<br/>I&apos;ve brought to life.</h2><Link href="/projects">View every project <ArrowUpRight /></Link></div>
       <div className="home-project-grid">{projects.slice(0, 3).map((project, index) => <Link className="home-project" href="/projects" key={project.title}>
-        <div><Image src={project.image} alt="" fill sizes="(max-width: 800px) 92vw, 31vw"/><span>0{index + 1}</span></div>
+        <div className={project.image ? "" : "project-thumbnail-placeholder"}>
+          <ProjectVisual image={project.image} title={project.title} sizes="(max-width: 800px) 92vw, 31vw" />
+          <span className="home-project-index">0{index + 1}</span>
+        </div>
         <h3>{project.title}</h3><p>{project.stack.slice(0, 3).join(" · ")}</p>
       </Link>)}</div>
     </section>

@@ -23,11 +23,13 @@ export async function generateMetadata({ params }: PageProps<"/blog/[blogSlug]">
   const post = await getPublishedBlogPageBySlug(blogSlug);
   if (!post) return { title: "Article not found", robots: { index: false, follow: false } };
   const path = `/blog/${post.slug}`;
-  const image = post.coverImageUrl ? [{ url: post.coverImageUrl, alt: post.title }] : [];
+  const metaTitle = post.seoMetaTitle.trim() || post.title;
+  const metaDescription = post.seoMetaDescription.trim() || post.excerpt;
+  const images = getBlogMedia(post.coverImageUrl, post.images).map((url) => ({ url, alt: post.title }));
   const tags = parseBlogTags(post.tags);
   return {
-    title: post.seoMetaTitle,
-    description: post.seoMetaDescription,
+    title: { absolute: metaTitle },
+    description: metaDescription,
     keywords: tags,
     robots: {
       index: true,
@@ -35,8 +37,8 @@ export async function generateMetadata({ params }: PageProps<"/blog/[blogSlug]">
       googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     },
     alternates: { canonical: path },
-    openGraph: { type: "article", url: path, title: post.seoMetaTitle, description: post.seoMetaDescription, publishedTime: post.publishedAt?.toISOString(), modifiedTime: post.updatedAt.toISOString(), authors: [personal.fullName], images: image },
-    twitter: { card: "summary_large_image", title: post.seoMetaTitle, description: post.seoMetaDescription, images: image.map((item) => item.url) },
+    openGraph: { type: "article", url: path, title: metaTitle, description: metaDescription, publishedTime: post.publishedAt?.toISOString(), modifiedTime: post.updatedAt.toISOString(), authors: [personal.fullName], images },
+    twitter: { card: "summary_large_image", title: metaTitle, description: metaDescription, images: images.map((item) => item.url) },
   };
 }
 
@@ -58,7 +60,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[blogSlu
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.title,
+    headline: post.seoMetaTitle,
     description: post.seoMetaDescription,
     url: articleUrl,
     mainEntityOfPage: articleUrl,

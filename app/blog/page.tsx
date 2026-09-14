@@ -14,7 +14,7 @@ export default async function BlogPage() {
 
   return <main className="blog-page page-shell">
     <JsonLd data={createWebPageJsonLd("Denta Bramasta's blog", "Field notes about software engineering, product thinking, and digital experiences.", "/blog", "Blog")} />
-    <header className="blog-page-heading"><p className="eyebrow">Field notes · by Denta Bramasta</p><h1>Ideas from the <em>workbench.</em></h1><p>What I learn while designing, building, and refining digital products.</p></header>
+    <header className="blog-page-heading"><p className="eyebrow">Field notes · by Denta Bramasta</p><h1>Ideas from the <em>workbench.</em></h1><p>I got tired of my social media FYP, so I built my own. :D</p></header>
     {posts.length ? <section className="blog-feed" aria-label="Published articles">{posts.map((post, index) => <BlogFeedCard key={post.id} post={post} liked={likedIds.has(post.id)} priority={index === 0} />)}</section> : <section className="blog-empty-state"><span>✦</span><h2>The first story is taking shape.</h2><p>Published notes will appear here soon.</p></section>}
   </main>;
 }

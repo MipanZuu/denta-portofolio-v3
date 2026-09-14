@@ -10,6 +10,6 @@ export function Experience() {
   return <section className="section page-shell" id="experience">
     <SectionHeading index="02" eyebrow="Journey" title={"Experience built\nthrough doing."} copy="From product delivery to teaching, every role has sharpened the way I communicate and build." />
     <div className="timeline">{experiences.map((item, index) => <TimelineRow key={`${item.company}-${item.position}`} number={String(index + 1).padStart(2, "0")} title={item.position} subtitle={item.company} companyUrl={item.companyUrl} location={item.location} type={item.type} duration={item.duration} highlights={item.highlights} />)}</div>
-    <div className="education-block"><h3>Education</h3><div className="education-grid">{education.map((item) => <article key={item.school}><span>{item.duration}</span><h4>{item.school}</h4><p>{item.subject} · {item.location}</p>{item.grade ? <strong className="education-grade">Final grade · {item.grade}</strong> : null}<small>{item.type}</small></article>)}</div></div>
+    <div className="education-block"><h3>Education</h3><div className="education-grid">{education.map((item) => <article key={item.school}><span>{item.duration}</span><h4>{item.school}</h4><p>{item.subject} · {item.location}</p>{item.grade ? <strong className="education-grade"><span>GPA:</span><span>{item.grade}</span></strong> : null}<small>{item.type}</small></article>)}</div></div>
   </section>;
 }

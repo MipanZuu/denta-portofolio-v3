@@ -18,12 +18,6 @@ function credentials(formData: FormData) {
 
 function authFailure(error: unknown, fallback: string) {
   console.error("Portfolio dashboard authentication failed:", error);
-  if (error instanceof Error && error.message.startsWith("AUTH_CONFIG:")) {
-    return error.message.replace(
-      "AUTH_CONFIG: ",
-      "Authentication configuration error: ",
-    );
-  }
   return fallback;
 }
 
@@ -44,7 +38,7 @@ export async function signInAction(
     return {
       error: authFailure(
         error,
-        "Unable to sign in. Check the Vercel function logs for the Neon Auth error.",
+        "Unable to sign in right now. Please try again later.",
       ),
     };
   }
@@ -76,7 +70,7 @@ export async function signUpAction(
     return {
       error: authFailure(
         error,
-        "Unable to create the account. Check the Vercel function logs for the Neon Auth error.",
+        "Unable to create the account right now. Please try again later.",
       ),
     };
   }

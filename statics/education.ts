@@ -8,8 +8,8 @@ export type Education = {
 };
 
 export const education: Education[] = [
-  { school: "Fontys University of Applied Sciences", subject: "ICT — Software Engineering", location: "Eindhoven", type: "Graduate · Double degree", duration: "2023 — 2025", grade: null },
-  { school: "Institut Teknologi Sepuluh Nopember", subject: "Informatics", location: "Surabaya", type: "Graduate · Bachelor of Informatics", duration: "2020 — 2025", grade: null },
-  { school: "SMAN 1 Bangkalan", subject: "Science", location: "Bangkalan", type: "Student", duration: "July 2017 — June 2020" },
-  { school: "SMPN 2 Bangkalan", subject: "Science", location: "Bangkalan", type: "Student", duration: "July 2014 — June 2017" },
+  { school: "Fontys University of Applied Sciences", subject: "ICT — Software Engineering", location: "Eindhoven", type: "Graduate · Bachelor of Science", duration: "2023 — 2025", grade: "8.9/10" },
+  { school: "Institut Teknologi Sepuluh Nopember", subject: "Informatics", location: "Surabaya", type: "Graduate · Sarjana Komputer", duration: "2020 — 2025", grade: "3.78/4.00" },
+  { school: "SMAN 1 Bangkalan", subject: "Science", location: "Bangkalan", type: "Graduate · Student", duration: "July 2017 — June 2020" },
+  { school: "SMPN 2 Bangkalan", subject: "Science", location: "Bangkalan", type: "Graduate · Student", duration: "July 2014 — June 2017" },
 ];

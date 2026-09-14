@@ -1,0 +1,1 @@
+DROP INDEX "blog_views_page_visitor_unique";
