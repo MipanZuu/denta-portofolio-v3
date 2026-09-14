@@ -38,27 +38,39 @@ export function InteractiveHero() {
     visual.style.setProperty("--hero-rotate-y", "0deg");
   };
 
-  return <section className="landing-hero page-shell">
-    <div className="landing-copy">
-      <p className="hero-eyebrow"><span className="availability-dot" />{personal.eyebrow}</p>
-      <h1>Useful products.<br/><em>Memorable</em> experiences.</h1>
-      <p className="landing-intro">{personal.intro}</p>
-      <div className="hero-actions">
-        <Link className="button button-primary" href="/projects">See selected work <ArrowUpRight /></Link>
-        <a className="button button-ghost" href={personal.resume} target="_blank">Résumé <DownloadIcon /></a>
+  return <section className="landing-stage">
+    <div className="landing-orb landing-orb-one" aria-hidden="true" />
+    <div className="landing-orb landing-orb-two" aria-hidden="true" />
+    <div className="landing-stage-inner page-shell">
+      <div className="landing-topline">
+        <p><span className="availability-dot" />Hello, I&apos;m Denta.</p>
+        <p>Eindhoven, NL <span>↗</span> Worldwide</p>
       </div>
-    </div>
 
-    <div className="interactive-portrait" ref={visualRef} onPointerMove={handlePointerMove} onPointerLeave={resetPointer}>
-      <div className="portrait-light" />
-      <div className="portrait-card">
-        <Image src={personal.portrait} alt="Denta Bramasta" fill priority sizes="(max-width: 800px) 90vw, 42vw" />
-        <div className="portrait-shade" />
-        <div className="portrait-status"><span>Currently exploring</span><strong key={discipline}>{disciplines[discipline]}</strong></div>
+      <div className="landing-title" aria-label="Denta Bramasta, software engineer who builds">
+        <span className="landing-title-name">Denta Bramasta</span>
+        <h1>Software engineer<br/><em>who builds.</em></h1>
       </div>
-      <div className="floating-note note-one"><span>01</span> Engineer the details</div>
-      <div className="floating-note note-two"><span>02</span> Design for people</div>
-      <div className="cursor-hint">Move your cursor</div>
+
+      <div className="interactive-portrait" ref={visualRef} onPointerMove={handlePointerMove} onPointerLeave={resetPointer}>
+        <div className="portrait-light" />
+        <div className="portrait-card">
+          <Image src={personal.portrait} alt="Portrait of Denta Bramasta" fill priority sizes="(max-width: 800px) 52vw, 24vw" />
+          <div className="portrait-shade" />
+        </div>
+        <div className="floating-note note-one">Engineer <span>+</span> designer</div>
+        <div className="floating-note note-two"><span className="status-pulse" /> At ParkMundo</div>
+      </div>
+
+      <div className="landing-bottomline">
+        <p>{personal.intro}</p>
+        <div className="landing-discipline"><span>Currently exploring</span><strong key={discipline}>{disciplines[discipline]}</strong></div>
+        <div className="landing-actions">
+          <Link href="/projects">Explore my work <ArrowUpRight /></Link>
+          <a href={personal.resume} target="_blank" rel="noreferrer">Résumé <DownloadIcon /></a>
+        </div>
+      </div>
     </div>
+    <a className="landing-scroll" href="#selected-work"><span>Scroll to explore</span><b>↓</b></a>
   </section>;
 }
