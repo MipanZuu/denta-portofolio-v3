@@ -45,7 +45,7 @@ export function Header() {
     });
   };
 
-  return <header className={`dynamic-header ${pathname === "/" ? "dynamic-header-home" : ""} ${open ? "is-expanded" : ""}`}>
+  return <header className={`dynamic-header ${open ? "is-expanded" : ""}`}>
     <div className="dynamic-collapsed">
       <button className="dynamic-logo-island" type="button" onClick={() => setOpen(true)} aria-label="Open navigation"><Image src="/images/logo.png" alt="Denta Bramasta" width={94} height={48} priority /></button>
       <button className="dynamic-route-island" type="button" onClick={() => setOpen(true)} aria-label={`Open navigation. Current section: ${active}`}><RouteIcon route={active} /></button>

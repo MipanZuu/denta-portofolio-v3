@@ -5,7 +5,7 @@ import { createWebPageJsonLd, seo } from "@/statics/seo";
 
 export default function Home() {
   return (
-    <main className="portfolio-landing">
+    <main>
       <JsonLd data={createWebPageJsonLd(seo.title, seo.description, "")} />
       <InteractiveHero />
       <HomePaths />
