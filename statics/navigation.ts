@@ -1,0 +1,8 @@
+export const navigation = [
+  { label: "Home", href: "/", section: "home" },
+  { label: "About", href: "/about", section: "about" },
+  { label: "Experience", href: "/experience", section: "experience" },
+  { label: "Technologies", href: "/technologies", section: "technologies" },
+  { label: "Projects", href: "/projects", section: "projects" },
+  { label: "Contact", href: "/contact", section: "contact" },
+] as const;
