@@ -1,0 +1,1 @@
+ALTER TABLE "blog_pages" ADD COLUMN "tags" text DEFAULT '[]' NOT NULL;

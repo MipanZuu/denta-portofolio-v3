@@ -14,6 +14,7 @@ function RouteIcon({ route, className }: IconProps & { route: string }) {
   if (route === "about") return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><circle cx="12" cy="12" r="9"/><path d="M12 10v6m0-9h.01"/></svg>;
   if (route === "technologies") return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8m-4-3v3"/></svg>;
   if (route === "projects" || route === "experience") return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><path d="M4 5h16v15H4zM8 5V3h8v2M8 10h8m-8 4h5"/></svg>;
+  if (route === "blog") return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5"/></svg>;
   if (route === "contact") return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>;
   return <svg className={className} viewBox="0 0 24 24" aria-hidden="true" {...shared}><path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4z"/></svg>;
 }
@@ -34,7 +35,7 @@ export function Header() {
   const active = pathname === "/" ? "home" : pathname.split("/")[1];
   const activeLabel = navigation.find((item) => item.section === active)?.label ?? "Home";
   const primaryNavigation = navigation.filter((item) => ["home", "about", "projects"].includes(item.section));
-  const moreNavigation = navigation.filter((item) => ["experience", "technologies"].includes(item.section));
+  const moreNavigation = navigation.filter((item) => ["experience", "technologies", "blog"].includes(item.section));
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
@@ -74,7 +75,7 @@ export function Header() {
       <div className="apple-mega-grid">
         {moreNavigation.map((item) => <Link className={`apple-mega-card ${active === item.section ? "is-active" : ""}`} href={item.href} key={item.href} onClick={() => setOpen(false)}>
           <span className="apple-mega-icon"><RouteIcon route={item.section} /></span>
-          <span><strong>{item.label}</strong><small>{item.section === "experience" ? "Roles, impact, and the journey so far" : "Languages, frameworks, and everyday tools"}</small></span>
+          <span><strong>{item.label}</strong><small>{item.section === "experience" ? "Roles, impact, and the journey so far" : item.section === "blog" ? "Notes on engineering, products, and craft" : "Languages, frameworks, and everyday tools"}</small></span>
           <b aria-hidden="true">↗</b>
         </Link>)}
         <Link className={`apple-mega-card ${active === "contact" ? "is-active" : ""}`} href="/contact" onClick={() => setOpen(false)}>

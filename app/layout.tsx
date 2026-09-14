@@ -40,5 +40,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en"><body><JsonLd data={[websiteJsonLd, personJsonLd]} /><Header />{children}<Footer /></body></html>;
+  return <html lang="en" data-scroll-behavior="smooth"><body><JsonLd data={[websiteJsonLd, personJsonLd]} /><Header />{children}<Footer /></body></html>;
 }
