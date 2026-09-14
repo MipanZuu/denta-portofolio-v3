@@ -17,6 +17,7 @@ export function InteractiveHero() {
 
   return <section className="landing-hero page-shell">
     <div className="landing-copy">
+      <p className="landing-name">{personal.fullName}</p>
       <p className="hero-eyebrow"><span className="availability-dot" />{personal.eyebrow}</p>
       <h1>Useful products.<br/><em>Memorable</em> experiences.</h1>
       <p className="landing-intro">{personal.intro}</p>
