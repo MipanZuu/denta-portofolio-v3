@@ -7,13 +7,13 @@
   --lime: #c9ff57;
   --orange: #ff6543;
   --blue: #a9c3ff;
-  --glass: rgba(255, 255, 255, 0.46);
-  --glass-strong: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.82);
+  --glass: rgba(255, 255, 255, 0.025);
+  --glass-strong: rgba(255, 255, 255, 0.055);
+  --glass-border: rgba(255, 255, 255, 0.58);
   --glass-line: rgba(53, 63, 55, 0.12);
   --glass-shadow:
-    0 22px 55px rgba(44, 57, 47, 0.11), 0 4px 12px rgba(44, 57, 47, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    0 20px 48px rgba(44, 57, 47, 0.09), 0 4px 12px rgba(44, 57, 47, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -82,8 +82,8 @@ button {
   border: 1px solid var(--glass-border);
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.74),
-    rgba(244, 244, 239, 0.4)
+    rgba(255, 255, 255, 0.36),
+    rgba(244, 244, 239, 0.12)
   );
   box-shadow: var(--glass-shadow);
   -webkit-backdrop-filter: blur(28px) saturate(170%);
@@ -123,7 +123,7 @@ button {
     transform 0.2s;
 }
 .apple-brand:hover {
-  background: rgba(255, 255, 255, 0.66);
+  background: rgba(255, 255, 255, 0.42);
   transform: scale(1.02);
 }
 .apple-brand img {
@@ -162,7 +162,7 @@ button {
 .apple-more-button:hover,
 .dynamic-header.is-expanded .apple-more-button {
   color: #111311;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.5);
   box-shadow: 0 3px 10px rgba(25, 31, 26, 0.08);
 }
 .apple-nav-separator {
@@ -240,7 +240,7 @@ button {
   border: 0;
   border-radius: 50%;
   color: #626762;
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.34);
   font-size: 22px;
   cursor: pointer;
 }
@@ -257,12 +257,12 @@ button {
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 24px 15px 24px 19px;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.7),
-    rgba(255, 255, 255, 0.28)
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.08)
   );
   box-shadow:
     inset 0 1px 0 #fff,
@@ -277,7 +277,7 @@ button {
 }
 .apple-mega-card:hover,
 .apple-mega-card.is-active {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.48);
   box-shadow: 0 10px 24px rgba(27, 33, 28, 0.1);
   transform: translateY(-3px);
 }
@@ -333,14 +333,14 @@ button {
   border: 0;
   border-radius: 12px;
   color: #343834;
-  background: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.22);
   font-size: 12px;
   cursor: pointer;
   transition: background 0.2s;
 }
 .apple-quick-actions a:hover,
 .apple-quick-actions button:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.48);
 }
 .apple-quick-actions svg {
   width: 16px;
@@ -353,7 +353,7 @@ body.dark-portfolio .apple-nav-bar,
 body.dark-portfolio .apple-mega-menu {
   color: #f4f5ef;
   border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(24, 27, 24, 0.78);
+  background: rgba(24, 27, 24, 0.48);
   box-shadow:
     0 14px 38px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -400,9 +400,9 @@ body.dark-portfolio .apple-quick-actions > span {
 }
 
 body.dark-portfolio {
-  --glass: rgba(255, 255, 255, 0.055);
-  --glass-strong: rgba(255, 255, 255, 0.095);
-  --glass-border: rgba(255, 255, 255, 0.13);
+  --glass: rgba(255, 255, 255, 0.012);
+  --glass-strong: rgba(255, 255, 255, 0.028);
+  --glass-border: rgba(255, 255, 255, 0.09);
   --glass-line: rgba(255, 255, 255, 0.11);
   --glass-shadow:
     0 22px 55px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.09);
@@ -633,8 +633,8 @@ body.dark-portfolio .about-lead > small {
   border-radius: 25px 17px 25px 20px;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.7),
-    rgba(255, 255, 255, 0.22)
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.07)
   );
   box-shadow:
     0 15px 34px rgba(44, 57, 47, 0.1),
@@ -922,8 +922,8 @@ a.current-mood:hover {
   border-radius: 31px 20px 31px 24px;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.62),
-    rgba(255, 255, 255, 0.16)
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0.07)
   );
   box-shadow:
     0 14px 30px rgba(44, 57, 47, 0.08),
@@ -954,7 +954,7 @@ a.current-mood:hover {
 }
 .home-path-grid a:hover {
   color: #0d130a;
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.46);
   box-shadow:
     0 22px 40px rgba(44, 57, 47, 0.14),
     inset 0 1px 0 #fff;
@@ -981,7 +981,7 @@ a.current-mood:hover {
   height: 38px;
   padding: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.34);
   box-shadow:
     inset 0 1px 0 #fff,
     0 7px 16px rgba(30, 39, 32, 0.09);
@@ -1438,12 +1438,12 @@ body.dark-portfolio .tech-item:hover {
   background:
     radial-gradient(
       circle at 30% 12%,
-      rgba(255, 255, 255, 0.92),
+      rgba(255, 255, 255, 0.56),
       transparent 38%
     ),
     linear-gradient(
       145deg,
-      rgba(255, 255, 255, 0.58),
+      rgba(255, 255, 255, 0.28),
       rgba(255, 255, 255, 0.17)
     );
   box-shadow:
@@ -1506,7 +1506,7 @@ body.dark-portfolio .tech-item:hover {
     box-shadow 0.25s;
 }
 .timeline-row:hover {
-  background: rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.44);
   box-shadow:
     0 22px 42px rgba(44, 57, 47, 0.12),
     inset 0 1px 0 #fff;
@@ -1701,7 +1701,7 @@ body.dark-portfolio .education-grade {
     box-shadow 0.25s;
 }
 .project-row:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.44);
   box-shadow:
     0 27px 52px rgba(44, 57, 47, 0.14),
     inset 0 1px 0 #fff;
@@ -1947,7 +1947,7 @@ body.dark-portfolio .project-placeholder small {
 }
 .tech-item:hover {
   transform: translateY(-5px) rotate(-1deg);
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.46);
   box-shadow:
     0 18px 32px rgba(44, 57, 47, 0.13),
     inset 0 1px 0 #fff;
@@ -3546,8 +3546,8 @@ body.dark-portfolio .dashboard-comment-pagination > span {
   border: 1px solid var(--glass-border);
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.68),
-    rgba(255, 255, 255, 0.22)
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.08)
   );
   box-shadow: var(--glass-shadow);
   -webkit-backdrop-filter: blur(24px);
@@ -4465,4 +4465,95 @@ body.dark-portfolio .blog-tags span {
   .upload-gallery-preview {
     grid-template-columns: 1fr;
   }
+}
+
+/* Clear liquid glass — keep the page visibly readable through each bubble. */
+.apple-nav-bar,
+.apple-mega-menu,
+.apple-mega-card,
+.current-mood,
+.landing-name,
+.landing-signal,
+.home-snapshot,
+.home-snapshot > div,
+.home-next,
+.home-path-grid a,
+.about-lead,
+.about-details > div,
+.hobby-list li,
+.timeline-row,
+.education-grid article,
+.project-row,
+.toolkit-group,
+.tech-item,
+.dashboard-nav,
+.dashboard-stats article,
+.dashboard-list-panel,
+.editor-card,
+.dashboard-auth > section,
+.blog-feed-card,
+.blog-detail-card {
+  border-color: rgba(255, 255, 255, 0.5);
+  background:
+    radial-gradient(
+      circle at 14% 2%,
+      rgba(255, 255, 255, 0.08),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.028),
+      rgba(255, 255, 255, 0.002) 52%,
+      rgba(255, 255, 255, 0.012)
+    );
+  box-shadow:
+    0 16px 38px rgba(39, 50, 42, 0.07),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.88),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(12px) saturate(155%);
+  backdrop-filter: blur(12px) saturate(155%);
+}
+
+body.dark-portfolio .apple-nav-bar,
+body.dark-portfolio .apple-mega-menu,
+body.dark-portfolio .apple-mega-card,
+body.dark-portfolio .current-mood,
+body.dark-portfolio .landing-name,
+body.dark-portfolio .landing-signal,
+body.dark-portfolio .home-snapshot,
+body.dark-portfolio .home-snapshot > div,
+body.dark-portfolio .home-next,
+body.dark-portfolio .home-path-grid a,
+body.dark-portfolio .about-lead,
+body.dark-portfolio .about-details > div,
+body.dark-portfolio .hobby-list li,
+body.dark-portfolio .timeline-row,
+body.dark-portfolio .education-grid article,
+body.dark-portfolio .project-row,
+body.dark-portfolio .toolkit-group,
+body.dark-portfolio .tech-item,
+body.dark-portfolio .dashboard-nav,
+body.dark-portfolio .dashboard-stats article,
+body.dark-portfolio .dashboard-list-panel,
+body.dark-portfolio .editor-card,
+body.dark-portfolio .dashboard-auth > section,
+body.dark-portfolio .blog-feed-card,
+body.dark-portfolio .blog-detail-card {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(
+      circle at 14% 2%,
+      rgba(255, 255, 255, 0.025),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.01),
+      transparent 52%,
+      rgba(255, 255, 255, 0.006)
+    );
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.2),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.15),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.025);
 }
