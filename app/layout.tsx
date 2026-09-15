@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { EasterEgg } from "@/components/layout/easter-egg";
+import { RouteExperience } from "@/components/layout/route-experience";
 import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
 import { JsonLd } from "@/components/seo/json-ld";
 import { personJsonLd, seo, websiteJsonLd } from "@/statics/seo";
@@ -60,6 +62,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <JsonLd data={[websiteJsonLd, personJsonLd]} />
         <RouteTransitionLoader />
+        <RouteExperience />
+        <EasterEgg />
         <Header />
         {children}
         <Footer />
