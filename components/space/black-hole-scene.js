@@ -70,6 +70,236 @@ const config = {
   bloomThreshold: 0.45,
 };
 
+function createGasGiantTexture() {
+  const width = 512;
+  const height = 256;
+  const data = new Uint8Array(width * height * 4);
+
+  for (let y = 0; y < height; y += 1) {
+    const latitude = y / height;
+    const broadBands = Math.sin(latitude * Math.PI * 22);
+    const fineBands = Math.sin(latitude * Math.PI * 58) * 0.24;
+
+    for (let x = 0; x < width; x += 1) {
+      const longitude = x / width;
+      const flow = Math.sin(
+        longitude * Math.PI * 12 + Math.sin(latitude * Math.PI * 18) * 2.4,
+      );
+      const stormX = longitude - 0.7;
+      const stormY = latitude - 0.62;
+      const storm = Math.exp(
+        -((stormX * stormX) / 0.007 + (stormY * stormY) / 0.0018),
+      );
+      const variation = broadBands * 18 + fineBands * 14 + flow * 5;
+      const index = (y * width + x) * 4;
+      data[index] = Math.max(0, Math.min(255, 173 + variation + storm * 55));
+      data[index + 1] = Math.max(
+        0,
+        Math.min(255, 116 + variation * 0.72 + storm * 22),
+      );
+      data[index + 2] = Math.max(
+        0,
+        Math.min(255, 79 + variation * 0.38 + storm * 10),
+      );
+      data[index + 3] = 255;
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function createStarField() {
+  const positions = new Float32Array(2400 * 3);
+  let seed = 928371;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+
+  for (let index = 0; index < positions.length; index += 3) {
+    const theta = random() * Math.PI * 2;
+    const phi = Math.acos(2 * random() - 1);
+    const radius = 65 + random() * 35;
+    positions[index] = radius * Math.sin(phi) * Math.cos(theta);
+    positions[index + 1] = radius * Math.cos(phi);
+    positions[index + 2] = radius * Math.sin(phi) * Math.sin(theta);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const material = new THREE.PointsMaterial({
+    color: 0xdde9ff,
+    size: 0.18,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.88,
+  });
+  return new THREE.Points(geometry, material);
+}
+
+function createNebula() {
+  const count = 11000;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const color = new THREE.Color();
+  let seed = 483921;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+
+  for (let index = 0; index < count; index += 1) {
+    const radius = Math.pow(random(), 0.58) * 12;
+    const arm = random() < 0.5 ? 0 : Math.PI;
+    const angle = radius * 0.72 + arm + (random() - 0.5) * 1.05;
+    const softness = 0.35 + radius * 0.07;
+    const offset = index * 3;
+    positions[offset] = Math.cos(angle) * radius + (random() - 0.5) * softness;
+    positions[offset + 1] = (random() - 0.5) * (2.7 - radius * 0.1);
+    positions[offset + 2] =
+      Math.sin(angle) * radius + (random() - 0.5) * softness;
+
+    const colorChoice = random();
+    if (radius < 2.1) color.setRGB(1, 0.75, 0.42);
+    else if (colorChoice < 0.44) color.setRGB(0.23, 0.48, 1);
+    else if (colorChoice < 0.76) color.setRGB(0.66, 0.25, 0.96);
+    else color.setRGB(1, 0.27, 0.55);
+    const brightness = 0.46 + random() * 0.54;
+    colors[offset] = color.r * brightness;
+    colors[offset + 1] = color.g * brightness;
+    colors[offset + 2] = color.b * brightness;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  const material = new THREE.PointsMaterial({
+    size: 0.2,
+    sizeAttenuation: true,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.82,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const cloud = new THREE.Points(geometry, material);
+  const coreGeometry = new THREE.SphereGeometry(0.72, 32, 24);
+  const coreMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffd7aa,
+    transparent: true,
+    opacity: 0.72,
+    blending: THREE.AdditiveBlending,
+  });
+  const core = new THREE.Mesh(coreGeometry, coreMaterial);
+  const group = new THREE.Group();
+  group.rotation.x = 0.38;
+  group.rotation.z = -0.16;
+  group.add(cloud, core);
+  return { group, cloud };
+}
+
+function createSolarSystem() {
+  const group = new THREE.Group();
+  const orbiters = [];
+  const planetData = [
+    { radius: 2.0, size: 0.17, color: 0x9c9288, speed: 1.6 },
+    { radius: 2.75, size: 0.25, color: 0xd9a665, speed: 1.15 },
+    { radius: 3.65, size: 0.28, color: 0x3d82d6, speed: 0.9 },
+    { radius: 4.55, size: 0.21, color: 0xc75c39, speed: 0.72 },
+    { radius: 6.05, size: 0.68, color: 0xd2a674, speed: 0.39 },
+    { radius: 7.7, size: 0.58, color: 0xdac48e, speed: 0.29, ringed: true },
+    { radius: 9.15, size: 0.4, color: 0x7bc7cf, speed: 0.2 },
+    { radius: 10.45, size: 0.38, color: 0x426bd6, speed: 0.16 },
+  ];
+
+  const sunGeometry = new THREE.SphereGeometry(1.12, 48, 32);
+  const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffc44d });
+  const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  group.add(sun);
+  const sunLight = new THREE.PointLight(0xffd59a, 35, 36, 1.35);
+  group.add(sunLight);
+
+  planetData.forEach((data, index) => {
+    const orbitPoints = [];
+    for (let stepIndex = 0; stepIndex <= 128; stepIndex += 1) {
+      const angle = (stepIndex / 128) * Math.PI * 2;
+      orbitPoints.push(
+        new THREE.Vector3(
+          Math.cos(angle) * data.radius,
+          0,
+          Math.sin(angle) * data.radius,
+        ),
+      );
+    }
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+    const orbitMaterial = new THREE.LineBasicMaterial({
+      color: 0x7c92ad,
+      transparent: true,
+      opacity: 0.2,
+    });
+    group.add(new THREE.Line(orbitGeometry, orbitMaterial));
+
+    const pivot = new THREE.Group();
+    pivot.rotation.y = index * 0.82;
+    const planetGeometry = new THREE.SphereGeometry(data.size, 32, 24);
+    const planetMaterial = new THREE.MeshStandardMaterial({
+      color: data.color,
+      roughness: 0.82,
+    });
+    const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
+    planetMesh.position.x = data.radius;
+    pivot.add(planetMesh);
+
+    if (data.ringed) {
+      const ringGeometry = new THREE.RingGeometry(
+        data.size * 1.35,
+        data.size * 2.05,
+        64,
+      );
+      const ringMaterial = new THREE.MeshBasicMaterial({
+        color: 0xcdb98e,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.7,
+      });
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring.position.x = data.radius;
+      ring.rotation.x = Math.PI / 2.45;
+      pivot.add(ring);
+    }
+
+    orbiters.push({ pivot, planet: planetMesh, speed: data.speed });
+    group.add(pivot);
+  });
+
+  group.rotation.x = 0.38;
+  group.rotation.z = -0.08;
+  return { group, orbiters, sun };
+}
+
+function disposeGroup(group) {
+  const geometries = new Set();
+  const materials = new Set();
+  group.traverse((object) => {
+    if (object.geometry) geometries.add(object.geometry);
+    if (object.material) {
+      const objectMaterials = Array.isArray(object.material)
+        ? object.material
+        : [object.material];
+      objectMaterials.forEach((material) => materials.add(material));
+    }
+  });
+  geometries.forEach((geometry) => geometry.dispose());
+  materials.forEach((material) => {
+    material.map?.dispose();
+    material.dispose();
+  });
+}
+
 function createBlackHoleScene(container) {
   const hash21 = Fn(([p]) =>
     fract(sin(dot(p, vec2(127.1, 311.7))).mul(43758.5453)),
@@ -394,10 +624,115 @@ function createBlackHoleScene(container) {
   mesh.frustumCulled = false;
   scene.add(mesh);
 
+  const planetTexture = createGasGiantTexture();
+  const planetGeometry = new THREE.SphereGeometry(5, 96, 64);
+  const planetMaterial = new THREE.MeshStandardMaterial({
+    map: planetTexture,
+    roughness: 0.78,
+    metalness: 0.03,
+    emissive: new THREE.Color(0x241309),
+    emissiveIntensity: 0.18,
+  });
+  const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+  const atmosphereGeometry = new THREE.SphereGeometry(5.18, 64, 48);
+  const atmosphereMaterial = new THREE.MeshBasicMaterial({
+    color: 0x8ecbff,
+    transparent: true,
+    opacity: 0.11,
+    side: THREE.BackSide,
+    blending: THREE.AdditiveBlending,
+  });
+  const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+  const ringGeometry = new THREE.RingGeometry(6.35, 9.2, 160);
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: 0xd9b487,
+    transparent: true,
+    opacity: 0.34,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const rings = new THREE.Mesh(ringGeometry, ringMaterial);
+  rings.rotation.x = 1.12;
+  rings.rotation.z = -0.18;
+
+  const planetGroup = new THREE.Group();
+  planetGroup.rotation.z = -0.12;
+  planetGroup.add(planet, atmosphere, rings);
+  planetGroup.visible = false;
+  scene.add(planetGroup);
+
+  const stars = createStarField();
+  stars.visible = false;
+  scene.add(stars);
+  const nebula = createNebula();
+  nebula.group.visible = false;
+  scene.add(nebula.group);
+  const solarSystem = createSolarSystem();
+  solarSystem.group.visible = false;
+  scene.add(solarSystem.group);
+  const ambientLight = new THREE.AmbientLight(0x36506f, 0.72);
+  const keyLight = new THREE.DirectionalLight(0xffe1b5, 4.2);
+  keyLight.position.set(-8, 5, -10);
+  const rimLight = new THREE.PointLight(0x4c88ff, 18, 48);
+  rimLight.position.set(8, -2, 3);
+  scene.add(ambientLight, keyLight, rimLight);
+
   let animationFrame = 0;
   let stopped = false;
   let postProcessing = null;
+  let bloomPass = null;
   let lastFrameTime = performance.now();
+  const setObject = (object) => {
+    const showPlanet = object === "planet";
+    const showNebula = object === "nebula";
+    const showSolarSystem = object === "solar-system";
+    mesh.visible = object === "black-hole";
+    planetGroup.visible = showPlanet;
+    nebula.group.visible = showNebula;
+    solarSystem.group.visible = showSolarSystem;
+    stars.visible = showPlanet || showNebula || showSolarSystem;
+    controls.minDistance = showPlanet
+      ? 9
+      : showNebula
+        ? 7
+        : showSolarSystem
+          ? 13
+          : 5;
+    controls.maxDistance = showPlanet
+      ? 32
+      : showNebula
+        ? 38
+        : showSolarSystem
+          ? 42
+          : 50;
+    controls.target.set(0, 0, 0);
+    if (showSolarSystem) camera.position.set(0, 10.5, -18);
+    else if (showNebula) camera.position.set(0, 3.5, -20);
+    else camera.position.set(0, showPlanet ? -0.8 : -2, -18);
+    camera.lookAt(0, 0, 0);
+    const accessibleLabels = {
+      "black-hole": "Interactive black hole visualization",
+      planet: "Interactive ringed gas giant visualization",
+      nebula: "Interactive colorful spiral nebula visualization",
+      "solar-system": "Interactive visualization of the solar system",
+    };
+    renderer.domElement.setAttribute(
+      "aria-label",
+      accessibleLabels[object] ?? accessibleLabels["black-hole"],
+    );
+    if (bloomPass) {
+      bloomPass.threshold.value = showNebula
+        ? 0.24
+        : showPlanet || showSolarSystem
+          ? 0.72
+          : config.bloomThreshold;
+      bloomPass.strength.value = showNebula
+        ? 0.95
+        : showPlanet || showSolarSystem
+          ? 0.35
+          : config.bloomStrength;
+    }
+  };
   const updateSize = () => {
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -416,6 +751,22 @@ function createBlackHoleScene(container) {
     const delta = Math.min((now - lastFrameTime) / 1000, 0.033);
     lastFrameTime = now;
     controls.update();
+    if (planetGroup.visible) {
+      planet.rotation.y += delta * 0.11;
+      stars.rotation.y -= delta * 0.004;
+    }
+    if (nebula.group.visible) {
+      nebula.cloud.rotation.y += delta * 0.025;
+      nebula.group.rotation.z += delta * 0.004;
+    }
+    if (solarSystem.group.visible) {
+      solarSystem.sun.rotation.y += delta * 0.08;
+      solarSystem.orbiters.forEach((orbiter) => {
+        orbiter.pivot.rotation.y += delta * orbiter.speed * 0.16;
+        orbiter.planet.rotation.y += delta * 0.45;
+      });
+      stars.rotation.y -= delta * 0.002;
+    }
     uniforms.time.value += delta;
     uniforms.cameraPosition.value.copy(camera.position);
     const target = new THREE.Vector3(0, 0, -1)
@@ -432,7 +783,7 @@ function createBlackHoleScene(container) {
     postProcessing = new THREE.PostProcessing(renderer);
     const scenePass = pass(scene, camera);
     const scenePassColor = scenePass.getTextureNode();
-    const bloomPass = bloom(scenePassColor);
+    bloomPass = bloom(scenePassColor);
     bloomPass.threshold.value = config.bloomThreshold;
     bloomPass.strength.value = config.bloomStrength;
     bloomPass.radius.value = config.bloomRadius;
@@ -442,6 +793,7 @@ function createBlackHoleScene(container) {
 
   return {
     ready,
+    setObject,
     destroy() {
       stopped = true;
       cancelAnimationFrame(animationFrame);
@@ -449,6 +801,10 @@ function createBlackHoleScene(container) {
       controls.dispose();
       geometry.dispose();
       material.dispose();
+      disposeGroup(planetGroup);
+      disposeGroup(nebula.group);
+      disposeGroup(solarSystem.group);
+      disposeGroup(stars);
       renderer.dispose();
       renderer.domElement.remove();
     },
@@ -457,9 +813,11 @@ function createBlackHoleScene(container) {
 
 export function BlackHoleScene() {
   const containerRef = useRef(null);
+  const sceneRef = useRef(null);
   const [error, setError] = useState(false);
   const [ready, setReady] = useState(false);
   const [showGuide, setShowGuide] = useState(true);
+  const [selectedObject, setSelectedObject] = useState("black-hole");
 
   useEffect(() => {
     const container = containerRef.current;
@@ -470,6 +828,7 @@ export function BlackHoleScene() {
       if (disposed) return;
       try {
         scene = createBlackHoleScene(container);
+        sceneRef.current = scene;
         scene.ready
           .then(() => {
             if (!disposed) setReady(true);
@@ -484,8 +843,15 @@ export function BlackHoleScene() {
     return () => {
       disposed = true;
       scene?.destroy();
+      sceneRef.current = null;
     };
   }, []);
+
+  const changeObject = (event) => {
+    const nextObject = event.target.value;
+    setSelectedObject(nextObject);
+    sceneRef.current?.setObject(nextObject);
+  };
 
   return (
     <section className="black-hole-experience" ref={containerRef}>
@@ -498,6 +864,22 @@ export function BlackHoleScene() {
         <div className="space-loading" aria-live="polite">
           Entering orbit…
         </div>
+      ) : null}
+      {ready ? (
+        <label className="space-object-picker">
+          <span>Celestial object</span>
+          <span className="space-object-select">
+            <select value={selectedObject} onChange={changeObject}>
+              <option value="black-hole">Black hole</option>
+              <option value="planet">Aurelia · Gas giant</option>
+              <option value="nebula">Chromia · Nebula</option>
+              <option value="solar-system">Our solar system</option>
+            </select>
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m4 6 4 4 4-4" />
+            </svg>
+          </span>
+        </label>
       ) : null}
       {ready && showGuide ? (
         <aside className="space-guide" aria-labelledby="space-guide-title">
@@ -512,10 +894,10 @@ export function BlackHoleScene() {
             </button>
           </div>
           <div>
-            <h1 id="space-guide-title">Take the black hole for a spin.</h1>
+            <h1 id="space-guide-title">Choose your corner of the universe.</h1>
             <p>
-              Move around the event horizon and find your own view of the
-              universe.
+              Switch celestial scenes, move around them, and find a view worth
+              getting lost in.
             </p>
           </div>
           <div className="space-guide-controls" aria-label="Scene controls">

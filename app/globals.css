@@ -4835,7 +4835,8 @@ body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card.is-active {
   touch-action: none;
 }
 .space-guide,
-.space-guide-toggle {
+.space-guide-toggle,
+.space-object-picker {
   position: absolute;
   z-index: 3;
   left: clamp(20px, 4vw, 64px);
@@ -4848,6 +4849,57 @@ body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card.is-active {
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
   -webkit-backdrop-filter: blur(22px) saturate(135%);
   backdrop-filter: blur(22px) saturate(135%);
+}
+.space-object-picker {
+  top: 92px;
+  right: clamp(20px, 4vw, 64px);
+  bottom: auto;
+  left: auto;
+  min-width: 218px;
+  padding: 11px 12px 12px;
+  display: grid;
+  gap: 5px;
+  border-radius: 17px 12px 17px 14px;
+  animation: spaceGuideEnter 0.45s 0.12s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.space-object-picker > span:first-child {
+  color: rgba(255, 255, 255, 0.56);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.space-object-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.space-object-select select {
+  width: 100%;
+  min-height: 34px;
+  padding: 0 30px 0 0;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 620;
+  appearance: none;
+  cursor: pointer;
+}
+.space-object-select select:focus-visible {
+  outline: 2px solid #c9ff57;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.space-object-select svg {
+  position: absolute;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.72);
+  stroke-width: 1.6;
+  pointer-events: none;
 }
 .space-guide {
   width: min(410px, calc(100% - 40px));
@@ -4993,6 +5045,11 @@ body:has(.space-page) .site-footer {
   }
 }
 @media (max-width: 600px) {
+  .space-object-picker {
+    top: 82px;
+    right: 16px;
+    min-width: 190px;
+  }
   .space-guide {
     padding: 17px;
     gap: 15px;
@@ -5005,7 +5062,8 @@ body:has(.space-page) .site-footer {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .space-guide {
+  .space-guide,
+  .space-object-picker {
     animation: none;
   }
 }
