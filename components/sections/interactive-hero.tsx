@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CurrentMood } from "@/components/spotify/current-mood";
 import { ArrowUpRight, DownloadIcon } from "@/components/ui/icons";
 import { personal } from "@/statics/personal";
 
@@ -27,13 +28,16 @@ export function InteractiveHero() {
       </div>
     </div>
 
-    <div className="landing-signal" aria-label={`Currently exploring ${disciplines[discipline].toLowerCase()}`}>
-      <div className="signal-orbit" aria-hidden="true"><span /><span /><span /></div>
-      <div className="signal-copy">
-        <span>Currently exploring</span>
-        <strong key={discipline}>{disciplines[discipline]}</strong>
+    <div className="landing-aside">
+      <div className="landing-signal" aria-label={`Currently exploring ${disciplines[discipline].toLowerCase()}`}>
+        <div className="signal-orbit" aria-hidden="true"><span /><span /><span /></div>
+        <div className="signal-copy">
+          <span>Currently exploring</span>
+          <strong key={discipline}>{disciplines[discipline]}</strong>
+        </div>
+        <p>Engineering the details.<br/>Designing for people.</p>
       </div>
-      <p>Engineering the details.<br/>Designing for people.</p>
+      <CurrentMood />
     </div>
   </section>;
 }
