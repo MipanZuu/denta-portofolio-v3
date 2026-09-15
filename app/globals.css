@@ -4467,7 +4467,7 @@ body.dark-portfolio .blog-tags span {
   }
 }
 
-/* Clear liquid glass — keep the page visibly readable through each bubble. */
+/* Dimensional liquid glass — clear center, refractive rims and soft caustics. */
 .apple-nav-bar,
 .apple-mega-menu,
 .apple-mega-card,
@@ -4493,25 +4493,46 @@ body.dark-portfolio .blog-tags span {
 .dashboard-auth > section,
 .blog-feed-card,
 .blog-detail-card {
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.64);
   background:
     radial-gradient(
-      circle at 14% 2%,
-      rgba(255, 255, 255, 0.08),
-      transparent 30%
+      ellipse 86% 18% at 50% -2%,
+      rgba(255, 255, 255, 0.62),
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 74%
     ),
+    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.32), transparent 72%),
     linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.028),
-      rgba(255, 255, 255, 0.002) 52%,
-      rgba(255, 255, 255, 0.012)
+      112deg,
+      rgba(255, 255, 255, 0.075),
+      rgba(255, 255, 255, 0.008) 44%,
+      rgba(255, 255, 255, 0.045)
     );
+  background-clip: padding-box;
   box-shadow:
-    0 16px 38px rgba(39, 50, 42, 0.07),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.88),
-    inset -1px -1px 0 rgba(255, 255, 255, 0.16);
-  -webkit-backdrop-filter: blur(12px) saturate(155%);
-  backdrop-filter: blur(12px) saturate(155%);
+    0 16px 38px rgba(39, 50, 42, 0.09),
+    0 2px 5px rgba(39, 50, 42, 0.06),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.96),
+    inset 0 -1.5px 1px rgba(255, 255, 255, 0.4),
+    inset 1.5px 0 1px rgba(255, 255, 255, 0.52),
+    inset -1.5px 0 1px rgba(255, 255, 255, 0.14);
+  outline: 1px solid rgba(255, 255, 255, 0.14);
+  outline-offset: -2px;
+  -webkit-backdrop-filter: blur(8px) saturate(165%) brightness(1.035);
+  backdrop-filter: blur(8px) saturate(165%) brightness(1.035);
+}
+
+.apple-mega-card:hover,
+.apple-mega-card.is-active,
+a.current-mood:hover,
+.home-path-grid a:hover,
+.timeline-row:hover,
+.project-row:hover,
+.tech-item:hover {
+  background:
+    radial-gradient(ellipse 86% 18% at 50% -2%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.16) 48%, transparent 74%),
+    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.38), transparent 72%),
+    linear-gradient(112deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.015) 44%, rgba(255, 255, 255, 0.065));
 }
 
 body.dark-portfolio .apple-nav-bar,
@@ -4539,21 +4560,40 @@ body.dark-portfolio .editor-card,
 body.dark-portfolio .dashboard-auth > section,
 body.dark-portfolio .blog-feed-card,
 body.dark-portfolio .blog-detail-card {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.2);
   background:
     radial-gradient(
-      circle at 14% 2%,
-      rgba(255, 255, 255, 0.025),
-      transparent 30%
+      ellipse 86% 18% at 50% -2%,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.025) 48%,
+      transparent 74%
     ),
+    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.075), transparent 72%),
     linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.01),
-      transparent 52%,
-      rgba(255, 255, 255, 0.006)
+      112deg,
+      rgba(255, 255, 255, 0.022),
+      rgba(255, 255, 255, 0.003) 44%,
+      rgba(255, 255, 255, 0.014)
     );
   box-shadow:
     0 18px 42px rgba(0, 0, 0, 0.2),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.15),
-    inset -1px -1px 0 rgba(255, 255, 255, 0.025);
+    0 2px 5px rgba(0, 0, 0, 0.12),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.22),
+    inset 0 -1.5px 1px rgba(255, 255, 255, 0.08),
+    inset 1.5px 0 1px rgba(255, 255, 255, 0.12),
+    inset -1.5px 0 1px rgba(255, 255, 255, 0.025);
+  outline-color: rgba(255, 255, 255, 0.035);
+}
+
+body.dark-portfolio .apple-mega-card:hover,
+body.dark-portfolio .apple-mega-card.is-active,
+body.dark-portfolio a.current-mood:hover,
+body.dark-portfolio .home-path-grid a:hover,
+body.dark-portfolio .timeline-row:hover,
+body.dark-portfolio .project-row:hover,
+body.dark-portfolio .tech-item:hover {
+  background:
+    radial-gradient(ellipse 86% 18% at 50% -2%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.035) 48%, transparent 74%),
+    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.095), transparent 72%),
+    linear-gradient(112deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.005) 44%, rgba(255, 255, 255, 0.02));
 }
