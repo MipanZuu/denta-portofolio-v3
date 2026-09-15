@@ -5,6 +5,8 @@ export const navigation = [
   { label: "Technologies", href: "/technologies", section: "technologies" },
   { label: "Projects", href: "/projects", section: "projects" },
   { label: "Blog", href: "/blog", section: "blog" },
+  { label: "Docs", href: "/docs", section: "docs" },
+  { label: "Playground", href: "/playground", section: "playground" },
   { label: "Space", href: "/space", section: "space" },
   { label: "Contact", href: "/contact", section: "contact" },
 ] as const;

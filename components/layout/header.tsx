@@ -16,6 +16,8 @@ const navigationDescriptions: Record<string, string> = {
   experience: "Roles, impact, and the journey so far",
   technologies: "Languages, frameworks, and everyday tools",
   blog: "Notes on engineering, products, and craft",
+  docs: "A guide to the portfolio, experiments, and decisions",
+  playground: "Small games and useful tools you can try",
   space: "An interactive journey around a black hole",
 };
 
@@ -71,6 +73,32 @@ function RouteIcon({ route, className }: IconProps & { route: string }) {
         {...shared}
       >
         <path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5" />
+      </svg>
+    );
+  if (route === "docs")
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        {...shared}
+      >
+        <path d="M5 3h10l4 4v14H5z" />
+        <path d="M15 3v5h4M8 12h8m-8 4h6" />
+      </svg>
+    );
+  if (route === "playground")
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        {...shared}
+      >
+        <rect x="3" y="3" width="7" height="7" rx="2" />
+        <rect x="14" y="3" width="7" height="7" rx="2" />
+        <rect x="3" y="14" width="7" height="7" rx="2" />
+        <path d="M17.5 14v7M14 17.5h7" />
       </svg>
     );
   if (route === "space")
@@ -143,8 +171,11 @@ export function Header() {
   const primaryNavigation = navigation.filter((item) =>
     ["home", "about", "projects"].includes(item.section),
   );
-  const moreNavigation = navigation.filter((item) =>
-    ["experience", "technologies", "blog", "space"].includes(item.section),
+  const featuredNavigation = navigation.filter((item) =>
+    ["playground", "space"].includes(item.section),
+  );
+  const directoryNavigation = navigation.filter((item) =>
+    ["experience", "technologies", "blog", "docs", "contact"].includes(item.section),
   );
 
   useEffect(() => {
@@ -238,55 +269,59 @@ export function Header() {
             ×
           </button>
         </div>
-        <div className="apple-mega-grid">
-          {primaryNavigation.map((item) => (
-            <Link
-              className={`apple-mega-card apple-mega-card-mobile-only ${active === item.section ? "is-active" : ""}`}
-              href={item.href}
-              key={`mobile-${item.href}`}
-              onClick={() => setOpen(false)}
-            >
-              <span className="apple-mega-icon">
-                <RouteIcon route={item.section} />
-              </span>
-              <span>
-                <strong>{item.label}</strong>
-                <small>{navigationDescriptions[item.section]}</small>
-              </span>
-              <b aria-hidden="true">↗</b>
-            </Link>
-          ))}
-          {moreNavigation.map((item) => (
-            <Link
-              className={`apple-mega-card ${active === item.section ? "is-active" : ""}`}
-              href={item.href}
-              key={item.href}
-              onClick={() => setOpen(false)}
-            >
-              <span className="apple-mega-icon">
-                <RouteIcon route={item.section} />
-              </span>
-              <span>
-                <strong>{item.label}</strong>
-                <small>{navigationDescriptions[item.section]}</small>
-              </span>
-              <b aria-hidden="true">↗</b>
-            </Link>
-          ))}
-          <Link
-            className={`apple-mega-card ${active === "contact" ? "is-active" : ""}`}
-            href="/contact"
-            onClick={() => setOpen(false)}
-          >
-            <span className="apple-mega-icon">
-              <RouteIcon route="contact" />
-            </span>
-            <span>
-              <strong>Contact</strong>
-              <small>Start a conversation or collaboration</small>
-            </span>
-            <b aria-hidden="true">↗</b>
-          </Link>
+        <div className="apple-nav-directory">
+          <section className="apple-directory-section apple-directory-featured">
+            <span className="apple-directory-label">Featured</span>
+            <div className="apple-featured-grid">
+              {featuredNavigation.map((item) => (
+                <Link
+                  className={`apple-feature-card ${active === item.section ? "is-active" : ""}`}
+                  href={item.href}
+                  key={item.href}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="apple-mega-icon">
+                    <RouteIcon route={item.section} />
+                  </span>
+                  <span>
+                    <strong>{item.label}</strong>
+                    <small>{navigationDescriptions[item.section]}</small>
+                  </span>
+                  <b aria-hidden="true">↗</b>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <section className="apple-directory-section apple-directory-browse">
+            <span className="apple-directory-label">Browse</span>
+            <nav className="apple-directory-list" aria-label="Portfolio directory">
+              {primaryNavigation.map((item) => (
+                <Link
+                  className={`apple-directory-link apple-directory-mobile-only ${active === item.section ? "is-active" : ""}`}
+                  href={item.href}
+                  key={`mobile-${item.href}`}
+                  onClick={() => setOpen(false)}
+                >
+                  <RouteIcon route={item.section} />
+                  <span>{item.label}</span>
+                  <b aria-hidden="true">↗</b>
+                </Link>
+              ))}
+              {directoryNavigation.map((item) => (
+                <Link
+                  className={`apple-directory-link ${active === item.section ? "is-active" : ""}`}
+                  href={item.href}
+                  key={item.href}
+                  onClick={() => setOpen(false)}
+                >
+                  <RouteIcon route={item.section} />
+                  <span>{item.label}</span>
+                  <b aria-hidden="true">↗</b>
+                </Link>
+              ))}
+            </nav>
+          </section>
         </div>
         <div className="apple-quick-actions">
           <span>Quick actions</span>

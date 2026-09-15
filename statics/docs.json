@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "title": "Docs",
+    "description": "A practical guide to Denta Bramasta's portfolio, engineering work, writing, and interactive experiments.",
+    "path": "/docs"
+  },
+  "heading": {
+    "index": "07",
+    "eyebrow": "Documentation",
+    "title": "A map for curious people.",
+    "copy": "Pick a trail. Each one leads to the real work, the thinking behind it, or something slightly strange."
+  },
+  "intro": {
+    "version": "Docs / living notes",
+    "title": "Nothing corporate. Just a clearer way to explore.",
+    "body": [
+      "This is the field guide to my portfolio: what lives here, why I made it, and what happens when I step away from the keyboard.",
+      "It will grow with the site, so new work and experiments always have an obvious home."
+    ],
+    "contentsLabel": "On this page"
+  },
+  "sections": [
+    {
+      "id": "welcome-to-the-workbench",
+      "number": "01",
+      "eyebrow": "Introduction",
+      "title": "Welcome to the workbench",
+      "summary": "I think of this portfolio as a working desk. It is tidy enough for visitors, but it is never really finished.",
+      "paragraphs": [
+        "Hi, I am Denta. I am a software engineer, and I like making complicated things feel simple enough that people do not need a manual to use them. This site is where I keep the projects, jobs, tools, and lessons that shaped me.",
+        "Projects shows what I have made. Experience tells you where I learned most of it. The Blog catches the small lessons before they disappear into one of the many notes on my phone.",
+        "There is no correct order. Open whatever looks interesting and wander from there. If you keep poking around, you might find a few things that are not listed in the menu."
+      ],
+      "callout": {
+        "label": "The short version",
+        "text": "I make useful things, write down what I learn, and sometimes put a black hole where a normal portfolio section should be."
+      },
+      "links": [
+        { "href": "/about", "label": "Meet the person", "note": "Background, education, and the human bits" },
+        { "href": "/projects", "label": "See the work", "note": "Selected products and engineering projects" }
+      ]
+    },
+    {
+      "id": "when-the-laptop-closes",
+      "number": "02",
+      "eyebrow": "Off-screen",
+      "title": "When the laptop closes",
+      "summary": "Good software needs breaks. So does the person making it.",
+      "paragraphs": [
+        "When the laptop closes, I need to move. I run, ride, travel, and take photos of things I would probably miss if I stayed behind a screen all day.",
+        "I also cook. The process is surprisingly close to debugging: change one thing, taste the result, then work out what went wrong. Reading and learning fill the quiet hours. Sleeping helps too. I am still trying to get better at that one.",
+        "A lot of my better ideas arrive during those breaks. Annoyingly, they often show up right after I have stopped looking for them."
+      ],
+      "callout": {
+        "label": "Current operating mode",
+        "text": "Code with care. Run without notifications. Take the photo. Eat the experiment. Get some sleep."
+      },
+      "links": [
+        { "href": "/about", "label": "Outside work", "note": "The longer personal introduction" },
+        { "href": "/", "label": "Current mood", "note": "What may be playing while I build" }
+      ]
+    },
+    {
+      "id": "how-this-place-is-built",
+      "number": "03",
+      "eyebrow": "Under the hood",
+      "title": "How this place is built",
+      "summary": "The site looks playful. Underneath it, most things are kept simple on purpose.",
+      "paragraphs": [
+        "I built the site with Next.js, React, and TypeScript. Public pages are for reading and exploring. The dashboard handles the boring but important jobs, including posts, images, comments, and the song shown on the home page.",
+        "The rounded glass, odd corners, and bright colors are there because I wanted the site to feel like mine. Movement should help you notice a change, not fight for your attention. It calms down on touch screens and when reduced motion is enabled.",
+        "The blog uses a database and caches the pages people read most. Images can be uploaded or added with a URL. Metadata and the sitemap are part of the same work because a good page should also make sense outside the browser window."
+      ],
+      "callout": {
+        "label": "Design rule",
+        "text": "If an effect makes the content harder to read, the effect loses. Even when it looks very cool."
+      },
+      "links": [
+        { "href": "/technologies", "label": "Technology stack", "note": "Languages, frameworks, platforms, and tools" },
+        { "href": "/blog", "label": "Engineering notes", "note": "Lessons and ideas from the workbench" }
+      ]
+    },
+    {
+      "id": "choose-your-route",
+      "number": "04",
+      "eyebrow": "Navigation",
+      "title": "Choose your route",
+      "summary": "There is no wrong way through the portfolio, but there may be a faster one.",
+      "paragraphs": [
+        "If you are here to understand how I work, begin with Experience and continue to Projects. If you want implementation details, Technologies is the useful shortcut. If you have five quiet minutes and no agenda, the Blog is probably the nicest place to start.",
+        "Space is the odd one. It asks the browser to work harder and gives you a black hole instead of another page of text. Drag to orbit, scroll to travel, and change the object when you feel like leaving Earth for a minute.",
+        "The More menu is kept as a short directory. I can add new sections later without making you hunt through a wall of giant cards."
+      ],
+      "callout": {
+        "label": "Recommended detour",
+        "text": "Try Space with headphones off. There is no dramatic soundtrack. Your laptop fan might provide one for free."
+      },
+      "links": [
+        { "href": "/experience", "label": "Professional route", "note": "Roles, responsibilities, and growth" },
+        { "href": "/space", "label": "Experimental route", "note": "Interactive planets, nebulae, and a black hole" }
+      ]
+    },
+    {
+      "id": "never-quite-finished",
+      "number": "05",
+      "eyebrow": "Roadmap",
+      "title": "Never quite finished",
+      "summary": "A personal site should move when the person behind it moves.",
+      "paragraphs": [
+        "Right now these docs live in a JSON file. The words are already separate from the layout, so moving them into the dashboard later should not mean rebuilding the whole page.",
+        "I want to add project decisions, small coding recipes, experiments that failed, and notes from whatever I am learning next. Not everything needs to become a serious case study. Sometimes a short, honest note does the job.",
+        "So yes, this page will change. The version label mostly looks nice, but I do plan to keep updating what sits behind it."
+      ],
+      "callout": {
+        "label": "Status",
+        "text": "Shipping, learning, occasionally breaking CSS, then shipping again."
+      },
+      "links": [
+        { "href": "/contact", "label": "Start a conversation", "note": "Questions, ideas, or collaboration" },
+        { "href": "/blog", "label": "Read the latest notes", "note": "The newest things I decided to write down" }
+      ]
+    }
+  ]
+}
