@@ -1,10 +1,10 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
-import { blogPages } from "@/db/schema";
+import { blogComments, blogPages } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/admin";
 import { slugBelongsToAnotherPage } from "@/lib/blog/queries";
 import { parseBlogPageForm } from "@/lib/blog/validation";
@@ -54,4 +54,44 @@ export async function deleteBlogPageAction(id: string) {
   const db = getDb();
   await db.update(blogPages).set({ deletedAt: new Date(), published: false, updatedAt: new Date() }).where(eq(blogPages.id, id));
   revalidatePath("/dashboard");
+}
+
+export async function deleteBlogCommentAction(blogPageId: string, commentId: string) {
+  await requireAdmin(`/dashboard/blog/${blogPageId}/edit`);
+
+  if (!blogPageId.startsWith("blog_") || !commentId.startsWith("comment_")) {
+    throw new Error("Comment not found.");
+  }
+
+  const db = getDb();
+  const [comment] = await db
+    .select({ id: blogComments.id, slug: blogPages.slug })
+    .from(blogComments)
+    .innerJoin(blogPages, eq(blogComments.blogPageId, blogPages.id))
+    .where(
+      and(
+        eq(blogComments.id, commentId),
+        eq(blogComments.blogPageId, blogPageId),
+        isNull(blogComments.deletedAt),
+        isNull(blogPages.deletedAt),
+      ),
+    )
+    .limit(1);
+
+  if (!comment) throw new Error("Comment not found.");
+
+  await db
+    .update(blogComments)
+    .set({ deletedAt: new Date() })
+    .where(
+      and(
+        eq(blogComments.id, comment.id),
+        eq(blogComments.blogPageId, blogPageId),
+        isNull(blogComments.deletedAt),
+      ),
+    );
+
+  revalidatePath(`/dashboard/blog/${blogPageId}/edit`);
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${comment.slug}`);
 }

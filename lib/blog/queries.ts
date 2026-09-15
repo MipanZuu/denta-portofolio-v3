@@ -117,6 +117,27 @@ export async function getBlogComments(blogPageId: string) {
     .orderBy(asc(blogComments.createdAt));
 }
 
+export async function getDashboardBlogComments(blogPageId: string, requestedPage: number, pageSize = 10) {
+  const db = getDb();
+  const safePageSize = Math.min(Math.max(Math.trunc(pageSize), 1), 50);
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(blogComments)
+    .where(and(eq(blogComments.blogPageId, blogPageId), isNull(blogComments.deletedAt)));
+
+  const totalPages = Math.max(1, Math.ceil(count / safePageSize));
+  const page = Math.min(Math.max(Math.trunc(requestedPage) || 1, 1), totalPages);
+  const comments = await db
+    .select()
+    .from(blogComments)
+    .where(and(eq(blogComments.blogPageId, blogPageId), isNull(blogComments.deletedAt)))
+    .orderBy(desc(blogComments.createdAt))
+    .limit(safePageSize)
+    .offset((page - 1) * safePageSize);
+
+  return { comments, count, page, pageSize: safePageSize, totalPages };
+}
+
 export async function getBlogEngagement(blogPageId: string, visitorId?: string) {
   const db = getDb();
   const [[likes], [comments], [views], visitorLike] = await Promise.all([
