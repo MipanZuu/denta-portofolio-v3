@@ -22,8 +22,25 @@
 }
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 80, 71, 0.38) transparent;
+}
+html::-webkit-scrollbar {
+  width: 10px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(70, 80, 71, 0.38);
+  background-clip: content-box;
 }
 body {
+  min-height: 100svh;
   margin: 0;
   background:
     radial-gradient(
@@ -4493,33 +4510,14 @@ body.dark-portfolio .blog-tags span {
 .dashboard-auth > section,
 .blog-feed-card,
 .blog-detail-card {
-  border-color: rgba(255, 255, 255, 0.64);
-  background:
-    radial-gradient(
-      ellipse 86% 18% at 50% -2%,
-      rgba(255, 255, 255, 0.62),
-      rgba(255, 255, 255, 0.12) 48%,
-      transparent 74%
-    ),
-    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.32), transparent 72%),
-    linear-gradient(
-      112deg,
-      rgba(255, 255, 255, 0.075),
-      rgba(255, 255, 255, 0.008) 44%,
-      rgba(255, 255, 255, 0.045)
-    );
-  background-clip: padding-box;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.025);
   box-shadow:
     0 16px 38px rgba(39, 50, 42, 0.09),
     0 2px 5px rgba(39, 50, 42, 0.06),
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.96),
-    inset 0 -1.5px 1px rgba(255, 255, 255, 0.4),
-    inset 1.5px 0 1px rgba(255, 255, 255, 0.52),
-    inset -1.5px 0 1px rgba(255, 255, 255, 0.14);
-  outline: 1px solid rgba(255, 255, 255, 0.14);
-  outline-offset: -2px;
-  -webkit-backdrop-filter: blur(8px) saturate(165%) brightness(1.035);
-  backdrop-filter: blur(8px) saturate(165%) brightness(1.035);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(4px) saturate(150%) brightness(1.02);
+  backdrop-filter: blur(4px) saturate(150%) brightness(1.02);
 }
 
 .apple-mega-card:hover,
@@ -4529,10 +4527,7 @@ a.current-mood:hover,
 .timeline-row:hover,
 .project-row:hover,
 .tech-item:hover {
-  background:
-    radial-gradient(ellipse 86% 18% at 50% -2%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.16) 48%, transparent 74%),
-    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.38), transparent 72%),
-    linear-gradient(112deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.015) 44%, rgba(255, 255, 255, 0.065));
+  background: rgba(255, 255, 255, 0.055);
 }
 
 body.dark-portfolio .apple-nav-bar,
@@ -4560,29 +4555,12 @@ body.dark-portfolio .editor-card,
 body.dark-portfolio .dashboard-auth > section,
 body.dark-portfolio .blog-feed-card,
 body.dark-portfolio .blog-detail-card {
-  border-color: rgba(255, 255, 255, 0.2);
-  background:
-    radial-gradient(
-      ellipse 86% 18% at 50% -2%,
-      rgba(255, 255, 255, 0.15),
-      rgba(255, 255, 255, 0.025) 48%,
-      transparent 74%
-    ),
-    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.075), transparent 72%),
-    linear-gradient(
-      112deg,
-      rgba(255, 255, 255, 0.022),
-      rgba(255, 255, 255, 0.003) 44%,
-      rgba(255, 255, 255, 0.014)
-    );
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.008);
   box-shadow:
     0 18px 42px rgba(0, 0, 0, 0.2),
     0 2px 5px rgba(0, 0, 0, 0.12),
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.22),
-    inset 0 -1.5px 1px rgba(255, 255, 255, 0.08),
-    inset 1.5px 0 1px rgba(255, 255, 255, 0.12),
-    inset -1.5px 0 1px rgba(255, 255, 255, 0.025);
-  outline-color: rgba(255, 255, 255, 0.035);
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 body.dark-portfolio .apple-mega-card:hover,
@@ -4592,8 +4570,164 @@ body.dark-portfolio .home-path-grid a:hover,
 body.dark-portfolio .timeline-row:hover,
 body.dark-portfolio .project-row:hover,
 body.dark-portfolio .tech-item:hover {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+/* Route transitions */
+.route-loading {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  visibility: visible;
+  opacity: 1;
   background:
-    radial-gradient(ellipse 86% 18% at 50% -2%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.035) 48%, transparent 74%),
-    radial-gradient(ellipse 58% 18% at 62% 104%, rgba(255, 255, 255, 0.095), transparent 72%),
-    linear-gradient(112deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.005) 44%, rgba(255, 255, 255, 0.02));
+    radial-gradient(circle at 18% 18%, rgba(169, 195, 255, 0.25), transparent 30rem),
+    radial-gradient(circle at 82% 72%, rgba(201, 255, 87, 0.2), transparent 28rem),
+    rgba(241, 240, 233, 0.76);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  animation: routeLoaderReveal 0.14s ease-out both;
+}
+.planet-loader {
+  position: relative;
+  width: clamp(220px, 35vw, 360px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 22%, rgba(255, 255, 255, 0.52), transparent 25%),
+    radial-gradient(circle at 62% 78%, rgba(169, 195, 255, 0.15), transparent 36%),
+    rgba(255, 255, 255, 0.035);
+  box-shadow:
+    0 30px 70px rgba(45, 56, 48, 0.15),
+    inset 2px 2px 2px rgba(255, 255, 255, 0.94),
+    inset -2px -2px 2px rgba(137, 148, 139, 0.14);
+  -webkit-backdrop-filter: blur(7px) saturate(170%);
+  backdrop-filter: blur(7px) saturate(170%);
+  animation: planetFloat 3.6s ease-in-out infinite;
+}
+.planet-loader-halo {
+  position: absolute;
+  inset: -7%;
+  border-radius: 50%;
+  background: conic-gradient(from 30deg, transparent, rgba(169, 195, 255, 0.28), transparent 34%, rgba(201, 255, 87, 0.22), transparent 68%, rgba(255, 101, 67, 0.2), transparent);
+  filter: blur(20px);
+  animation: planetHaloSpin 7s linear infinite;
+}
+.planet-loader-core {
+  position: relative;
+  z-index: 2;
+  width: 25%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255, 255, 255, 0.9), transparent 22%),
+    conic-gradient(from 210deg, var(--lime), var(--blue), var(--orange), var(--lime));
+  box-shadow:
+    0 0 34px rgba(169, 195, 255, 0.38),
+    inset 2px 2px 3px rgba(255, 255, 255, 0.75),
+    inset -3px -3px 5px rgba(24, 32, 25, 0.14);
+  animation: planetCorePulse 1.8s ease-in-out infinite;
+}
+.planet-loader-core i {
+  width: 36%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.7);
+}
+.planet-loader-orbit {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgba(75, 84, 77, 0.34);
+  border-radius: 50%;
+  animation: planetOrbit 3.2s linear infinite;
+}
+.planet-loader-orbit i {
+  position: absolute;
+  top: 50%;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 0 7px rgba(255, 101, 67, 0.12), 0 4px 12px rgba(36, 43, 37, 0.18);
+  transform: translateY(-50%);
+}
+.planet-loader-orbit.orbit-one {
+  inset: 18%;
+  animation-duration: 2.4s;
+}
+.planet-loader-orbit.orbit-two {
+  inset: 8%;
+  border-style: dashed;
+  animation-duration: 4.6s;
+  animation-direction: reverse;
+}
+.planet-loader-orbit.orbit-two i {
+  top: 18%;
+  left: auto;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--lime);
+  box-shadow: 0 0 0 7px rgba(201, 255, 87, 0.14), 0 4px 12px rgba(36, 43, 37, 0.16);
+}
+.planet-loader-orbit.orbit-three {
+  inset: 30%;
+  border-color: rgba(75, 84, 77, 0.24);
+  animation-duration: 1.65s;
+}
+.planet-loader-orbit.orbit-three i {
+  top: -6px;
+  left: 56%;
+  width: 11px;
+  height: 11px;
+  background: var(--blue);
+  box-shadow: 0 0 0 6px rgba(169, 195, 255, 0.15), 0 4px 12px rgba(36, 43, 37, 0.14);
+}
+body.dark-portfolio .route-loading {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(75, 104, 161, 0.24), transparent 30rem),
+    radial-gradient(circle at 82% 72%, rgba(102, 145, 69, 0.17), transparent 28rem),
+    rgba(16, 19, 16, 0.78);
+}
+body.dark-portfolio .planet-loader {
+  border-color: rgba(255, 255, 255, 0.2);
+  background:
+    radial-gradient(circle at 34% 22%, rgba(255, 255, 255, 0.12), transparent 25%),
+    radial-gradient(circle at 62% 78%, rgba(169, 195, 255, 0.08), transparent 36%),
+    rgba(255, 255, 255, 0.012);
+  box-shadow:
+    0 32px 76px rgba(0, 0, 0, 0.34),
+    inset 2px 2px 2px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 2px rgba(0, 0, 0, 0.18);
+}
+body.dark-portfolio .planet-loader-orbit {
+  border-color: rgba(236, 241, 234, 0.3);
+}
+@keyframes routeLoaderReveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes planetOrbit {
+  to { transform: rotate(360deg); }
+}
+@keyframes planetHaloSpin {
+  to { transform: rotate(-360deg) scale(1.04); }
+}
+@keyframes planetCorePulse {
+  50% { transform: scale(1.08); filter: saturate(1.2); }
+}
+@keyframes planetFloat {
+  50% { transform: translateY(-9px) rotate(1deg); }
 }
