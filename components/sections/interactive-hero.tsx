@@ -24,7 +24,14 @@ export function InteractiveHero() {
       <p className="landing-intro">{personal.intro}</p>
       <div className="hero-actions">
         <Link className="button button-primary" href="/projects">See selected work <ArrowUpRight /></Link>
-        <a className="button button-ghost" href={personal.resume} target="_blank">Résumé <DownloadIcon /></a>
+        <button
+          className="button button-ghost resume-disabled"
+          type="button"
+          disabled
+          title="Résumé download is unavailable"
+        >
+          Résumé <DownloadIcon />
+        </button>
       </div>
     </div>
 

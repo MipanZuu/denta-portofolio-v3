@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local migration source retained for reference
 /portofolio-denta/
+
+# Résumés contain personal information and must not be published.
+/public/documents/*.pdf

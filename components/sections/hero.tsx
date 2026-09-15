@@ -12,7 +12,14 @@ export function Hero() {
           <p className="hero-intro">{personal.intro}</p>
           <div className="hero-actions">
             <a className="button button-primary" href="#work">Explore my work <ArrowUpRight /></a>
-            <a className="button button-ghost" href={personal.resume} target="_blank">Résumé <DownloadIcon /></a>
+            <button
+              className="button button-ghost resume-disabled"
+              type="button"
+              disabled
+              title="Résumé download is unavailable"
+            >
+              Résumé <DownloadIcon />
+            </button>
           </div>
         </div>
 

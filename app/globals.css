@@ -1227,6 +1227,16 @@ body.dark-portfolio .tech-item:hover {
 .button-ghost:hover {
   background: #fff;
 }
+.button.resume-disabled:disabled,
+.apple-quick-actions .resume-disabled:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.button.resume-disabled:disabled:hover {
+  background: transparent;
+  transform: none;
+}
 .portrait-wrap {
   position: relative;
   width: min(460px, 100%);

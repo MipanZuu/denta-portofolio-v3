@@ -298,13 +298,14 @@ export function Header() {
             <GitHubIcon />
             GitHub
           </a>
-          <a
-            href="/documents/denta-bramasta-cv.pdf"
-            target="_blank"
-            rel="noreferrer"
+          <button
+            className="resume-disabled"
+            type="button"
+            disabled
+            title="Résumé download is unavailable"
           >
             <span className="apple-file-icon">↓</span>Résumé
-          </a>
+          </button>
           <button type="button" onClick={toggleTheme}>
             <span>{dark ? "☀" : "☾"}</span>
             {dark ? "Light mode" : "Dark mode"}
