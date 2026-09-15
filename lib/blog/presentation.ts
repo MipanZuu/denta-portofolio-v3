@@ -20,9 +20,11 @@ export function parseBlogTags(tags: string) {
   }
 }
 
-export function formatBlogDate(date: Date | null) {
+export function formatBlogDate(date: Date | string | null) {
   if (!date) return "Recently";
-  return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(date);
+  const parsedDate = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(parsedDate.getTime())) return "Recently";
+  return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(parsedDate);
 }
 
 export function formatCompactCount(count: number) {
