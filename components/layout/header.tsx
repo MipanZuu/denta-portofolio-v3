@@ -16,6 +16,7 @@ const navigationDescriptions: Record<string, string> = {
   experience: "Roles, impact, and the journey so far",
   technologies: "Languages, frameworks, and everyday tools",
   blog: "Notes on engineering, products, and craft",
+  space: "An interactive journey around a black hole",
 };
 
 function RouteIcon({ route, className }: IconProps & { route: string }) {
@@ -70,6 +71,19 @@ function RouteIcon({ route, className }: IconProps & { route: string }) {
         {...shared}
       >
         <path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5" />
+      </svg>
+    );
+  if (route === "space")
+    return (
+      <svg
+        className={className}
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        {...shared}
+      >
+        <circle cx="12" cy="12" r="3" />
+        <ellipse cx="12" cy="12" rx="10" ry="4.5" />
+        <path d="M5.8 4.6c2.6 2 4.8 5.1 6.2 8.7 1.1 2.9 1.4 5.5.9 7.4" />
       </svg>
     );
   if (route === "contact")
@@ -130,7 +144,7 @@ export function Header() {
     ["home", "about", "projects"].includes(item.section),
   );
   const moreNavigation = navigation.filter((item) =>
-    ["experience", "technologies", "blog"].includes(item.section),
+    ["experience", "technologies", "blog", "space"].includes(item.section),
   );
 
   useEffect(() => {
@@ -162,7 +176,7 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className={`dynamic-header ${open ? "is-expanded" : ""}`}
+      className={`dynamic-header ${open ? "is-expanded" : ""} ${active === "space" ? "is-space-route" : ""}`}
     >
       <div className="apple-nav-bar">
         <Link

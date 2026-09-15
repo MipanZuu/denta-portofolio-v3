@@ -4731,3 +4731,281 @@ body.dark-portfolio .planet-loader-orbit {
 @keyframes planetFloat {
   50% { transform: translateY(-9px) rotate(1deg); }
 }
+
+/* Only the navigation cards are denser so their labels stay readable. */
+.dynamic-header .apple-mega-card {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 252, 0.76);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  backdrop-filter: blur(24px) saturate(145%);
+}
+.dynamic-header .apple-mega-card:hover,
+.dynamic-header .apple-mega-card.is-active {
+  background: rgba(255, 255, 252, 0.9);
+}
+body.dark-portfolio .dynamic-header .apple-mega-card {
+  border-color: rgba(255, 255, 255, 0.11);
+  background: rgba(35, 39, 35, 0.8);
+}
+body.dark-portfolio .dynamic-header .apple-mega-card:hover,
+body.dark-portfolio .dynamic-header .apple-mega-card.is-active {
+  background: rgba(44, 49, 44, 0.92);
+}
+
+/* Keep the full navigation legible over the Space scene only. */
+.dynamic-header.is-space-route {
+  color: #f8fafc;
+}
+.dynamic-header.is-space-route .apple-nav-bar,
+.dynamic-header.is-space-route .apple-mega-menu {
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(3, 10, 18, 0.72);
+  box-shadow:
+    0 18px 46px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  backdrop-filter: blur(30px) saturate(140%);
+}
+.dynamic-header.is-space-route .apple-primary-nav a:hover,
+.dynamic-header.is-space-route .apple-primary-nav a.is-active,
+.dynamic-header.is-space-route .apple-more-button:hover,
+.dynamic-header.is-space-route.is-expanded .apple-more-button {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+.dynamic-header.is-space-route .apple-nav-separator,
+.dynamic-header.is-space-route .apple-quick-actions {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.dynamic-header.is-space-route .apple-mega-heading span,
+.dynamic-header.is-space-route .apple-quick-actions > span {
+  color: rgba(255, 255, 255, 0.64);
+}
+.dynamic-header.is-space-route .apple-mega-heading button {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+.dynamic-header.is-space-route .apple-mega-card,
+body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card {
+  color: #171a17;
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 252, 0.86);
+}
+.dynamic-header.is-space-route .apple-mega-card small,
+body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card small {
+  color: #646a64;
+}
+.dynamic-header.is-space-route .apple-mega-card:hover,
+.dynamic-header.is-space-route .apple-mega-card.is-active,
+body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card:hover,
+body.dark-portfolio .dynamic-header.is-space-route .apple-mega-card.is-active {
+  background: rgba(255, 255, 252, 0.96);
+}
+.dynamic-header.is-space-route .apple-quick-actions a,
+.dynamic-header.is-space-route .apple-quick-actions button {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.dynamic-header.is-space-route .apple-quick-actions a:hover,
+.dynamic-header.is-space-route .apple-quick-actions button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Interactive space route */
+.space-page {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  color: #fff;
+  background: #000;
+}
+.black-hole-experience,
+.black-hole-experience canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.black-hole-experience canvas {
+  display: block;
+  touch-action: none;
+}
+.space-guide,
+.space-guide-toggle {
+  position: absolute;
+  z-index: 3;
+  left: clamp(20px, 4vw, 64px);
+  bottom: clamp(20px, 4vw, 54px);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fff;
+  background: rgba(4, 9, 15, 0.62);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  backdrop-filter: blur(22px) saturate(135%);
+}
+.space-guide {
+  width: min(410px, calc(100% - 40px));
+  padding: 20px;
+  display: grid;
+  gap: 20px;
+  border-radius: 28px 18px 28px 22px;
+  animation: spaceGuideEnter 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.space-guide-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.space-guide-heading > span {
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.space-guide-heading button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.space-guide h1 {
+  max-width: 330px;
+  margin: 0 0 8px;
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+.space-guide p {
+  max-width: 350px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+.space-guide-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.space-guide-controls span {
+  min-height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.78rem;
+}
+.space-guide-controls svg,
+.space-guide-toggle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.space-guide-action {
+  min-height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 15px 11px 15px 12px;
+  color: #10150e;
+  background: #c9ff57;
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.space-guide-action:hover {
+  background: #d8ff87;
+  transform: translateY(-2px);
+}
+.space-guide-toggle {
+  min-height: 44px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.space-loading,
+.space-fallback {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  text-align: center;
+}
+.space-loading {
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+.space-fallback {
+  padding: 24px;
+  background: radial-gradient(circle, #101a2b, #000 64%);
+}
+.space-fallback strong {
+  font-size: clamp(1.4rem, 4vw, 2.5rem);
+}
+.space-fallback span {
+  color: rgba(255, 255, 255, 0.65);
+}
+body:has(.space-page) .site-footer {
+  display: none;
+}
+@keyframes spaceGuideEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (max-width: 600px) {
+  .space-guide {
+    padding: 17px;
+    gap: 15px;
+  }
+  .space-guide h1 {
+    font-size: 1.55rem;
+  }
+  .space-guide p {
+    font-size: 0.86rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .space-guide {
+    animation: none;
+  }
+}
