@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProjectVisual } from "@/components/projects/project-visual";
+import { HomePlayground } from "@/components/sections/home-playground";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { experiences } from "@/statics/experience";
 import { projects } from "@/statics/projects";
@@ -15,8 +16,10 @@ export function HomePaths() {
       <div><strong>{technologyCount}</strong><span>Tools in the kit</span></div>
     </section>
 
+    <HomePlayground />
+
     <section className="home-featured page-shell">
-      <div className="home-section-heading"><p><span>01</span>Featured work</p><h2>A few things<br/>I&apos;ve brought to life.</h2><Link href="/projects">View every project <ArrowUpRight /></Link></div>
+      <div className="home-section-heading"><p><span>02</span>Featured work</p><h2>A few things<br/>I&apos;ve brought to life.</h2><Link href="/projects">View every project <ArrowUpRight /></Link></div>
       <div className="home-project-grid">{projects.slice(0, 3).map((project, index) => <Link className="home-project" href="/projects" key={project.title}>
         <div className={project.image ? "" : "project-thumbnail-placeholder"}>
           <ProjectVisual image={project.image} title={project.title} sizes="(max-width: 800px) 92vw, 31vw" />
