@@ -3,9 +3,32 @@ import { NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth/server";
 import { contact } from "@/statics/contact";
 
+const responseHeaders = {
+  "Cache-Control": "no-store",
+  "Cross-Origin-Resource-Policy": "same-origin",
+  "X-Content-Type-Options": "nosniff",
+  "X-Robots-Tag": "noindex, nofollow, noarchive",
+};
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as HandleUploadBody;
+
+    if (body.type === "blob.generate-client-token") {
+      const fetchSite = request.headers.get("sec-fetch-site");
+      if (fetchSite && fetchSite !== "same-origin") {
+        return NextResponse.json({ error: "Cross-origin access is not allowed." }, { status: 403, headers: responseHeaders });
+      }
+
+      const { data: session } = await getAuth().getSession();
+      if (!session?.user) {
+        return NextResponse.json({ error: "Authentication required." }, { status: 401, headers: responseHeaders });
+      }
+      if (session.user.email.toLowerCase() !== contact.email.toLowerCase()) {
+        return NextResponse.json({ error: "You are not allowed to upload blog images." }, { status: 403, headers: responseHeaders });
+      }
+    }
+
     const response = await handleUpload({
       body,
       request,
@@ -25,8 +48,11 @@ export async function POST(request: Request) {
       },
       onUploadCompleted: async () => {},
     });
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: responseHeaders });
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Upload failed." }, { status: 400 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Upload failed." },
+      { status: 400, headers: responseHeaders },
+    );
   }
 }

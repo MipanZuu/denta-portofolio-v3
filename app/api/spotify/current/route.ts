@@ -14,6 +14,9 @@ type SpotifyCurrentlyPlaying = {
 
 const responseHeaders = {
   "Cache-Control": "public, s-maxage=20, stale-while-revalidate=40",
+  "Cross-Origin-Resource-Policy": "same-origin",
+  "X-Content-Type-Options": "nosniff",
+  "X-Robots-Tag": "noindex, nofollow, noarchive",
 };
 
 function emptyResponse(configured: boolean) {
@@ -23,7 +26,15 @@ function emptyResponse(configured: boolean) {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin") {
+    return Response.json(
+      { error: "Cross-origin access is not allowed." },
+      { status: 403, headers: responseHeaders },
+    );
+  }
+
   const { clientId, clientSecret, refreshToken } = getSpotifyConfig();
 
   if (!clientId || !clientSecret || !refreshToken) return emptyResponse(false);
