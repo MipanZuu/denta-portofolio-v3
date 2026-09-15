@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -50,8 +51,8 @@ export function BlogMedia({ images, alt, priority = false, href }: BlogMediaProp
     </div>
     {hasMultipleImages ? <>
       <span className="blog-carousel-count" aria-hidden="true">{activeIndex + 1}/{images.length}</span>
-      <button className="blog-carousel-control blog-carousel-previous" type="button" onClick={showPrevious} aria-label="Previous image">‹</button>
-      <button className="blog-carousel-control blog-carousel-next" type="button" onClick={showNext} aria-label="Next image">›</button>
+      <button className="blog-carousel-control blog-carousel-previous" type="button" onClick={showPrevious} aria-label="Previous image"><ChevronLeft /></button>
+      <button className="blog-carousel-control blog-carousel-next" type="button" onClick={showNext} aria-label="Next image"><ChevronRight /></button>
       <div className="blog-carousel-dots" aria-label={`Image ${activeIndex + 1} of ${images.length}`}>
         {images.map((image, index) => <button key={`${image}-${index}`} className={index === activeIndex ? "is-active" : ""} type="button" onClick={() => setActiveIndex(index)} aria-label={`Show image ${index + 1}`} aria-current={index === activeIndex ? "true" : undefined} />)}
       </div>

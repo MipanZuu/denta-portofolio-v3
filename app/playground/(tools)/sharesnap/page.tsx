@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <>
       <JsonLd data={createWebPageJsonLd("ShareSnap Social Preview Generator", description, "/playground/sharesnap")} />
-      <PlaygroundDetailHeading kind="Tool" index="05" title="ShareSnap" description="Shape a social card before the internet gets to judge the crop. Preview the essentials, then export a clean 1200 × 630 Open Graph image." />
+      <PlaygroundDetailHeading kind="Tool" index="06" title="ShareSnap" description="Shape a social card before the internet gets to judge the crop. Preview the essentials, then export a clean 1200 × 630 Open Graph image." />
       <ShareSnap />
     </>
   );

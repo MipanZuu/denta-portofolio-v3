@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, ChevronDown, Hand, Info, Mouse, X } from "lucide-react";
 import * as THREE from "three/webgpu";
 import {
   Break,
@@ -875,9 +876,7 @@ export function BlackHoleScene() {
               <option value="nebula">Chromia · Nebula</option>
               <option value="solar-system">Our solar system</option>
             </select>
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <path d="m4 6 4 4 4-4" />
-            </svg>
+            <ChevronDown aria-hidden="true" />
           </span>
         </label>
       ) : null}
@@ -890,7 +889,7 @@ export function BlackHoleScene() {
               onClick={() => setShowGuide(false)}
               aria-label="Close space controls"
             >
-              ×
+              <X aria-hidden="true" />
             </button>
           </div>
           <div>
@@ -902,16 +901,11 @@ export function BlackHoleScene() {
           </div>
           <div className="space-guide-controls" aria-label="Scene controls">
             <span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 10V7a2 2 0 0 1 4 0v3-5a2 2 0 0 1 4 0v5-3a2 2 0 0 1 4 0v7c0 4-2.8 7-7 7h-1c-2.6 0-4.4-1.3-6-3l-2.5-2.8a2 2 0 0 1 3-2.7L8 14" />
-              </svg>
+              <Hand aria-hidden="true" />
               Drag to orbit
             </span>
             <span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="7" y="2" width="10" height="20" rx="5" />
-                <path d="M12 6v4" />
-              </svg>
+              <Mouse aria-hidden="true" />
               Scroll to travel
             </span>
           </div>
@@ -920,7 +914,7 @@ export function BlackHoleScene() {
             type="button"
             onClick={() => setShowGuide(false)}
           >
-            Begin exploring <span aria-hidden="true">↗</span>
+            Begin exploring <ArrowUpRight aria-hidden="true" />
           </button>
         </aside>
       ) : ready ? (
@@ -930,10 +924,7 @@ export function BlackHoleScene() {
           onClick={() => setShowGuide(true)}
           aria-label="Show space controls"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 11v5m0-8h.01" />
-          </svg>
+          <Info aria-hidden="true" />
           Controls
         </button>
       ) : null}

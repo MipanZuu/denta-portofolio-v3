@@ -18,7 +18,7 @@ export default function Page() {
       <JsonLd data={createWebPageJsonLd("JSON Toolkit", description, "/playground/json-toolkit")} />
       <PlaygroundDetailHeading
         kind="Tool"
-        index="02"
+        index="04"
         title="JSON Toolkit"
         description="Paste a payload, tidy it up, check what broke, or squeeze it onto one line. Your JSON never leaves this page."
       />

@@ -14,7 +14,7 @@ export default function Page() {
       <JsonLd data={createWebPageJsonLd("Image Lab", description, "/playground/image-lab")} />
       <PlaygroundDetailHeading
         kind="Tool"
-        index="04"
+        index="02"
         title="Image Lab"
         description="Shrink it, resize it, or change its format. The image stays on your device while your browser does the work."
       />

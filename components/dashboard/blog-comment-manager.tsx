@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft, ArrowRight, CircleCheck } from "lucide-react";
 import { deleteBlogCommentAction } from "@/app/dashboard/actions";
 import type { BlogComment } from "@/db/schema";
 import { formatBlogDate, initials } from "@/lib/blog/presentation";
@@ -50,7 +51,7 @@ export function BlogCommentManager({ blogPageId, comments, count, page, pageSize
         </div>
       ) : (
         <div className="dashboard-comments-empty">
-          <span>✓</span>
+          <span><CircleCheck aria-hidden="true" /></span>
           <div>
             <strong>No comments yet</strong>
             <p>New comments on this post will appear here.</p>
@@ -60,9 +61,9 @@ export function BlogCommentManager({ blogPageId, comments, count, page, pageSize
 
       {totalPages > 1 ? (
         <nav className="dashboard-comment-pagination" aria-label="Comment pages">
-          {page > 1 ? <Link href={pageHref(page - 1)}>← Previous</Link> : <span aria-disabled="true">← Previous</span>}
+          {page > 1 ? <Link href={pageHref(page - 1)}><ArrowLeft aria-hidden="true" /> Previous</Link> : <span aria-disabled="true"><ArrowLeft aria-hidden="true" /> Previous</span>}
           <p>Showing {firstComment}–{lastComment} of {count} · Page {page} of {totalPages}</p>
-          {page < totalPages ? <Link href={pageHref(page + 1)}>Next →</Link> : <span aria-disabled="true">Next →</span>}
+          {page < totalPages ? <Link href={pageHref(page + 1)}>Next <ArrowRight aria-hidden="true" /></Link> : <span aria-disabled="true">Next <ArrowRight aria-hidden="true" /></span>}
         </nav>
       ) : null}
     </section>

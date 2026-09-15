@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ArrowDownRight } from "lucide-react";
 
 const KONAMI_CODE = [
   "arrowup",
@@ -139,7 +140,7 @@ export function EasterEgg() {
           type="button"
           onClick={() => setOpen(false)}
         >
-          Back to Earth <span aria-hidden="true">↘</span>
+          Back to Earth <ArrowDownRight aria-hidden="true" />
         </button>
       </section>
     </div>

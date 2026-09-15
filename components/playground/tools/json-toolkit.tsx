@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CircleAlert, CircleCheck, Ellipsis } from "lucide-react";
 
 const starterJson = `{
   "hello": "world",
@@ -93,7 +94,7 @@ export function JsonToolkit() {
       </div>
 
       <div className={`json-toolkit-status ${inspection.error ? "is-error" : ""}`} role="status">
-        <span aria-hidden="true">{inspection.error ? "!" : valid ? "✓" : "…"}</span>
+        <span aria-hidden="true">{inspection.error ? <CircleAlert /> : valid ? <CircleCheck /> : <Ellipsis />}</span>
         <div>
           <strong>{inspection.error ? "JSON needs a tiny repair" : valid ? "Valid JSON" : "Waiting for JSON"}</strong>
           <p>{inspection.error ? inspection.error.message : valid ? "The brackets are behaving. Pick an action above." : "Paste something between the braces and I’ll check it here in your browser."}</p>

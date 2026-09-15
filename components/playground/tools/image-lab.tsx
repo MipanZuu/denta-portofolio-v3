@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Upload } from "lucide-react";
 
 type ImageInfo = { file: File; url: string; width: number; height: number };
 type Result = { blob: Blob; url: string; width: number; height: number; filename: string };
@@ -116,7 +117,7 @@ export function ImageLab() {
     <article className="playground-panel image-lab">
       {!source ? (
         <button className="image-lab-dropzone" type="button" onClick={() => inputRef.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); chooseFile(event.dataTransfer.files[0]); }}>
-          <span aria-hidden="true">↥</span>
+          <span aria-hidden="true"><Upload /></span>
           <strong>Drop an image here</strong>
           <small>or choose one from your device</small>
         </button>

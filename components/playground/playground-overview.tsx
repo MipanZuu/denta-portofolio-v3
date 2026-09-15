@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { playgroundGames, playgroundTools } from "@/statics/playground";
+import { BadgeCheck, ChevronRight } from "lucide-react";
 
 function OverviewGroup({ title, items }: { title: string; items: typeof playgroundGames }) {
   return (
@@ -9,8 +10,8 @@ function OverviewGroup({ title, items }: { title: string; items: typeof playgrou
         {items.map((item, index) => (
           <Link href={item.href} key={item.href}>
             <span className="playground-overview-index">{String(index + 1).padStart(2, "0")}</span>
-            <span><strong>{item.title}</strong><small>{item.description}</small></span>
-            <span className="playground-overview-arrow" aria-hidden="true">↗</span>
+            <span><strong>{item.title}{item.recommended ? <span className="playground-recommended" title="Recommended" aria-label="Recommended"><BadgeCheck /></span> : null}</strong><small>{item.description}</small></span>
+            <span className="playground-overview-arrow" aria-hidden="true"><ChevronRight /></span>
           </Link>
         ))}
       </div>

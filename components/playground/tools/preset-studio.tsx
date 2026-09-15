@@ -3,6 +3,7 @@
 
 import { ChangeEvent, CSSProperties, useEffect, useMemo, useRef, useState } from "react";
 import type { PhotoPreset } from "@/lib/photo-presets";
+import { MoveHorizontal, Sparkles } from "lucide-react";
 
 type Adjustments = { exposure: number; contrast: number; highlights: number; shadows: number; temperature: number; tint: number; vibrance: number; saturation: number };
 const neutral: Adjustments = { exposure: 0, contrast: 0, highlights: 0, shadows: 0, temperature: 0, tint: 0, vibrance: 0, saturation: 0 };
@@ -124,12 +125,12 @@ export function PresetStudio({ presets }: { presets: PhotoPreset[] }) {
 
   return (
     <article className="playground-panel preset-studio">
-      {!photo ? <button type="button" className="preset-dropzone" onClick={() => inputRef.current?.click()}><span>✦</span><strong>Choose a photo to begin</strong><small>JPEG, PNG, or WebP. It stays on this device.</small></button> : (
+      {!photo ? <button type="button" className="preset-dropzone" onClick={() => inputRef.current?.click()}><span><Sparkles /></span><strong>Choose a photo to begin</strong><small>JPEG, PNG, or WebP. It stays on this device.</small></button> : (
         <>
           <div className="preset-stage" style={{ "--comparison": `${comparison}%` } as CSSProperties}>
             <canvas ref={originalCanvasRef} aria-label="Original photo preview" />
             <canvas ref={editedCanvasRef} className="preset-stage-edited" aria-label="Edited photo preview" />
-            <div className="preset-compare-line" aria-hidden="true"><span>↔</span></div>
+            <div className="preset-compare-line" aria-hidden="true"><span><MoveHorizontal /></span></div>
             <input className="preset-compare-input" type="range" min="0" max="100" value={comparison} onChange={(event) => setComparison(Number(event.target.value))} aria-label={`Before and after comparison, ${comparison}% original`} />
             <small className="preset-before-label">Before</small><small className="preset-after-label">After</small>
             <span className="preset-name-label">{selected?.name ?? "No preset"}</span>

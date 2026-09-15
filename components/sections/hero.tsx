@@ -29,7 +29,7 @@ export function Hero() {
             <div className="portrait-overlay" />
             <span className="portrait-caption">Developer<br />Designer<br />Problem solver</span>
           </div>
-          <div className="orbit-badge"><span>Available for work · Available for work · </span><b>↗</b></div>
+          <div className="orbit-badge"><span>Available for work · Available for work · </span><b><ArrowUpRight aria-hidden="true" /></b></div>
         </div>
       </div>
       <div className="hero-footer"><span>Scroll to discover</span><span className="scroll-line" /><span>Selected portfolio · 2026</span></div>

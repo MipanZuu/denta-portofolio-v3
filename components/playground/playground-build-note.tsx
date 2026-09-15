@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { playgroundBuildNotes } from "@/statics/playground-build-notes";
+import { Plus } from "lucide-react";
 
 export function PlaygroundBuildNote() {
   const pathname = usePathname();
@@ -12,7 +13,7 @@ export function PlaygroundBuildNote() {
     <details className="playground-build-note">
       <summary>
         <span><small>Build notes</small><strong>Under the hood, without the lecture</strong></span>
-        <span className="playground-build-note-toggle" aria-hidden="true">+</span>
+        <span className="playground-build-note-toggle" aria-hidden="true"><Plus /></span>
       </summary>
       <div className="playground-build-note-body">
         <div className="playground-build-note-intro">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -75,7 +76,7 @@ export default function DocsPage() {
                           <strong>{link.label}</strong>
                           <small>{link.note}</small>
                         </span>
-                        <b aria-hidden="true">↗</b>
+                        <b aria-hidden="true"><ArrowUpRight /></b>
                       </Link>
                     ))}
                   </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import type { BlogPage } from "@/db/schema";
 import { ImageUploadFields } from "@/components/dashboard/image-upload-fields";
 
@@ -20,7 +21,7 @@ function tagList(tags?: string) {
 
 export function BlogEditor({ page, action, saved }: BlogEditorProps) {
   return <>
-    <header className="editor-heading"><div><Link href="/dashboard">← All posts</Link><p className="eyebrow">{page ? "Edit article" : "New article"}</p><h1>{page ? page.title : "Untitled story"}</h1></div><div>{saved ? <span className="saved-indicator">Saved successfully</span> : null}<button className="button button-primary" type="submit" form="blog-editor-form">{page ? "Save changes" : "Create post"}</button></div></header>
+    <header className="editor-heading"><div><Link href="/dashboard"><ArrowLeft aria-hidden="true" /> All posts</Link><p className="eyebrow">{page ? "Edit article" : "New article"}</p><h1>{page ? page.title : "Untitled story"}</h1></div><div>{saved ? <span className="saved-indicator">Saved successfully</span> : null}<button className="button button-primary" type="submit" form="blog-editor-form">{page ? "Save changes" : "Create post"}</button></div></header>
     <form id="blog-editor-form" className="blog-editor" action={action}>
       <section className="editor-main">
         <div className="editor-card"><div className="editor-card-heading"><span>01</span><div><h2>Story</h2><p>The content readers will see.</p></div></div><div className="editor-fields">

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { Music2 } from "lucide-react";
 
 type SpotifyMood = {
   configured: boolean;
@@ -54,7 +55,7 @@ export function CurrentMood() {
         {mood.track?.albumImageUrl ? (
           <Image src={mood.track.albumImageUrl} alt="" fill sizes="54px" />
         ) : (
-          <b>♫</b>
+          <b><Music2 /></b>
         )}
       </span>
       <span className="current-mood-copy">

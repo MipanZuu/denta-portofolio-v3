@@ -5,15 +5,21 @@ import { personal } from "@/statics/personal";
 import { projects } from "@/statics/projects";
 import { technologyGroups } from "@/statics/technologies";
 
-const deploymentHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
-const siteUrl = (process.env.SITE_URL ?? (deploymentHost ? `https://${deploymentHost}` : "https://denta-bramasta-portfolio.dingus2129.chatgpt.site")).replace(/\/$/, "");
+const deploymentHost =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const siteUrl = (
+  process.env.SITE_URL ??
+  (deploymentHost
+    ? `https://${deploymentHost}`
+    : "https://www.dentabramasta.com")
+).replace(/\/$/, "");
 
 export const seo = {
   siteName: "Denta Bramasta — Portfolio",
   siteUrl,
-  title: "Denta Bramasta — Software Engineer",
+  title: "Denta Bramasta Hidayat | Portfolio",
   description:
-    "Portfolio of Denta Bramasta Hidayat, a Software Engineer at ParkMundo building scalable multilingual products with Next.js, React, TypeScript, GraphQL, and Express.",
+    "Portfolio of Denta Bramasta Hidayat, a software engineer building thoughtful digital products, web applications, and tools. Explore my projects, experience, writing, and experiments.",
   keywords: [
     "Denta Bramasta",
     "Denta Bramasta Hidayat",
@@ -25,26 +31,72 @@ export const seo = {
     "ParkMundo Software Engineer",
     "Indonesian Software Engineer Netherlands",
     "Web Developer Portfolio",
+    "Software Engineer",
+    "Full-stack Developer",
+    "Software Engineer Netherlands",
+    "Web Developer",
+    "Next.js Developer",
+    "React Developer",
+    "TypeScript Developer",
+    "Software Engineer Portfolio",
   ],
+  logo: "/images/logo.png",
+  defaultOgImage: "/og/default.jpg",
 } as const;
 
-export function createPageMetadata(title: string, description: string, path: string): Metadata {
-  const socialTitle = `${title} — Denta Bramasta`;
+export function createPageMetadata(
+  title: string,
+  description: string,
+  path: string,
+  image?: string,
+): Metadata {
+  const socialTitle = `${title} — Denta | Portfolio`;
+  const socialImage = image ?? seo.defaultOgImage;
+
   return {
     title,
     description,
+
+    alternates: {
+      canonical: path,
+    },
+
+    openGraph: {
+      type: "website",
+      title: socialTitle,
+      description,
+      url: path,
+      siteName: seo.siteName,
+      images: [
+        {
+          url: socialImage,
+          width: 1200,
+          height: 630,
+          alt: socialTitle,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: socialTitle,
+      description,
+      images: [socialImage],
+    },
+
     robots: {
       index: true,
       follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     },
-    alternates: { canonical: path },
-    openGraph: { title: socialTitle, description, url: path },
-    twitter: { title: socialTitle, description },
   };
 }
 
-export function createWebPageJsonLd(name: string, description: string, path: string, type = "WebPage") {
+export function createWebPageJsonLd(
+  name: string,
+  description: string,
+  path: string,
+  type = "WebPage",
+) {
   return {
     "@context": "https://schema.org",
     "@type": type,
@@ -91,7 +143,9 @@ export const personJsonLd = {
     name: item.school,
     address: item.location,
   })),
-  knowsAbout: technologyGroups.flatMap((group) => group.items.map((item) => item.name)),
+  knowsAbout: technologyGroups.flatMap((group) =>
+    group.items.map((item) => item.name),
+  ),
   sameAs: contact.socials.map((social) => social.href),
 };
 

@@ -13,7 +13,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={createWebPageJsonLd("Denta Preset Studio", description, "/playground/preset-studio")} />
-      <PlaygroundDetailHeading kind="Tool" index="06" title="Preset Studio" description="Borrow my photographic mood for a minute. Drop in a photo, try one of my real presets, fine-tune it, and take the result home." />
+      <PlaygroundDetailHeading kind="Tool" index="01" title="Preset Studio" description="Borrow my photographic mood for a minute. Drop in a photo, try one of my real presets, fine-tune it, and take the result home." />
       <PresetStudio presets={presets} />
     </>
   );

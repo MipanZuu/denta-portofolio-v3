@@ -4,10 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, GitBranch, Home, Info, Mail, Moon, Orbit, PanelsTopLeft, Sun, X } from "lucide-react";
 import { contact } from "@/statics/contact";
 import { navigation } from "@/statics/navigation";
-
-type IconProps = { className?: string };
 
 const navigationDescriptions: Record<string, string> = {
   home: "A quick introduction and selected work",
@@ -21,143 +20,10 @@ const navigationDescriptions: Record<string, string> = {
   space: "An interactive journey around a black hole",
 };
 
-function RouteIcon({ route, className }: IconProps & { route: string }) {
-  const shared = {
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-  if (route === "about")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 10v6m0-9h.01" />
-      </svg>
-    );
-  if (route === "technologies")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <rect x="3" y="4" width="18" height="14" rx="2" />
-        <path d="M8 21h8m-4-3v3" />
-      </svg>
-    );
-  if (route === "projects" || route === "experience")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <path d="M4 5h16v15H4zM8 5V3h8v2M8 10h8m-8 4h5" />
-      </svg>
-    );
-  if (route === "blog")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <path d="M5 4h14v16H5zM8 8h8m-8 4h8m-8 4h5" />
-      </svg>
-    );
-  if (route === "docs")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <path d="M5 3h10l4 4v14H5z" />
-        <path d="M15 3v5h4M8 12h8m-8 4h6" />
-      </svg>
-    );
-  if (route === "playground")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <rect x="3" y="3" width="7" height="7" rx="2" />
-        <rect x="14" y="3" width="7" height="7" rx="2" />
-        <rect x="3" y="14" width="7" height="7" rx="2" />
-        <path d="M17.5 14v7M14 17.5h7" />
-      </svg>
-    );
-  if (route === "space")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <circle cx="12" cy="12" r="3" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.5" />
-        <path d="M5.8 4.6c2.6 2 4.8 5.1 6.2 8.7 1.1 2.9 1.4 5.5.9 7.4" />
-      </svg>
-    );
-  if (route === "contact")
-    return (
-      <svg
-        className={className}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        {...shared}
-      >
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="m4 7 8 6 8-6" />
-      </svg>
-    );
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      {...shared}
-    >
-      <path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M6.5 8.3H3.2V19h3.3V8.3ZM4.8 3A1.9 1.9 0 1 0 4.8 6.8 1.9 1.9 0 0 0 4.8 3Zm14.4 9.9c0-3.2-1.7-4.8-4-4.8-1.9 0-2.7 1-3.2 1.8V8.3H8.7V19H12v-5.3c0-1.4.3-2.8 2.1-2.8 1.8 0 1.8 1.7 1.8 2.9V19h3.3v-6.1Z"
-      />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 0 1.6 1.1 1.6 1.1.9 1.6 2.4 1.1 3 .8.1-.7.4-1.1.7-1.3-2.3-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7c-.1-.3-.5-1.3.1-2.7 0 0 .9-.3 2.8 1a9.6 9.6 0 0 1 5.1 0c2-1.3 2.8-1 2.8-1 .6 1.4.2 2.4.1 2.7a3.9 3.9 0 0 1 1 2.7c0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.8V21c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"
-      />
-    </svg>
-  );
+function RouteIcon({ route, className }: { route: string; className?: string }) {
+  const icons = { home: Home, about: Info, projects: BriefcaseBusiness, experience: BriefcaseBusiness, technologies: Code2, blog: PanelsTopLeft, docs: FileText, playground: FlaskConical, space: Orbit, contact: Mail };
+  const Icon = icons[route as keyof typeof icons] ?? Home;
+  return <Icon className={className} aria-hidden="true" />;
 }
 
 export function Header() {
@@ -248,10 +114,7 @@ export function Header() {
           aria-expanded={open}
           aria-controls="more-navigation"
         >
-          More{" "}
-          <svg viewBox="0 0 16 16" aria-hidden="true">
-            <path d="m4 10 4-4 4 4" />
-          </svg>
+          More <ChevronUp aria-hidden="true" />
         </button>
       </div>
 
@@ -266,7 +129,7 @@ export function Header() {
             onClick={() => setOpen(false)}
             aria-label="Close expanded navigation"
           >
-            ×
+            <X aria-hidden="true" />
           </button>
         </div>
         <div className="apple-nav-directory">
@@ -287,7 +150,7 @@ export function Header() {
                     <strong>{item.label}</strong>
                     <small>{navigationDescriptions[item.section]}</small>
                   </span>
-                  <b aria-hidden="true">↗</b>
+                  <b aria-hidden="true"><ChevronRight /></b>
                 </Link>
               ))}
             </div>
@@ -305,7 +168,7 @@ export function Header() {
                 >
                   <RouteIcon route={item.section} />
                   <span>{item.label}</span>
-                  <b aria-hidden="true">↗</b>
+                  <b aria-hidden="true"><ChevronRight /></b>
                 </Link>
               ))}
               {directoryNavigation.map((item) => (
@@ -317,7 +180,7 @@ export function Header() {
                 >
                   <RouteIcon route={item.section} />
                   <span>{item.label}</span>
-                  <b aria-hidden="true">↗</b>
+                  <b aria-hidden="true"><ChevronRight /></b>
                 </Link>
               ))}
             </nav>
@@ -326,11 +189,11 @@ export function Header() {
         <div className="apple-quick-actions">
           <span>Quick actions</span>
           <a href={contact.socials[0].href} target="_blank" rel="noreferrer">
-            <LinkedInIcon />
+            <Contact aria-hidden="true" />
             LinkedIn
           </a>
           <a href={contact.socials[1].href} target="_blank" rel="noreferrer">
-            <GitHubIcon />
+            <GitBranch aria-hidden="true" />
             GitHub
           </a>
           <button
@@ -339,10 +202,10 @@ export function Header() {
             disabled
             title="Résumé download is unavailable"
           >
-            <span className="apple-file-icon">↓</span>Résumé
+            <span className="apple-file-icon"><Download aria-hidden="true" /></span>Résumé
           </button>
           <button type="button" onClick={toggleTheme}>
-            <span>{dark ? "☀" : "☾"}</span>
+            <span>{dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}</span>
             {dark ? "Light mode" : "Dark mode"}
           </button>
         </div>

@@ -27,7 +27,6 @@ export function RouteExperience() {
     );
 
     const removeTiltListeners = tiltElements.map((element) => {
-      element.classList.add("route-tilt-card");
       const move = (event: PointerEvent) => {
         if (event.pointerType !== "mouse" || reducedMotion) return;
         const bounds = element.getBoundingClientRect();
@@ -45,7 +44,6 @@ export function RouteExperience() {
       return () => {
         element.removeEventListener("pointermove", move);
         element.removeEventListener("pointerleave", reset);
-        element.classList.remove("route-tilt-card");
         element.style.removeProperty("--route-tilt-x");
         element.style.removeProperty("--route-tilt-y");
       };
