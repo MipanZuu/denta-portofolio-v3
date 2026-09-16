@@ -55,25 +55,45 @@ export function CurrentMood() {
         {mood.track?.albumImageUrl ? (
           <Image src={mood.track.albumImageUrl} alt="" fill sizes="54px" />
         ) : (
-          <b><Music2 /></b>
+          <b>
+            <Music2 />
+          </b>
         )}
       </span>
       <span className="current-mood-copy">
         <small>Current mood</small>
         <strong>{mood.track?.title ?? "Between tracks"}</strong>
-        <span>{mood.track?.artist ?? (mood.configured ? "Check back in a beat" : "Spotify coming online")}</span>
+        <span>
+          {mood.track?.artist ??
+            (mood.configured
+              ? "Check back in a beat"
+              : "Spotify coming online")}
+        </span>
       </span>
-      <span className={`current-mood-equalizer${mood.isPlaying ? " is-playing" : ""}`} aria-label={mood.isPlaying ? "Playing now" : "Not currently playing"}>
-        <i /><i /><i />
+      <span
+        className={`current-mood-equalizer${mood.isPlaying ? " is-playing" : ""}`}
+        aria-label={mood.isPlaying ? "Playing now" : "Not currently playing"}
+      >
+        <i />
+        <i />
+        <i />
       </span>
     </>
   );
 
   return mood.track?.spotifyUrl ? (
-    <a className="current-mood" href={mood.track.spotifyUrl} target="_blank" rel="noreferrer" aria-live="polite">
+    <a
+      className="current-mood"
+      href={mood.track.spotifyUrl}
+      target="_blank"
+      rel="noreferrer"
+      aria-live="polite"
+    >
       {content}
     </a>
   ) : (
-    <div className="current-mood" aria-live="polite">{content}</div>
+    <div className="current-mood" aria-live="polite">
+      {content}
+    </div>
   );
 }

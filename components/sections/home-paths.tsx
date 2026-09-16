@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProjectVisual } from "@/components/projects/project-visual";
 import { HomePlayground } from "@/components/sections/home-playground";
+import { HomeExplorer } from "@/components/sections/home-explorer";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { experiences } from "@/statics/experience";
 import { projects } from "@/statics/projects";
@@ -15,6 +16,8 @@ export function HomePaths() {
       <div><strong>{experiences.length}</strong><span>Professional roles</span></div>
       <div><strong>{technologyCount}</strong><span>Tools in the kit</span></div>
     </section>
+
+    <HomeExplorer />
 
     <HomePlayground />
 

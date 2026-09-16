@@ -6,12 +6,12 @@ import { EasterEgg } from "@/components/layout/easter-egg";
 import { RouteExperience } from "@/components/layout/route-experience";
 import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
 import { JsonLd } from "@/components/seo/json-ld";
-import { personJsonLd, seo, websiteJsonLd } from "@/statics/seo";
+import { rootJsonLd, seo } from "@/statics/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(seo.siteUrl),
-  title: { default: seo.title, template: "%s — Denta Bramasta" },
+  title: seo.title,
   description: seo.description,
   applicationName: seo.siteName,
   authors: [{ name: "Denta Bramasta Hidayat", url: seo.siteUrl }],
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/images/profile.jpg",
-        width: 1200,
+        width: 800,
         height: 1200,
         alt: "Denta Bramasta Hidayat",
       },
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <JsonLd data={[websiteJsonLd, personJsonLd]} />
+        <JsonLd data={rootJsonLd} />
         <RouteTransitionLoader />
         <RouteExperience />
         <EasterEgg />

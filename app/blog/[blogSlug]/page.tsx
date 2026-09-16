@@ -128,12 +128,14 @@ export default async function BlogPostPage({
   const gallery = getBlogMedia(post.coverImageUrl, post.images);
   const tags = parseBlogTags(post.tags);
   const media = gallery[0] ?? null;
+  const metaTitle = post.seoMetaTitle.trim() || post.title;
+  const metaDescription = post.seoMetaDescription.trim() || post.excerpt;
   const articleUrl = `${seo.siteUrl}/blog/${post.slug}`;
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.seoMetaTitle,
-    description: post.seoMetaDescription,
+    headline: metaTitle,
+    description: metaDescription,
     url: articleUrl,
     mainEntityOfPage: articleUrl,
     image: media ?? undefined,

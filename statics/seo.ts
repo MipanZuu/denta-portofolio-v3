@@ -41,7 +41,7 @@ export const seo = {
     "Software Engineer Portfolio",
   ],
   logo: "/images/logo.png",
-  defaultOgImage: "/og/default.jpg",
+  defaultOgImage: "/images/profile.jpg",
 } as const;
 
 export function createPageMetadata(
@@ -50,11 +50,10 @@ export function createPageMetadata(
   path: string,
   image?: string,
 ): Metadata {
-  const socialTitle = `${title} — Denta | Portfolio`;
   const socialImage = image ?? seo.defaultOgImage;
 
   return {
-    title,
+    title: { absolute: title },
     description,
 
     alternates: {
@@ -63,23 +62,23 @@ export function createPageMetadata(
 
     openGraph: {
       type: "website",
-      title: socialTitle,
+      title,
       description,
       url: path,
       siteName: seo.siteName,
       images: [
         {
           url: socialImage,
-          width: 1200,
-          height: 630,
-          alt: socialTitle,
+          width: 800,
+          height: 1200,
+          alt: title,
         },
       ],
     },
 
     twitter: {
       card: "summary_large_image",
-      title: socialTitle,
+      title,
       description,
       images: [socialImage],
     },
@@ -147,6 +146,14 @@ export const personJsonLd = {
     group.items.map((item) => item.name),
   ),
   sameAs: contact.socials.map((social) => social.href),
+};
+
+const { "@context": websiteContext, ...websiteGraphNode } = websiteJsonLd;
+const { "@context": personContext, ...personGraphNode } = personJsonLd;
+
+export const rootJsonLd = {
+  "@context": websiteContext ?? personContext,
+  "@graph": [websiteGraphNode, personGraphNode],
 };
 
 export const projectsJsonLd = {
