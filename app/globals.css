@@ -6659,34 +6659,55 @@ body:has(.journey-page) .site-footer {
   .journey-hud,
   .journey-hud.is-right {
     top: auto;
-    right: 18px;
-    bottom: 28px;
-    left: 18px;
+    right: 14px;
+    bottom: 16px;
+    left: 14px;
     width: auto;
-    padding: 22px 22px 22px 25px;
+    max-height: 34svh;
+    padding: 16px 18px 16px 21px;
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 26px 18px 26px 21px;
-    background: rgba(2, 7, 14, 0.52);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255, 255, 255, 0.16);
-    -webkit-backdrop-filter: blur(22px) saturate(135%);
-    backdrop-filter: blur(22px) saturate(135%);
+    border-radius: 22px 15px 22px 18px;
+    background: linear-gradient(135deg, rgba(4, 10, 20, 0.68), rgba(4, 8, 16, 0.38));
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.14);
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+    backdrop-filter: blur(16px) saturate(125%);
   }
   .journey-hud > span {
-    margin-bottom: 20px;
+    margin-bottom: 8px;
+    font-size: 0.62rem;
+  }
+  .journey-hud time {
+    margin-bottom: 4px;
+    font-size: 0.8rem;
   }
   .journey-hud h1 {
     max-width: 360px;
-    font-size: clamp(2.5rem, 11vw, 4rem);
+    font-size: clamp(1.85rem, 8vw, 2.65rem);
+    line-height: 0.94;
   }
   .journey-hud p {
-    margin-top: 16px;
-    font-size: 0.94rem;
-    line-height: 1.48;
+    margin-top: 9px;
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.78rem;
+    line-height: 1.38;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  .journey-hud small,
+  .journey-hud a {
+    min-height: 28px;
+    margin-top: 9px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 0.6rem;
   }
   .journey-hud-line {
-    top: 23px;
-    bottom: 23px;
-    left: 12px;
+    top: 16px;
+    bottom: 16px;
+    left: 9px;
   }
   .journey-progress {
     top: 88px;

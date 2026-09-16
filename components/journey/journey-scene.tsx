@@ -114,6 +114,28 @@ function makePlanetTexture(index: number, accent: string) {
   return { colorMap, bumpMap };
 }
 
+function makeAtmosphereGlow(accent: string, isSun: boolean) {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 256;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  const color = new THREE.Color(accent);
+  const r = Math.round(color.r * 255);
+  const g = Math.round(color.g * 255);
+  const b = Math.round(color.b * 255);
+  const gradient = context.createRadialGradient(128, 128, 38, 128, 128, 126);
+  gradient.addColorStop(0, `rgba(${r},${g},${b},0)`);
+  gradient.addColorStop(0.38, `rgba(${r},${g},${b},${isSun ? 0.38 : 0.16})`);
+  gradient.addColorStop(0.52, `rgba(${r},${g},${b},${isSun ? 0.24 : 0.1})`);
+  gradient.addColorStop(0.72, `rgba(${r},${g},${b},${isSun ? 0.1 : 0.035})`);
+  gradient.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 256, 256);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
 function createPlanet(index: number, accent: string) {
   const group = new THREE.Group();
   const color = new THREE.Color(accent);
@@ -133,22 +155,38 @@ function createPlanet(index: number, accent: string) {
     }),
   );
   group.add(planet);
+  const glowTexture = makeAtmosphereGlow(accent, index === 0);
+  if (glowTexture) {
+    const glow = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: glowTexture,
+        color,
+        transparent: true,
+        opacity: index === 0 ? 0.9 : 0.58,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      }),
+    );
+    glow.scale.setScalar(radius * (index === 0 ? 3.9 : 3.05));
+    glow.renderOrder = -1;
+    group.add(glow);
+  }
   group.add(
     new THREE.Mesh(
-      new THREE.SphereGeometry(radius * 1.13, 64, 48),
+      new THREE.SphereGeometry(radius * 1.025, 64, 48),
       new THREE.ShaderMaterial({
         uniforms: {
           glowColor: { value: color },
-          intensity: { value: index === 0 ? 1.25 : 0.72 },
+          intensity: { value: index === 0 ? 0.68 : 0.38 },
         },
         vertexShader:
           "varying vec3 vNormal; varying vec3 vView; void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0); vNormal=normalize(normalMatrix*normal); vView=normalize(-mv.xyz); gl_Position=projectionMatrix*mv; }",
         fragmentShader:
-          "uniform vec3 glowColor; uniform float intensity; varying vec3 vNormal; varying vec3 vView; void main(){ float rim=pow(1.0-max(dot(vNormal,vView),0.0),3.2); gl_FragColor=vec4(glowColor,rim*intensity); }",
+          "uniform vec3 glowColor; uniform float intensity; varying vec3 vNormal; varying vec3 vView; void main(){ float facing=max(dot(vNormal,vView),0.0); float rim=1.0-smoothstep(0.0,0.28,facing); rim*=rim; gl_FragColor=vec4(glowColor,rim*intensity); }",
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        side: THREE.BackSide,
+        side: THREE.FrontSide,
       }),
     ),
   );
@@ -193,6 +231,7 @@ function createPlanet(index: number, accent: string) {
   group.add(light);
   group.userData.planet = planet;
   group.userData.textures = textures;
+  group.userData.glowTexture = glowTexture;
   return group;
 }
 
@@ -428,9 +467,14 @@ export function JourneyScene() {
         } | null;
         textures?.colorMap.dispose();
         textures?.bumpMap.dispose();
+        (planet.userData.glowTexture as THREE.Texture | null)?.dispose();
         planet.traverse((object) => {
-          if (!(object instanceof THREE.Mesh)) return;
-          object.geometry.dispose();
+          if (
+            !(object instanceof THREE.Mesh) &&
+            !(object instanceof THREE.Sprite)
+          )
+            return;
+          if (object instanceof THREE.Mesh) object.geometry.dispose();
           const materials = Array.isArray(object.material)
             ? object.material
             : [object.material];
