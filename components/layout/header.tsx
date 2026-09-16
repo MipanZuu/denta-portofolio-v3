@@ -4,13 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, GitBranch, Home, Info, Mail, Moon, Orbit, PanelsTopLeft, Sun, X } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, GitBranch, Home, Info, Mail, Milestone, Moon, Orbit, PanelsTopLeft, Sun, X } from "lucide-react";
 import { contact } from "@/statics/contact";
 import { navigation } from "@/statics/navigation";
 
 const navigationDescriptions: Record<string, string> = {
   home: "A quick introduction and selected work",
   about: "The story, education, and interests behind the work",
+  journey: "A scroll-driven trip through the story so far",
   projects: "A closer look at the things I have built",
   experience: "Roles, impact, and the journey so far",
   technologies: "Languages, frameworks, and everyday tools",
@@ -21,7 +22,7 @@ const navigationDescriptions: Record<string, string> = {
 };
 
 function RouteIcon({ route, className }: { route: string; className?: string }) {
-  const icons = { home: Home, about: Info, projects: BriefcaseBusiness, experience: BriefcaseBusiness, technologies: Code2, blog: PanelsTopLeft, docs: FileText, playground: FlaskConical, space: Orbit, contact: Mail };
+  const icons = { home: Home, about: Info, journey: Milestone, projects: BriefcaseBusiness, experience: BriefcaseBusiness, technologies: Code2, blog: PanelsTopLeft, docs: FileText, playground: FlaskConical, space: Orbit, contact: Mail };
   const Icon = icons[route as keyof typeof icons] ?? Home;
   return <Icon className={className} aria-hidden="true" />;
 }
@@ -38,7 +39,7 @@ export function Header() {
     ["home", "about", "projects"].includes(item.section),
   );
   const featuredNavigation = navigation.filter((item) =>
-    ["playground", "space"].includes(item.section),
+    ["journey", "playground", "space"].includes(item.section),
   );
   const directoryNavigation = navigation.filter((item) =>
     ["experience", "technologies", "blog", "docs", "contact"].includes(item.section),
@@ -73,7 +74,7 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className={`dynamic-header ${open ? "is-expanded" : ""} ${active === "space" ? "is-space-route" : ""}`}
+      className={`dynamic-header ${open ? "is-expanded" : ""} ${["space", "journey"].includes(active) ? "is-space-route" : ""}`}
     >
       <div className="apple-nav-bar">
         <Link

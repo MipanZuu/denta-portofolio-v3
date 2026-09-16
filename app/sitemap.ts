@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 const routes = [
   { path: "", priority: 1, changeFrequency: "monthly" as const, images: ["/images/profile.jpg"] },
   { path: "/about", priority: 0.8, changeFrequency: "yearly" as const },
+  { path: "/journey", priority: 0.8, changeFrequency: "yearly" as const },
   { path: "/experience", priority: 0.9, changeFrequency: "monthly" as const },
   { path: "/projects", priority: 0.9, changeFrequency: "monthly" as const, images: projects.flatMap((project) => project.image ? [project.image] : []) },
   { path: "/technologies", priority: 0.7, changeFrequency: "monthly" as const },
