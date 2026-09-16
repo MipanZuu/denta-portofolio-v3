@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { PlanetaryLoader } from "./planetary-loader";
 
-const MINIMUM_VISIBLE_MS = 1000;
+const MINIMUM_VISIBLE_MS = 1750;
 const SAFETY_TIMEOUT_MS = 10_000;
 
 export function RouteTransitionLoader() {

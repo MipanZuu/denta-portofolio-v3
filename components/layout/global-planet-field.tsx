@@ -37,6 +37,58 @@ export function GlobalPlanetField() {
       sun.position.set(-7, 9, 12);
       scene.add(sun);
 
+      const starLayers = new THREE.Group();
+      scene.add(starLayers);
+      const starResources: Array<{
+        geometry: InstanceType<typeof THREE.BufferGeometry>;
+        material: InstanceType<typeof THREE.PointsMaterial>;
+      }> = [];
+      const makeStarLayer = (
+        count: number,
+        spread: number,
+        depth: number,
+        size: number,
+        opacity: number,
+        seed: number,
+      ) => {
+        const random = randomSource(seed);
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
+        const palette = [
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xb9d0ff),
+          new THREE.Color(0xffd6a7),
+          new THREE.Color(0xd9ffb2),
+        ];
+        for (let index = 0; index < count; index += 1) {
+          const offset = index * 3;
+          positions[offset] = (random() - .5) * spread;
+          positions[offset + 1] = (random() - .5) * spread * .68;
+          positions[offset + 2] = depth - random() * 4;
+          const color = palette[Math.floor(random() * palette.length)];
+          colors.set([color.r, color.g, color.b], offset);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        const material = new THREE.PointsMaterial({
+          size,
+          vertexColors: true,
+          transparent: true,
+          opacity,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true,
+        });
+        const points = new THREE.Points(geometry, material);
+        starResources.push({ geometry, material });
+        starLayers.add(points);
+        return points;
+      };
+      const farStars = makeStarLayer(720, 34, -20, .035, .42, 4201);
+      const middleStars = makeStarLayer(360, 27, -10, .052, .5, 7331);
+      const nearStars = makeStarLayer(130, 23, -2, .075, .4, 9109);
+
       const textures: InstanceType<typeof THREE.CanvasTexture>[] = [];
       const makeTexture = (seed: number, colors: [string, string, string], rocky: boolean) => {
         const textureCanvas = document.createElement("canvas");
@@ -135,8 +187,13 @@ export function GlobalPlanetField() {
         scheduleRender();
       };
       const pointer = (event: PointerEvent) => {
-        system.rotation.y = (event.clientX / window.innerWidth - .5) * .055;
-        system.rotation.x = (event.clientY / window.innerHeight - .5) * -.035;
+        const pointerX = event.clientX / window.innerWidth - .5;
+        const pointerY = event.clientY / window.innerHeight - .5;
+        system.rotation.y = pointerX * .055;
+        system.rotation.x = pointerY * -.035;
+        nearStars.position.set(pointerX * -.22, pointerY * .16, 0);
+        middleStars.position.set(pointerX * -.1, pointerY * .07, 0);
+        farStars.position.set(pointerX * -.035, pointerY * .025, 0);
         scheduleRender();
       };
       const scroll = () => {
@@ -144,6 +201,8 @@ export function GlobalPlanetField() {
         near.position.y = nearBaseY + offset;
         middle.position.y = middleBaseY + offset * .45;
         far.position.y = farBaseY + offset * .18;
+        nearStars.position.y = window.scrollY * .00016;
+        middleStars.position.y = window.scrollY * .00007;
         (near.userData.sphere as InstanceType<typeof THREE.Mesh>).rotation.y = window.scrollY * .00012;
         (middle.userData.sphere as InstanceType<typeof THREE.Mesh>).rotation.y = -window.scrollY * .00018;
         scheduleRender();
@@ -163,6 +222,10 @@ export function GlobalPlanetField() {
             const materials = Array.isArray(object.material) ? object.material : [object.material];
             materials.forEach((material) => material.dispose());
           }
+        });
+        starResources.forEach(({ geometry, material }) => {
+          geometry.dispose();
+          material.dispose();
         });
         textures.forEach((texture) => texture.dispose());
         renderer.dispose();
