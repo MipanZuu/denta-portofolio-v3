@@ -16,6 +16,12 @@ export function RouteTransitionLoader() {
   const finishTimer = useRef<number | null>(null);
   const safetyTimer = useRef<number | null>(null);
 
+  useEffect(() => {
+    // Warm the shared 3D chunk before the first navigation so the loader can
+    // start moving immediately instead of waiting for a lazy import.
+    void import("three");
+  }, []);
+
   const clearTimers = useCallback(() => {
     if (finishTimer.current) window.clearTimeout(finishTimer.current);
     if (safetyTimer.current) window.clearTimeout(safetyTimer.current);

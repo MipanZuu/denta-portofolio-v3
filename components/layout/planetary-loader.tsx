@@ -49,6 +49,7 @@ export function PlanetaryLoader() {
       const system = new THREE.Group();
       scene.add(system);
       const planet = new THREE.Mesh(new THREE.SphereGeometry(1.42, 56, 42), new THREE.MeshStandardMaterial({ map: planetTexture, roughness: .66, metalness: .03 }));
+      planet.rotation.y = .28;
       system.add(planet);
       const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1.49, 48, 36), new THREE.MeshPhysicalMaterial({ color: 0xc9ffdd, transparent: true, opacity: .11, transmission: .8, side: THREE.BackSide, depthWrite: false }));
       system.add(atmosphere);
@@ -94,17 +95,19 @@ export function PlanetaryLoader() {
         camera.aspect = width / Math.max(height, 1);
         camera.updateProjectionMatrix();
         renderer.setSize(width, height, false);
-        system.scale.setScalar(width < 600 ? .76 : 1);
+        system.scale.setScalar(width < 600 ? .56 : .72);
       };
       const observer = new ResizeObserver(resize);
       observer.observe(canvas);
       resize();
+      renderer.compile(scene, camera);
+      renderer.render(scene, camera);
       const clock = new THREE.Clock();
       const animate = () => {
         if (disposed) return;
         frame = window.requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
-        planet.rotation.y = time * .22;
+        planet.rotation.y = .28 + time * .42;
         atmosphere.rotation.y = -time * .08;
         rings.rotation.z = -.12 + Math.sin(time * .45) * .05;
         moonPivot.rotation.z = time * .72;
