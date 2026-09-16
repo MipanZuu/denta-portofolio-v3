@@ -4,6 +4,7 @@ import { HomePlayground } from "@/components/sections/home-playground";
 import { HomeExplorer } from "@/components/sections/home-explorer";
 import { HomeConstellation } from "@/components/sections/home-constellation";
 import { HomeOrbit } from "@/components/sections/home-orbit";
+import { HomeAlias } from "@/components/sections/home-alias";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { experiences } from "@/statics/experience";
 import { projects } from "@/statics/projects";
@@ -37,6 +38,8 @@ export function HomePaths() {
     <HomeConstellation />
 
     <HomeOrbit />
+
+    <HomeAlias />
 
     <section className="home-next page-shell">
       <p>More than a list of technologies</p>
