@@ -207,12 +207,30 @@ export function GlobalPlanetField() {
         (middle.userData.sphere as InstanceType<typeof THREE.Mesh>).rotation.y = -window.scrollY * .00018;
         scheduleRender();
       };
+      const restore = (event: Event) => {
+        event.preventDefault();
+        scheduleRender();
+      };
+      const resume = () => {
+        if (document.visibilityState === "visible") {
+          resize();
+          scheduleRender();
+        }
+      };
+      canvas.addEventListener("webglcontextlost", restore);
+      canvas.addEventListener("webglcontextrestored", scheduleRender);
+      document.addEventListener("visibilitychange", resume);
+      window.addEventListener("pageshow", resume);
       window.addEventListener("resize", resize);
       window.addEventListener("pointermove", pointer, { passive: true });
       window.addEventListener("scroll", scroll, { passive: true });
       resize();
       cleanup = () => {
         window.cancelAnimationFrame(scheduled);
+        canvas.removeEventListener("webglcontextlost", restore);
+        canvas.removeEventListener("webglcontextrestored", scheduleRender);
+        document.removeEventListener("visibilitychange", resume);
+        window.removeEventListener("pageshow", resume);
         window.removeEventListener("resize", resize);
         window.removeEventListener("pointermove", pointer);
         window.removeEventListener("scroll", scroll);
@@ -232,8 +250,8 @@ export function GlobalPlanetField() {
       };
     });
     return () => { disposed = true; cleanup(); };
-  }, [immersiveRoute]);
+  }, [immersiveRoute, pathname]);
 
   if (immersiveRoute) return null;
-  return <canvas className="global-planet-field" ref={canvasRef} aria-hidden="true" />;
+  return <canvas key={pathname} className="global-planet-field" ref={canvasRef} aria-hidden="true" />;
 }
