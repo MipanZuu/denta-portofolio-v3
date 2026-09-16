@@ -16,50 +16,117 @@ function seededRandom(seedValue: number) {
 
 function makePlanetTexture(index: number, accent: string) {
   const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 256;
+  const bumpCanvas = document.createElement("canvas");
+  canvas.width = bumpCanvas.width = 1024;
+  canvas.height = bumpCanvas.height = 512;
   const context = canvas.getContext("2d");
-  if (!context) return null;
+  const bumpContext = bumpCanvas.getContext("2d");
+  if (!context || !bumpContext) return null;
   const random = seededRandom(107 + index * 811);
   const base = new THREE.Color(accent);
   const hsl = { h: 0, s: 0, l: 0 };
   base.getHSL(hsl);
-  context.fillStyle = `#${base.clone().multiplyScalar(0.38).getHexString()}`;
+  const rocky = [1, 3, 4, 6, 8].includes(index);
+
+  const background = context.createLinearGradient(0, 0, 0, canvas.height);
+  background.addColorStop(0, `hsl(${hsl.h * 360}, ${42 + hsl.s * 28}%, 22%)`);
+  background.addColorStop(
+    0.48,
+    `hsl(${hsl.h * 360 + 10}, ${55 + hsl.s * 20}%, 48%)`,
+  );
+  background.addColorStop(
+    1,
+    `hsl(${hsl.h * 360 - 12}, ${38 + hsl.s * 26}%, 16%)`,
+  );
+  context.fillStyle = background;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  for (let y = 0; y < canvas.height; y += 4) {
-    const wave = Math.sin(y * 0.09 + index) * 18;
-    context.fillStyle = `hsla(${hsl.h * 360}, ${38 + random() * 44}%, ${24 + random() * 34}%, ${0.18 + random() * 0.34})`;
-    context.fillRect(wave, y, canvas.width, 3 + random() * 5);
+
+  bumpContext.fillStyle = "#777";
+  bumpContext.fillRect(0, 0, bumpCanvas.width, bumpCanvas.height);
+  for (let y = 0; y < canvas.height; y += 3) {
+    const wave = Math.sin(y * 0.045 + index) * 24 + Math.sin(y * 0.013) * 34;
+    const bandHeight = 2 + random() * (rocky ? 8 : 15);
+    context.fillStyle = `hsla(${hsl.h * 360 + (random() - 0.5) * 24}, ${35 + random() * 45}%, ${22 + random() * 44}%, ${rocky ? 0.18 : 0.34})`;
+    context.fillRect(wave - 50, y, canvas.width + 100, bandHeight);
+    bumpContext.fillStyle = `rgba(${80 + random() * 150},${80 + random() * 150},${80 + random() * 150},.34)`;
+    bumpContext.fillRect(wave - 50, y, bumpCanvas.width + 100, bandHeight);
   }
-  for (let i = 0; i < 130; i += 1) {
-    context.fillStyle = `rgba(255,255,255,${random() * 0.08})`;
+
+  const detailCount = rocky ? 310 : 150;
+  for (let i = 0; i < detailCount; i += 1) {
+    const x = random() * canvas.width;
+    const y = random() * canvas.height;
+    const radius = rocky ? 2 + random() * 20 : 5 + random() * 34;
+    context.fillStyle = rocky
+      ? `rgba(${30 + random() * 80},${24 + random() * 65},${24 + random() * 70},${0.06 + random() * 0.18})`
+      : `rgba(255,255,255,${random() * 0.075})`;
     context.beginPath();
-    context.arc(
-      random() * 512,
-      random() * 256,
-      2 + random() * 20,
+    context.ellipse(
+      x,
+      y,
+      radius * (rocky ? 1 : 2.8),
+      radius,
+      random() * Math.PI,
       0,
       Math.PI * 2,
     );
     context.fill();
+    if (rocky && radius > 10) {
+      context.strokeStyle = `rgba(255,255,255,${0.04 + random() * 0.1})`;
+      context.lineWidth = 2 + random() * 3;
+      context.stroke();
+    }
+    bumpContext.fillStyle = rocky
+      ? `rgb(${45 + random() * 120},${45 + random() * 120},${45 + random() * 120})`
+      : `rgba(210,210,210,.2)`;
+    bumpContext.beginPath();
+    bumpContext.ellipse(
+      x,
+      y,
+      radius * (rocky ? 1 : 2.8),
+      radius,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    bumpContext.fill();
   }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.RepeatWrapping;
-  return texture;
+
+  if (!rocky) {
+    const stormX = 620 + (index % 3) * 70;
+    const storm = context.createRadialGradient(stormX, 300, 4, stormX, 300, 68);
+    storm.addColorStop(0, "rgba(255,245,220,.62)");
+    storm.addColorStop(0.45, "rgba(218,132,104,.34)");
+    storm.addColorStop(1, "rgba(120,60,70,0)");
+    context.fillStyle = storm;
+    context.beginPath();
+    context.ellipse(stormX, 300, 115, 38, -0.1, 0, Math.PI * 2);
+    context.fill();
+  }
+
+  const colorMap = new THREE.CanvasTexture(canvas);
+  colorMap.colorSpace = THREE.SRGBColorSpace;
+  colorMap.wrapS = THREE.RepeatWrapping;
+  colorMap.anisotropy = 8;
+  const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+  bumpMap.wrapS = THREE.RepeatWrapping;
+  bumpMap.anisotropy = 8;
+  return { colorMap, bumpMap };
 }
 
 function createPlanet(index: number, accent: string) {
   const group = new THREE.Group();
   const color = new THREE.Color(accent);
   const radius = index === 0 ? 3.1 : 2.1 + (index % 4) * 0.34;
-  const texture = makePlanetTexture(index, accent);
+  const textures = makePlanetTexture(index, accent);
   const planet = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 64, 48),
     new THREE.MeshStandardMaterial({
       color: index === 0 ? 0xffc676 : 0xffffff,
-      map: texture,
-      roughness: index === 0 ? 0.75 : 0.86,
+      map: textures?.colorMap ?? null,
+      bumpMap: textures?.bumpMap ?? null,
+      bumpScale: index === 0 ? 0.035 : 0.11,
+      roughness: index === 0 ? 0.58 : 0.82,
       metalness: 0.02,
       emissive: index === 0 ? color : new THREE.Color(0x000000),
       emissiveIntensity: index === 0 ? 1.25 : 0,
@@ -68,29 +135,46 @@ function createPlanet(index: number, accent: string) {
   group.add(planet);
   group.add(
     new THREE.Mesh(
-      new THREE.SphereGeometry(radius * 1.08, 48, 36),
-      new THREE.MeshBasicMaterial({
-        color,
+      new THREE.SphereGeometry(radius * 1.13, 64, 48),
+      new THREE.ShaderMaterial({
+        uniforms: {
+          glowColor: { value: color },
+          intensity: { value: index === 0 ? 1.25 : 0.72 },
+        },
+        vertexShader:
+          "varying vec3 vNormal; varying vec3 vView; void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0); vNormal=normalize(normalMatrix*normal); vView=normalize(-mv.xyz); gl_Position=projectionMatrix*mv; }",
+        fragmentShader:
+          "uniform vec3 glowColor; uniform float intensity; varying vec3 vNormal; varying vec3 vView; void main(){ float rim=pow(1.0-max(dot(vNormal,vView),0.0),3.2); gl_FragColor=vec4(glowColor,rim*intensity); }",
         transparent: true,
-        opacity: index === 0 ? 0.2 : 0.1,
         blending: THREE.AdditiveBlending,
+        depthWrite: false,
         side: THREE.BackSide,
       }),
     ),
   );
   if ([2, 5, 7].includes(index)) {
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(radius * 1.38, radius * 2.04, 128),
-      new THREE.MeshBasicMaterial({
-        color: index === 5 ? 0xe7c394 : color,
-        transparent: true,
-        opacity: 0.58,
-        side: THREE.DoubleSide,
-      }),
-    );
-    ring.rotation.x = Math.PI * 0.62;
-    ring.rotation.y = 0.2;
-    group.add(ring);
+    const rings = new THREE.Group();
+    for (let band = 0; band < 11; band += 1) {
+      const inner = radius * (1.35 + band * 0.067);
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(
+          inner,
+          inner + radius * (0.035 + (band % 3) * 0.008),
+          160,
+        ),
+        new THREE.MeshBasicMaterial({
+          color: band % 2 ? color : 0xead8b8,
+          transparent: true,
+          opacity: 0.18 + (band % 4) * 0.095,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      rings.add(ring);
+    }
+    rings.rotation.x = Math.PI * 0.62;
+    rings.rotation.y = 0.2;
+    group.add(rings);
   }
   if (index > 0 && index % 2 === 0) {
     const moonPivot = new THREE.Group();
@@ -108,15 +192,17 @@ function createPlanet(index: number, accent: string) {
   light.position.set(radius * 0.7, radius * 0.7, 3);
   group.add(light);
   group.userData.planet = planet;
-  group.userData.texture = texture;
+  group.userData.textures = textures;
   return group;
 }
 
 function createStarField() {
   const random = seededRandom(20020829);
-  const count = 9200;
+  const count = 11200;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const phases = new Float32Array(count);
   const palette = [
     new THREE.Color(0xffffff),
     new THREE.Color(0xb9d7ff),
@@ -133,16 +219,52 @@ function createStarField() {
     colors[offset] = color.r;
     colors[offset + 1] = color.g;
     colors[offset + 2] = color.b;
+    sizes[i] = random() > 0.985 ? 4 + random() * 4.5 : 0.65 + random() * 2.1;
+    phases[i] = random() * Math.PI * 2;
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-  const material = new THREE.PointsMaterial({
-    size: 0.16,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.94,
+  geometry.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+  geometry.setAttribute("phase", new THREE.BufferAttribute(phases, 1));
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      pixelRatio: { value: Math.min(window.devicePixelRatio, 1.7) },
+    },
+    vertexShader: `
+      attribute float size;
+      attribute float phase;
+      varying vec3 vColor;
+      varying float vTwinkle;
+      uniform float time;
+      uniform float pixelRatio;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vColor = color;
+        vTwinkle = 0.76 + 0.24 * sin(time * (0.75 + phase * 0.08) + phase);
+        gl_PointSize = size * pixelRatio * (115.0 / max(1.0, -mv.z));
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      varying float vTwinkle;
+      void main() {
+        vec2 point = gl_PointCoord - vec2(0.5);
+        float distanceToCenter = length(point);
+        float core = 1.0 - smoothstep(0.0, 0.16, distanceToCenter);
+        float halo = 1.0 - smoothstep(0.05, 0.5, distanceToCenter);
+        float crossGlow = exp(-abs(point.x) * 30.0) * exp(-abs(point.y) * 3.5) + exp(-abs(point.y) * 30.0) * exp(-abs(point.x) * 3.5);
+        float alpha = (core + halo * 0.68 + crossGlow * 0.13) * vTwinkle;
+        if (distanceToCenter > 0.5) discard;
+        gl_FragColor = vec4(vColor * (1.0 + core * 0.55), alpha);
+      }
+    `,
     vertexColors: true,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
   });
   return new THREE.Points(geometry, material);
 }
@@ -277,6 +399,7 @@ export function JourneyScene() {
         camera.position.z - 18,
       );
       stars.rotation.z = time * 0.0025;
+      (stars.material as THREE.ShaderMaterial).uniforms.time.value = time;
       nebula.rotation.z = -time * 0.003;
       planets.forEach((planet, index) => {
         const body = planet.userData.planet as THREE.Mesh;
@@ -299,7 +422,12 @@ export function JourneyScene() {
       window.removeEventListener("pointermove", move);
       observer.disconnect();
       planets.forEach((planet) => {
-        (planet.userData.texture as THREE.Texture | null)?.dispose();
+        const textures = planet.userData.textures as {
+          colorMap: THREE.Texture;
+          bumpMap: THREE.Texture;
+        } | null;
+        textures?.colorMap.dispose();
+        textures?.bumpMap.dispose();
         planet.traverse((object) => {
           if (!(object instanceof THREE.Mesh)) return;
           object.geometry.dispose();
