@@ -6,4 +6,4 @@ import { createPageMetadata, createWebPageJsonLd, projectsJsonLd } from "@/stati
 const description = "Selected full-stack, frontend, and product engineering projects by Denta Bramasta.";
 export const metadata: Metadata = createPageMetadata("Projects", description, "/projects");
 
-export default function ProjectsPage() { return <main className="route-page"><JsonLd data={[createWebPageJsonLd("Projects by Denta Bramasta", description, "/projects", "CollectionPage"), projectsJsonLd]} /><Projects /></main>; }
+export default function ProjectsPage() { return <main className="route-page theme-orbit-page theme-orbit-projects"><JsonLd data={[createWebPageJsonLd("Projects by Denta Bramasta", description, "/projects", "CollectionPage"), projectsJsonLd]} /><Projects /></main>; }

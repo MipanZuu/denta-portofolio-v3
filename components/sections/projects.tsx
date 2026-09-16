@@ -16,6 +16,7 @@ export function Projects() {
       <div className="projects-list">
         {projects.map((project, index) => (
           <article className="project-row" key={project.title}>
+            <span className="project-orbit-node" aria-hidden="true" />
             <span className="project-index">{String(index + 1).padStart(2, "0")}</span>
 
             <div className={`project-thumbnail${project.image ? "" : " project-thumbnail-placeholder"}`}>

@@ -41,6 +41,19 @@ export function HomeAlias() {
       dotContext.fillRect(0, 0, 64, 64);
       const dotTexture = new THREE.CanvasTexture(dotCanvas);
 
+      const cloudCanvas = document.createElement("canvas");
+      cloudCanvas.width = cloudCanvas.height = 256;
+      const cloudContext = cloudCanvas.getContext("2d");
+      if (!cloudContext) return;
+      const cloudGradient = cloudContext.createRadialGradient(128, 128, 2, 128, 128, 126);
+      cloudGradient.addColorStop(0, "rgba(255,255,255,.78)");
+      cloudGradient.addColorStop(.2, "rgba(255,255,255,.34)");
+      cloudGradient.addColorStop(.58, "rgba(255,255,255,.09)");
+      cloudGradient.addColorStop(1, "rgba(255,255,255,0)");
+      cloudContext.fillStyle = cloudGradient;
+      cloudContext.fillRect(0, 0, 256, 256);
+      const cloudTexture = new THREE.CanvasTexture(cloudCanvas);
+
       const maskCanvas = document.createElement("canvas");
       maskCanvas.width = 768;
       maskCanvas.height = 384;
@@ -97,17 +110,71 @@ export function HomeAlias() {
       const grains = new THREE.Points(grainGeometry, grainMaterial);
       logo.add(grains);
 
-      const fieldCount = 2600;
+      const hazeCount = Math.floor(samples.length * .42);
+      const hazePositions = new Float32Array(hazeCount * 3);
+      const hazeColors = new Float32Array(hazeCount * 3);
+      const hazePalette = [new THREE.Color(0x5fd7e8), new THREE.Color(0x715dff), new THREE.Color(0xff6543), new THREE.Color(0xc9ff57)];
+      for (let index = 0; index < hazeCount; index += 1) {
+        const sample = samples[Math.floor(random() * samples.length)];
+        const offset = index * 3;
+        const spread = .06 + random() * .22;
+        hazePositions[offset] = (sample[0] - maskCanvas.width / 2) * .015 + (random() - .5) * spread;
+        hazePositions[offset + 1] = (maskCanvas.height / 2 - sample[1]) * .015 + (random() - .5) * spread;
+        hazePositions[offset + 2] = -1.2 + (random() - .5) * 1.8;
+        const color = hazePalette[Math.floor(random() * hazePalette.length)].clone().multiplyScalar(.55 + random() * .45);
+        hazeColors.set([color.r, color.g, color.b], offset);
+      }
+      const hazeGeometry = new THREE.BufferGeometry();
+      hazeGeometry.setAttribute("position", new THREE.BufferAttribute(hazePositions, 3));
+      hazeGeometry.setAttribute("color", new THREE.BufferAttribute(hazeColors, 3));
+      const hazeMaterial = new THREE.PointsMaterial({
+        size: .2,
+        map: cloudTexture,
+        vertexColors: true,
+        transparent: true,
+        opacity: .15,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        sizeAttenuation: true,
+      });
+      const haze = new THREE.Points(hazeGeometry, hazeMaterial);
+      logo.add(haze);
+      haze.renderOrder = -1;
+
+      const nebulaColors = [0x153d72, 0x4b2d78, 0x0e6973, 0x8f3628, 0x365a3e];
+      const nebulae = nebulaColors.map((color, index) => {
+        const material = new THREE.SpriteMaterial({
+          color,
+          map: cloudTexture,
+          transparent: true,
+          opacity: .2 + (index % 2) * .05,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        });
+        const sprite = new THREE.Sprite(material);
+        const positions = [[-5.8, 2.8], [5.4, 1.4], [-3.4, -3.8], [4.6, -4], [.2, .2]];
+        sprite.position.set(positions[index][0], positions[index][1], -8 - index);
+        sprite.scale.set(9 + index * 1.2, 6.4 + index * .85, 1);
+        scene.add(sprite);
+        return sprite;
+      });
+
+      const fieldCount = 3400;
       const fieldPositions = new Float32Array(fieldCount * 3);
+      const fieldColors = new Float32Array(fieldCount * 3);
+      const starPalette = [new THREE.Color(0xffffff), new THREE.Color(0xa9c3ff), new THREE.Color(0xffd49a), new THREE.Color(0x82e8ed)];
       for (let index = 0; index < fieldCount; index += 1) {
         const offset = index * 3;
         fieldPositions[offset] = (random() - .5) * 25;
         fieldPositions[offset + 1] = (random() - .5) * 16;
         fieldPositions[offset + 2] = -2 - random() * 28;
+        const color = starPalette[Math.floor(random() * starPalette.length)].clone().multiplyScalar(.45 + random() * .7);
+        fieldColors.set([color.r, color.g, color.b], offset);
       }
       const fieldGeometry = new THREE.BufferGeometry();
       fieldGeometry.setAttribute("position", new THREE.BufferAttribute(fieldPositions, 3));
-      const fieldMaterial = new THREE.PointsMaterial({ color: 0xff8b4d, size: .062, map: dotTexture, transparent: true, opacity: .22, alphaTest: .02, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+      fieldGeometry.setAttribute("color", new THREE.BufferAttribute(fieldColors, 3));
+      const fieldMaterial = new THREE.PointsMaterial({ size: .075, map: dotTexture, vertexColors: true, transparent: true, opacity: .62, alphaTest: .02, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true });
       const field = new THREE.Points(fieldGeometry, fieldMaterial);
       scene.add(field);
       const resize = () => {
@@ -129,8 +196,13 @@ export function HomeAlias() {
         grainMaterial.uniforms.time.value = time;
         logo.rotation.x += (pointerRef.current.y * .13 - logo.rotation.x) * .035;
         logo.rotation.y += (pointerRef.current.x * .2 - logo.rotation.y) * .035;
+        haze.rotation.z = Math.sin(time * .09) * .012;
         field.rotation.z = Math.sin(time * .08) * .05;
         field.position.z = Math.sin(time * .18) * 1.2;
+        nebulae.forEach((nebula, index) => {
+          nebula.material.rotation = Math.sin(time * .025 + index) * .08;
+          nebula.material.opacity = .18 + Math.sin(time * .11 + index * 1.4) * .035;
+        });
         renderer.render(scene, camera);
       };
       animate();
@@ -139,9 +211,13 @@ export function HomeAlias() {
         resizeObserver.disconnect();
         grainGeometry.dispose();
         grainMaterial.dispose();
+        hazeGeometry.dispose();
+        hazeMaterial.dispose();
         fieldGeometry.dispose();
         fieldMaterial.dispose();
+        nebulae.forEach((nebula) => nebula.material.dispose());
         dotTexture.dispose();
+        cloudTexture.dispose();
         renderer.dispose();
       };
     });

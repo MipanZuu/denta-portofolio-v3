@@ -4,7 +4,7 @@ import { education } from "@/statics/education";
 import { experiences } from "@/statics/experience";
 
 function TimelineRow({ number, title, subtitle, companyUrl, location, type, duration, highlights }: { number: string; title: string; subtitle: string; companyUrl?: string; location: string; type: string; duration: string; highlights?: string[] }) {
-  return <article className={`timeline-row ${highlights ? "timeline-row-featured" : ""}`}><span className="timeline-number">{number}</span><div className="timeline-role"><h3>{title}</h3>{companyUrl ? <a href={companyUrl} target="_blank" rel="noreferrer">{subtitle} <ArrowUpRight aria-hidden="true" /></a> : <p>{subtitle}</p>}{highlights ? <ul>{highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul> : null}</div><div className="timeline-meta"><span>{location}</span><small>{type}</small></div><time>{duration}</time></article>;
+  return <article className={`timeline-row ${highlights ? "timeline-row-featured" : ""}`}><span className="timeline-orbit-node" aria-hidden="true" /><span className="timeline-number">{number}</span><div className="timeline-role"><h3>{title}</h3>{companyUrl ? <a href={companyUrl} target="_blank" rel="noreferrer">{subtitle} <ArrowUpRight aria-hidden="true" /></a> : <p>{subtitle}</p>}{highlights ? <ul>{highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul> : null}</div><div className="timeline-meta"><span>{location}</span><small>{type}</small></div><time>{duration}</time></article>;
 }
 
 export function Experience() {

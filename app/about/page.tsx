@@ -6,4 +6,4 @@ import { createPageMetadata, createWebPageJsonLd } from "@/statics/seo";
 const description = "Learn about Denta Bramasta's background, education, interests, and approach to building digital products.";
 export const metadata: Metadata = createPageMetadata("About", description, "/about");
 
-export default function AboutPage() { return <main className="route-page"><JsonLd data={createWebPageJsonLd("About Denta Bramasta", description, "/about", "ProfilePage")} /><About /></main>; }
+export default function AboutPage() { return <main className="route-page theme-orbit-page theme-orbit-about"><JsonLd data={createWebPageJsonLd("About Denta Bramasta", description, "/about", "ProfilePage")} /><About /></main>; }
