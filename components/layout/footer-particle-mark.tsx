@@ -48,7 +48,7 @@ export function FooterParticleMark() {
     const build = () => {
       width = stage.clientWidth;
       height = stage.clientHeight;
-      const ratio = Math.min(window.devicePixelRatio, 1.6);
+      const ratio = Math.min(window.devicePixelRatio, 1.2);
       canvas.width = Math.max(1, Math.floor(width * ratio));
       canvas.height = Math.max(1, Math.floor(height * ratio));
       canvas.style.width = `${width}px`;
@@ -70,7 +70,7 @@ export function FooterParticleMark() {
       maskContext.fillStyle = "#fff";
       maskContext.fillText("MZYY", width / 2, height / 2 + fontSize * .035);
       const pixels = maskContext.getImageData(0, 0, mask.width, mask.height).data;
-      const step = width < 680 ? 5 : 6;
+      const step = width < 680 ? 7 : 8;
       const nextParticles: Particle[] = [];
       for (let y = 0; y < height; y += step) {
         for (let x = 0; x < width; x += step) {
@@ -84,14 +84,14 @@ export function FooterParticleMark() {
             homeY: y + jitterY,
             vx: 0,
             vy: 0,
-            radius: .85 + seededRandom() * 1.15,
+            radius: 1.1 + seededRandom() * 1.25,
             color: colors[Math.floor(seededRandom() * colors.length)],
             phase: seededRandom() * Math.PI * 2,
           });
         }
       }
       particles = nextParticles;
-      stars = Array.from({ length: Math.max(90, Math.floor(width / 5)) }, () => ({
+      stars = Array.from({ length: Math.max(60, Math.floor(width / 12)) }, () => ({
         x: seededRandom() * width,
         y: seededRandom() * height,
         radius: .25 + seededRandom() * 1.1,
@@ -132,28 +132,31 @@ export function FooterParticleMark() {
 
         const speed = Math.min(1, Math.abs(particle.vx) + Math.abs(particle.vy));
         context.globalAlpha = .76 + Math.sin(time * .0018 + particle.phase) * .16;
-        context.shadowColor = particle.color;
-        context.shadowBlur = 4 + speed * 8;
         context.fillStyle = particle.color;
         context.beginPath();
         context.arc(particle.x, particle.y, particle.radius + speed * .35, 0, Math.PI * 2);
         context.fill();
       });
       context.globalAlpha = 1;
-      context.shadowBlur = 0;
     };
 
     const animate = (time: number) => {
-      if (visible) render(time);
+      if (!visible) return;
+      render(time);
       frame = window.requestAnimationFrame(animate);
     };
     const resizeObserver = new ResizeObserver(() => { build(); render(); });
     resizeObserver.observe(stage);
-    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "160px" });
+    const observer = new IntersectionObserver(([entry]) => {
+      const nextVisible = entry.isIntersecting;
+      const wasVisible = visible;
+      visible = nextVisible;
+      if (nextVisible && !wasVisible && !reducedMotion) frame = window.requestAnimationFrame(animate);
+      if (!nextVisible) window.cancelAnimationFrame(frame);
+    }, { rootMargin: "100px" });
     observer.observe(stage);
     build();
     render();
-    if (!reducedMotion) frame = window.requestAnimationFrame(animate);
 
     return () => {
       window.cancelAnimationFrame(frame);
