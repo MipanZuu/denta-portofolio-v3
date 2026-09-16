@@ -29,7 +29,7 @@ function RouteIcon({ route, className }: { route: string; className?: string }) 
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const active = pathname === "/" ? "home" : pathname.split("/")[1];
@@ -46,6 +46,12 @@ export function Header() {
   );
 
   useEffect(() => {
+    const savedTheme = window.localStorage.getItem("portfolio-theme");
+    const isDark = savedTheme !== "light";
+    document.body.classList.toggle("dark-portfolio", isDark);
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+    const themeFrame = window.requestAnimationFrame(() => setDark(isDark));
+
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
@@ -59,6 +65,7 @@ export function Header() {
     window.addEventListener("keydown", closeOnEscape);
     window.addEventListener("pointerdown", closeOnOutsidePress);
     return () => {
+      window.cancelAnimationFrame(themeFrame);
       window.removeEventListener("keydown", closeOnEscape);
       window.removeEventListener("pointerdown", closeOnOutsidePress);
     };
@@ -66,8 +73,11 @@ export function Header() {
 
   const toggleTheme = () => {
     setDark((current) => {
-      document.body.classList.toggle("dark-portfolio", !current);
-      return !current;
+      const next = !current;
+      document.body.classList.toggle("dark-portfolio", next);
+      document.documentElement.style.colorScheme = next ? "dark" : "light";
+      window.localStorage.setItem("portfolio-theme", next ? "dark" : "light");
+      return next;
     });
   };
 

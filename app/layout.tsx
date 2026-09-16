@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { GlobalPlanetField } from "@/components/layout/global-planet-field";
 import { EasterEgg } from "@/components/layout/easter-egg";
 import { RouteExperience } from "@/components/layout/route-experience";
 import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
@@ -58,8 +59,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
-      <body>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body className="dark-portfolio" suppressHydrationWarning>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("portfolio-theme");document.body.classList.toggle("dark-portfolio",t!=="light");document.documentElement.style.colorScheme=t==="light"?"light":"dark"}catch(e){document.documentElement.style.colorScheme="dark"}`,
+          }}
+        />
+        <GlobalPlanetField />
         <JsonLd data={rootJsonLd} />
         <RouteTransitionLoader />
         <RouteExperience />
