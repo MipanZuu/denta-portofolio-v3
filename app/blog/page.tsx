@@ -7,7 +7,9 @@ import {
   listPublishedBlogPages,
 } from "@/lib/blog/queries";
 import { readVisitorId } from "@/lib/blog/visitor";
-import { createPageMetadata, createWebPageJsonLd } from "@/statics/seo";
+import { getBlogMedia } from "@/lib/blog/presentation";
+import { personal } from "@/statics/personal";
+import { createPageMetadata, createWebPageJsonLd, seo } from "@/statics/seo";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = createPageMetadata(
@@ -25,16 +27,38 @@ export default async function BlogPage() {
     visitorId,
     posts.map((post) => post.id),
   );
+  const blogJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": `${seo.siteUrl}/blog/#blog`,
+    url: `${seo.siteUrl}/blog`,
+    name: "Denta Bramasta's blog",
+    description: "Field notes about software engineering, product thinking, and digital experiences.",
+    author: { "@id": `${seo.siteUrl}/#person`, "@type": "Person", name: personal.fullName },
+    blogPost: posts.map((post) => {
+      const image = getBlogMedia(post.coverImageUrl, post.images)[0];
+      return {
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.excerpt,
+        url: `${seo.siteUrl}/blog/${post.slug}`,
+        datePublished: post.publishedAt?.toISOString(),
+        dateModified: post.publishedAt?.toISOString(),
+        ...(image ? { image: new URL(image, seo.siteUrl).toString() } : {}),
+        author: { "@id": `${seo.siteUrl}/#person` },
+      };
+    }),
+  };
 
   return (
     <main className="blog-page page-shell">
       <JsonLd
-        data={createWebPageJsonLd(
+        data={[createWebPageJsonLd(
           "Denta Bramasta's blog",
           "Field notes about software engineering, product thinking, and digital experiences.",
           "/blog",
           "Blog",
-        )}
+        ), blogJsonLd]}
       />
       <header className="blog-page-heading">
         <p className="eyebrow">Field notes · by Denta Bramasta</p>

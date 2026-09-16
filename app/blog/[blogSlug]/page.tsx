@@ -23,7 +23,7 @@ import {
 } from "@/lib/blog/presentation";
 import { readVisitorId } from "@/lib/blog/visitor";
 import { personal } from "@/statics/personal";
-import { seo } from "@/statics/seo";
+import { createBreadcrumbJsonLd, seo } from "@/statics/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -127,7 +127,7 @@ export default async function BlogPostPage({
   ]);
   const gallery = getBlogMedia(post.coverImageUrl, post.images);
   const tags = parseBlogTags(post.tags);
-  const media = gallery[0] ?? null;
+  const media = gallery[0] ? new URL(gallery[0], seo.siteUrl).toString() : null;
   const metaTitle = post.seoMetaTitle.trim() || post.title;
   const metaDescription = post.seoMetaDescription.trim() || post.excerpt;
   const articleUrl = `${seo.siteUrl}/blog/${post.slug}`;
@@ -147,11 +147,14 @@ export default async function BlogPostPage({
       "@type": "Person",
       name: personal.fullName,
     },
+    publisher: { "@id": `${seo.siteUrl}/#person` },
+    isPartOf: { "@id": `${seo.siteUrl}/#website` },
+    inLanguage: "en",
   };
 
   return (
     <main className="blog-detail-page page-shell">
-      <JsonLd data={articleJsonLd} />
+      <JsonLd data={[articleJsonLd, createBreadcrumbJsonLd(post.title, `/blog/${post.slug}`)]} />
       <Link className="blog-back-link" href="/blog">
         <ArrowLeft aria-hidden="true" /> Back to field notes
       </Link>

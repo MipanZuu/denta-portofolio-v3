@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProjectVisual } from "@/components/projects/project-visual";
 import { HomePlayground } from "@/components/sections/home-playground";
 import { HomeExplorer } from "@/components/sections/home-explorer";
+import { HomeConstellation } from "@/components/sections/home-constellation";
 import { ArrowUpRight } from "@/components/ui/icons";
 import { experiences } from "@/statics/experience";
 import { projects } from "@/statics/projects";
@@ -31,6 +32,8 @@ export function HomePaths() {
         <h3>{project.title}</h3><p>{project.stack.slice(0, 3).join(" · ")}</p>
       </Link>)}</div>
     </section>
+
+    <HomeConstellation />
 
     <section className="home-next page-shell">
       <p>More than a list of technologies</p>

@@ -96,8 +96,7 @@ export function createWebPageJsonLd(
   path: string,
   type = "WebPage",
 ) {
-  return {
-    "@context": "https://schema.org",
+  const page = {
     "@type": type,
     "@id": `${seo.siteUrl}${path}/#webpage`,
     url: `${seo.siteUrl}${path}`,
@@ -106,6 +105,35 @@ export function createWebPageJsonLd(
     isPartOf: { "@id": `${seo.siteUrl}/#website` },
     about: { "@id": `${seo.siteUrl}/#person` },
     inLanguage: "en",
+  };
+  if (!path) return { "@context": "https://schema.org", ...page };
+  return {
+    "@context": "https://schema.org",
+    "@graph": [page, createBreadcrumbJsonLd(name, path, false)],
+  };
+}
+
+function readablePathSegment(segment: string) {
+  return segment.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+}
+
+export function createBreadcrumbJsonLd(name: string, path: string, includeContext = true) {
+  const segments = path.split("/").filter(Boolean);
+  return {
+    ...(includeContext ? { "@context": "https://schema.org" } : {}),
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: seo.siteUrl },
+      ...segments.map((segment, index) => {
+        const itemPath = `/${segments.slice(0, index + 1).join("/")}`;
+        return {
+          "@type": "ListItem",
+          position: index + 2,
+          name: index === segments.length - 1 ? name : readablePathSegment(segment),
+          item: `${seo.siteUrl}${itemPath}`,
+        };
+      }),
+    ],
   };
 }
 
