@@ -5,14 +5,7 @@ import { personal } from "@/statics/personal";
 import { projects } from "@/statics/projects";
 import { technologyGroups } from "@/statics/technologies";
 
-const deploymentHost =
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
-const siteUrl = (
-  process.env.SITE_URL ??
-  (deploymentHost
-    ? `https://${deploymentHost}`
-    : "https://www.dentabramasta.com")
-).replace(/\/$/, "");
+const siteUrl = "https://dentabramasta.com";
 
 export const seo = {
   siteName: "Denta Bramasta — Portfolio",

@@ -30,13 +30,20 @@ const routes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await listPublishedBlogPagesForSitemap();
+  let posts: Awaited<ReturnType<typeof listPublishedBlogPagesForSitemap>> = [];
+  try {
+    posts = await listPublishedBlogPagesForSitemap();
+  } catch (error) {
+    console.error("Unable to add blog posts to sitemap", error);
+  }
   const staticPages: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${seo.siteUrl}${route.path}`,
     lastModified: new Date("2026-09-16"),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
-    images: "images" in route ? route.images?.map((image) => `${seo.siteUrl}${image}`) : undefined,
+    images: "images" in route
+      ? route.images?.map((image) => new URL(image, seo.siteUrl).toString())
+      : undefined,
   }));
   const blogPosts: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${seo.siteUrl}/blog/${post.slug}`,
