@@ -3,17 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
 
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.dentabramasta.com" }],
-        destination: "https://dentabramasta.com/:path*",
-        permanent: true,
-      },
-    ];
-  },
-
   images: {
     formats: ["image/avif", "image/webp"],
 

@@ -5,7 +5,7 @@ import { personal } from "@/statics/personal";
 import { projects } from "@/statics/projects";
 import { technologyGroups } from "@/statics/technologies";
 
-const siteUrl = "https://dentabramasta.com";
+const siteUrl = "https://www.dentabramasta.com";
 
 export const seo = {
   siteName: "Denta Bramasta — Portfolio",
