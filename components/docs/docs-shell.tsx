@@ -11,6 +11,7 @@ export function DocsShell({ groups, children }: { groups: Group[]; children: Rea
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const [readingMode, setReadingMode] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const filtered = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -30,8 +31,23 @@ export function DocsShell({ groups, children }: { groups: Group[]; children: Rea
     return () => window.removeEventListener("keydown", shortcut);
   }, []);
 
+  useEffect(() => {
+    return () => document.body.classList.remove("docs-reading-mode");
+  }, []);
+
+  function toggleReadingMode() {
+    const next = !readingMode;
+    setReadingMode(next);
+    setOpen(false);
+    document.body.classList.toggle("docs-reading-mode", next);
+  }
+
   return (
     <div className="docs-route-shell">
+      <button className="docs-reading-toggle" type="button" onClick={toggleReadingMode} aria-pressed={readingMode}>
+        {readingMode ? <X /> : <BookOpen />}
+        <span>{readingMode ? "Exit reading mode" : "Reading mode"}</span>
+      </button>
       <button className="docs-mobile-trigger" type="button" onClick={() => setOpen(true)}><Menu /> Browse guide</button>
       <aside className={`docs-route-sidebar ${open ? "is-open" : ""}`}>
         <div className="docs-sidebar-heading">

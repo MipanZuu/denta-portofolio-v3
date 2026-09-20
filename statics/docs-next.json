@@ -19,7 +19,7 @@
     "title": "Build with Next.js without memorising magic.",
     "description": "A field guide to the decisions that matter: where code runs, what crosses the server-client boundary, how routes are composed, when data is reused, and what actually reaches the browser.",
     "updated": "Updated September 2026",
-    "readingTime": "85 min read"
+    "readingTime": "105 min read"
   },
   "groups": [
     {
@@ -137,6 +137,21 @@
           "id": "internationalization",
           "title": "Internationalisation"
         }
+      ]
+    },
+    {
+      "label": "Advanced application",
+      "items": [
+        {
+          "id": "advanced-routing",
+          "title": "Parallel and intercepted routes"
+        },
+        { "id": "request-data", "title": "Cookies, headers, and request data" },
+        {
+          "id": "database-boundaries",
+          "title": "Databases and data boundaries"
+        },
+        { "id": "instrumentation", "title": "Instrumentation and tracing" }
       ]
     },
     {
@@ -1388,6 +1403,212 @@
           "note": "Internationalisation is not a final translation pass. It is a routing and interface decision made early."
         }
       ]
+    },
+    {
+      "id": "advanced-routing",
+      "number": "26",
+      "title": "Parallel and intercepted routes",
+      "summary": "Advanced routing is useful when several parts of a screen navigate independently or when a URL should open as an overlay during client navigation and as a full page on refresh.",
+      "blocks": [
+        {
+          "id": "parallel-routes",
+          "title": "Parallel routes give a layout named slots",
+          "paragraphs": [
+            "A folder beginning with @ creates a slot that a parent layout receives as a prop. Slots do not become URL segments. They let one route compose independently rendered areas such as analytics, activity, and team panels.",
+            "Use this when the regions genuinely have separate navigation or loading behaviour. A normal component is simpler when the content always changes together."
+          ],
+          "codeLabel": "A dashboard with two route slots",
+          "code": "app/dashboard/\n├─ layout.tsx\n├─ page.tsx\n├─ @analytics/page.tsx\n└─ @activity/page.tsx\n\nexport default function Layout({ children, analytics, activity }) {\n  return <>{children}<aside>{analytics}</aside><section>{activity}</section></>\n}"
+        },
+        {
+          "id": "slot-recovery",
+          "title": "Every slot needs a sensible recovery path",
+          "paragraphs": [
+            "During a soft navigation, Next.js can preserve the active subpage for a slot. After a full refresh, it needs a default.tsx when the current URL does not identify what that slot should render.",
+            "Treat default.tsx as an intentional fallback. Returning null is fine for an optional modal slot. A core dashboard panel should usually provide a useful default state."
+          ]
+        },
+        {
+          "id": "intercepting-routes",
+          "title": "Intercept a route when navigation context matters",
+          "paragraphs": [
+            "An intercepted route can show a photo, sign-in form, or cart as a modal while preserving the page behind it. The same URL still renders as a normal page when it is opened directly or refreshed.",
+            "This solves a real product problem: the overlay has a shareable URL, browser back closes it naturally, and a direct visit never depends on the previous screen existing."
+          ],
+          "list": [
+            "Use (.) for a route at the same segment level.",
+            "Use (..) for a route one segment above.",
+            "Remember that matchers count route segments, not folders such as @modal slots.",
+            "Keep the full-page route usable without the intercepted presentation."
+          ]
+        },
+        {
+          "id": "modal-details",
+          "title": "A routed modal still has normal dialog responsibilities",
+          "paragraphs": [
+            "Routing solves the URL and history behaviour. It does not provide focus trapping, Escape handling, an accessible name, scroll locking, or focus restoration. Use a tested dialog primitive or implement those behaviours deliberately.",
+            "Provide a close action that calls router.back when there is known navigation history, and a safe fallback route when the modal may have been reached in an unusual state."
+          ]
+        },
+        {
+          "id": "routing-cost",
+          "title": "Do not reach for advanced routing to avoid component state",
+          "paragraphs": [
+            "Parallel and intercepted routes add file conventions that every future contributor must understand. They are worth it when the URL, browser history, reload behaviour, and independent loading states are part of the feature.",
+            "For a tooltip, disclosure, or temporary local panel, ordinary component state is usually the honest solution."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "request-data",
+      "number": "27",
+      "title": "Cookies, headers, and request data",
+      "summary": "Request data connects the browser to server rendering, but reading it changes when and where a route can be rendered. Use it close to the decision that needs it.",
+      "blocks": [
+        {
+          "id": "async-request-apis",
+          "title": "Request APIs are asynchronous and request-specific",
+          "paragraphs": [
+            "In current Next.js, cookies and headers are asynchronous APIs. Their values only exist when a request arrives, so reading them opts the relevant route into dynamic work.",
+            "Do not read a cookie in the root layout simply because one deeply nested button needs it. That moves request-specific work higher in the tree and can remove useful prerendering opportunities."
+          ],
+          "codeLabel": "Read a preference where it is used",
+          "code": "import { cookies } from 'next/headers'\n\nexport async function DensityPreference() {\n  const store = await cookies()\n  const density = store.get('density')?.value ?? 'comfortable'\n  return <span>Density: {density}</span>\n}"
+        },
+        {
+          "id": "setting-cookies",
+          "title": "Server Components read cookies, mutations write them",
+          "paragraphs": [
+            "A Server Component can read cookies sent with the incoming request. It cannot set a cookie while rendering because response headers may already be streaming. Write or delete cookies in a Server Action or Route Handler.",
+            "Session cookies should normally use httpOnly, secure in production, an appropriate sameSite policy, an expiry, and a narrow path where possible. These flags reduce risk, but they do not replace session validation on the server."
+          ]
+        },
+        {
+          "id": "headers",
+          "title": "Headers are useful context, not trusted identity",
+          "paragraphs": [
+            "Headers can carry content negotiation, trace identifiers, forwarded host information, and platform metadata. Values supplied by the public internet are untrusted unless a trusted proxy overwrites and verifies them.",
+            "Never grant access because a caller sent x-user-role: admin. Authentication should establish identity through a verified session or token, then authorisation should load permissions from a trusted source."
+          ]
+        },
+        {
+          "id": "response-headers",
+          "title": "Set broad response policy in configuration",
+          "paragraphs": [
+            "Stable headers such as Strict-Transport-Security, X-Content-Type-Options, Referrer-Policy, and a carefully tested Content-Security-Policy are often clearer in next.config than repeated across handlers.",
+            "Route Handlers remain the right place for response-specific values such as a generated file name, webhook acknowledgement, or endpoint-specific cache policy."
+          ]
+        },
+        {
+          "id": "request-debugging",
+          "title": "Debug the complete request chain",
+          "paragraphs": [
+            "When a cookie works locally but not in production, inspect domain, path, secure, sameSite, expiry, and the exact Set-Cookie response. When a host or protocol looks wrong, inspect the platform proxy headers and your trusted-host configuration.",
+            "Log names and decisions, not raw secrets. A trace can safely say that a session cookie was absent without printing the session value."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "database-boundaries",
+      "number": "28",
+      "title": "Databases and data boundaries",
+      "summary": "Server Components can query a database directly. A clean data boundary keeps that convenience from spreading query details and permission mistakes across the component tree.",
+      "blocks": [
+        {
+          "id": "direct-query",
+          "title": "Skip an internal HTTP hop when the server owns both sides",
+          "paragraphs": [
+            "A Server Component already runs on the server, so it can call a database function directly. Fetching your own Route Handler adds serialization, another error surface, and an HTTP round trip inside the same application.",
+            "Keep Route Handlers for real HTTP consumers such as mobile clients, webhooks, and public integrations. Share domain functions beneath both the page and the handler when they need the same operation."
+          ]
+        },
+        {
+          "id": "data-access-layer",
+          "title": "Put permission-aware reads in a data access layer",
+          "paragraphs": [
+            "A useful data function accepts the authenticated actor and the resource identifier, checks access, selects only the fields the caller needs, and returns a plain result. This makes the safe path the easy path.",
+            "Avoid returning a full database row to every component. An internal notes field or password hash can leak later when somebody spreads the object into a Client Component or JSON response."
+          ],
+          "codeLabel": "A narrow, permission-aware query",
+          "code": "import 'server-only'\n\nexport async function getProjectSummary(userId: string, projectId: string) {\n  const project = await db.query.projects.findFirst({\n    where: and(eq(projects.id, projectId), eq(projects.ownerId, userId)),\n    columns: { id: true, name: true, updatedAt: true },\n  })\n  if (!project) return null\n  return project\n}"
+        },
+        {
+          "id": "connection-lifecycle",
+          "title": "Match connection strategy to the runtime",
+          "paragraphs": [
+            "A long-running Node server, a serverless function, and an edge runtime have different connection limits and driver support. Use a database provider and driver designed for the environment where the query runs.",
+            "During local development, hot reload can recreate modules repeatedly. Follow the driver guidance for reusing clients so a small edit does not open a new pool until the database refuses connections."
+          ]
+        },
+        {
+          "id": "transactions",
+          "title": "Use a transaction when partial success would be wrong",
+          "paragraphs": [
+            "Creating an order and decrementing inventory are one business operation even if they touch several tables. Put dependent writes in a transaction so either all of them commit or none do.",
+            "External calls cannot usually join the database transaction. Record durable intent, commit it, and let a retryable worker perform email, payment, or webhook work. This is more reliable than holding a database transaction open during a slow network call."
+          ]
+        },
+        {
+          "id": "queries-production",
+          "title": "Observe queries before guessing about performance",
+          "paragraphs": [
+            "Log slow query duration and inspect execution plans for important paths. Indexes help reads but add storage and write cost, so add them for actual access patterns rather than every column that looks searchable.",
+            "Pagination should have a stable order. For large or frequently changing collections, cursor pagination usually behaves more predictably than a deep offset."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrumentation",
+      "number": "29",
+      "title": "Instrumentation and tracing",
+      "summary": "Production debugging gets easier when logs, errors, traces, and Web Vitals describe the same request without exposing the person behind it.",
+      "blocks": [
+        {
+          "id": "instrumentation-file",
+          "title": "Register server instrumentation once",
+          "paragraphs": [
+            "Place instrumentation.ts at the project root, or beside app inside src when the project uses a src directory. Its register function runs when a server instance starts, before it begins handling requests.",
+            "Import runtime-specific packages inside register. A Node tracing library may not run in the edge runtime, and top-level imports can fail before your runtime check has a chance to help."
+          ],
+          "codeLabel": "Runtime-aware registration",
+          "code": "export async function register() {\n  if (process.env.NEXT_RUNTIME === 'nodejs') {\n    await import('./instrumentation-node')\n  }\n\n  if (process.env.NEXT_RUNTIME === 'edge') {\n    await import('./instrumentation-edge')\n  }\n}"
+        },
+        {
+          "id": "request-errors",
+          "title": "Capture server errors with useful context",
+          "paragraphs": [
+            "The onRequestError hook can forward errors captured by the server to an observability provider. Include the route, operation, deployment version, and a correlation identifier. Avoid request bodies, cookies, access tokens, and personal fields by default.",
+            "A stack trace without release information tells you where code failed but not which code was running. Attach a commit SHA or deployment identifier to logs and error events."
+          ]
+        },
+        {
+          "id": "structured-logs",
+          "title": "Write logs that can answer a question",
+          "paragraphs": [
+            "Structured logs are easier to filter than sentences assembled for the console. Use stable fields such as event, route, durationMs, status, requestId, and resourceId. Keep the human message short.",
+            "Choose log levels deliberately. A validation rejection is usually expected information, not an error page for the on-call engineer. A failed database connection is different."
+          ]
+        },
+        {
+          "id": "traces-metrics",
+          "title": "Traces explain one request; metrics reveal a pattern",
+          "paragraphs": [
+            "A trace connects the work inside a request: rendering, database queries, service calls, and cache access. Metrics show whether latency or failure rate changed across thousands of requests. Use both before deciding where a slowdown lives.",
+            "Measure product operations as well as framework internals. Checkout completion time or search failure rate is often more useful than a generic request average."
+          ]
+        },
+        {
+          "id": "alert-quality",
+          "title": "Alert on user impact, not every unusual event",
+          "paragraphs": [
+            "An alert should ask for action. A brief increase in one harmless warning may belong on a dashboard, while sustained checkout failures should wake somebody up.",
+            "For every alert, write the likely causes, the first dashboard to open, and a safe mitigation. If nobody knows what to do when it fires, it is noise rather than protection."
+          ]
+        }
+      ]
     }
   ],
   "sourceMap": {
@@ -1415,7 +1636,11 @@
     "forms-validation": [13, 20],
     "environment-config": [21, 22],
     "accessibility": [23, 24],
-    "internationalization": [25, 26]
+    "internationalization": [25, 26],
+    "advanced-routing": [27, 28],
+    "request-data": [29, 30, 31],
+    "database-boundaries": [3, 32],
+    "instrumentation": [33, 34]
   },
   "sources": [
     {
@@ -1525,6 +1750,38 @@
     {
       "label": "Google Localized Versions Guidance",
       "href": "https://developers.google.com/search/docs/specialty/international/localized-versions"
+    },
+    {
+      "label": "Next.js Parallel Routes",
+      "href": "https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes"
+    },
+    {
+      "label": "Next.js Intercepting Routes",
+      "href": "https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes"
+    },
+    {
+      "label": "Next.js cookies API",
+      "href": "https://nextjs.org/docs/app/api-reference/functions/cookies"
+    },
+    {
+      "label": "Next.js headers API",
+      "href": "https://nextjs.org/docs/app/api-reference/functions/headers"
+    },
+    {
+      "label": "Next.js Response Headers",
+      "href": "https://nextjs.org/docs/app/api-reference/config/next-config-js/headers"
+    },
+    {
+      "label": "Next.js Data Security Guide",
+      "href": "https://nextjs.org/docs/app/guides/data-security"
+    },
+    {
+      "label": "Next.js Instrumentation Guide",
+      "href": "https://nextjs.org/docs/app/guides/instrumentation"
+    },
+    {
+      "label": "Next.js Analytics Guide",
+      "href": "https://nextjs.org/docs/app/guides/analytics"
     }
   ]
 }

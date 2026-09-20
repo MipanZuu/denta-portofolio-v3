@@ -12,6 +12,7 @@ const learningSteps = [
   { icon: Database, label: "State and data", copy: "Control freshness, mutations, APIs, and recovery.", ids: ["cache", "server-actions", "route-handlers", "error-handling"] },
   { icon: ShieldCheck, label: "Trust", copy: "Protect data and describe public pages correctly.", ids: ["authentication", "metadata-seo"] },
   { icon: Rocket, label: "Product essentials", copy: "Build forms, configuration, accessibility, and locale support into the product.", ids: ["forms-validation", "environment-config", "accessibility", "internationalization"] },
+  { icon: Layers3, label: "Advanced application", copy: "Handle complex routes, request context, database boundaries, and production traces.", ids: ["advanced-routing", "request-data", "database-boundaries", "instrumentation"] },
   { icon: Rocket, label: "Ship", copy: "Test behaviour and operate the production build.", ids: ["testing", "deployment", "mistakes", "production"] }
 ];
 

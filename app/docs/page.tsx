@@ -15,7 +15,7 @@ export default function DocsPage() {
       <div className="docs-library-grid">
         <Link className="docs-library-card is-featured" href="/docs/nextjs">
           <div className="docs-library-icon"><BookOpen /></div>
-          <span>Web framework / 25 chapters</span>
+          <span>Web framework / 29 chapters</span>
           <h2>Next.js App Router</h2>
           <p>Routing, rendering, data, caching, security, SEO, testing, and production architecture from beginner to advanced.</p>
           <strong>Open guide <ArrowUpRight /></strong>
