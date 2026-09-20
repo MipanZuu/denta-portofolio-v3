@@ -62,12 +62,15 @@ export function Header() {
       )
         setOpen(false);
     };
+    const syncTheme = (event: Event) => setDark((event as CustomEvent<{ dark: boolean }>).detail.dark);
     window.addEventListener("keydown", closeOnEscape);
     window.addEventListener("pointerdown", closeOnOutsidePress);
+    window.addEventListener("portfolio-theme-change", syncTheme);
     return () => {
       window.cancelAnimationFrame(themeFrame);
       window.removeEventListener("keydown", closeOnEscape);
       window.removeEventListener("pointerdown", closeOnOutsidePress);
+      window.removeEventListener("portfolio-theme-change", syncTheme);
     };
   }, []);
 

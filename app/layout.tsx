@@ -6,6 +6,7 @@ import { GlobalPlanetField } from "@/components/layout/global-planet-field";
 import { EasterEgg } from "@/components/layout/easter-egg";
 import { RouteExperience } from "@/components/layout/route-experience";
 import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
+import { PortfolioCompanion } from "@/components/layout/portfolio-companion";
 import { JsonLd } from "@/components/seo/json-ld";
 import { rootJsonLd, seo } from "@/statics/seo";
 import "./globals.css";
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         {children}
         <Footer />
+        <PortfolioCompanion />
         <Analytics />
       </body>
     </html>
