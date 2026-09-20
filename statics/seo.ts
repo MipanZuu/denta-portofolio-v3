@@ -8,11 +8,11 @@ import { technologyGroups } from "@/statics/technologies";
 const siteUrl = "https://www.dentabramasta.com";
 
 export const seo = {
-  siteName: "Denta Bramasta — Portfolio",
+  siteName: "Denta Bramasta",
   siteUrl,
-  title: "Denta Bramasta Hidayat | Portfolio",
+  title: "Denta Bramasta Hidayat — Software Engineer",
   description:
-    "Portfolio of Denta Bramasta Hidayat, a software engineer building thoughtful digital products, web applications, and tools. Explore my projects, experience, writing, and experiments.",
+    "Personal website of Denta Bramasta Hidayat, a software engineer building thoughtful digital products, web applications, and tools. Explore projects, engineering notes, and experiments.",
   keywords: [
     "Denta Bramasta",
     "Denta Bramasta Hidayat",
@@ -34,7 +34,7 @@ export const seo = {
     "Software Engineer Portfolio",
   ],
   logo: "/images/logo.png",
-  defaultOgImage: "/images/profile.jpg",
+  defaultOgImage: "/og/default.jpg",
 } as const;
 
 export function createPageMetadata(
@@ -107,10 +107,17 @@ export function createWebPageJsonLd(
 }
 
 function readablePathSegment(segment: string) {
-  return segment.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
-export function createBreadcrumbJsonLd(name: string, path: string, includeContext = true) {
+export function createBreadcrumbJsonLd(
+  name: string,
+  path: string,
+  includeContext = true,
+) {
   const segments = path.split("/").filter(Boolean);
   return {
     ...(includeContext ? { "@context": "https://schema.org" } : {}),
@@ -122,7 +129,8 @@ export function createBreadcrumbJsonLd(name: string, path: string, includeContex
         return {
           "@type": "ListItem",
           position: index + 2,
-          name: index === segments.length - 1 ? name : readablePathSegment(segment),
+          name:
+            index === segments.length - 1 ? name : readablePathSegment(segment),
           item: `${seo.siteUrl}${itemPath}`,
         };
       }),
