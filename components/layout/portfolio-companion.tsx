@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import docs from "@/statics/docs-next.json";
 import { navigation } from "@/statics/navigation";
-import { personal } from "@/statics/personal";
 import { playgroundItems } from "@/statics/playground";
 
 type Action = { label: string; href?: string; command?: "dark" | "light" };
