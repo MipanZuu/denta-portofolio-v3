@@ -15,7 +15,7 @@ const destinations = [
 
 export function HeroOrbitNavigation() {
   const [rotation, setRotation] = useState(0);
-  const dragRef = useRef({ active: false, angle: 0, rotation: 0 });
+  const dragRef = useRef({ active: false, angle: 0 });
   const pointerAngle = (event: PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     return Math.atan2(event.clientY - bounds.top - bounds.height / 2, event.clientX - bounds.left - bounds.width / 2) * 180 / Math.PI;
@@ -28,17 +28,31 @@ export function HeroOrbitNavigation() {
       onPointerDown={(event) => {
         if ((event.target as Element).closest("a")) return;
         event.currentTarget.setPointerCapture(event.pointerId);
-        dragRef.current = { active: true, angle: pointerAngle(event), rotation };
+        event.currentTarget.classList.add("is-dragging");
+        dragRef.current = { active: true, angle: pointerAngle(event) };
       }}
       onPointerMove={(event) => {
         if (!dragRef.current.active) return;
-        setRotation(dragRef.current.rotation + pointerAngle(event) - dragRef.current.angle);
+        const nextAngle = pointerAngle(event);
+        let delta = nextAngle - dragRef.current.angle;
+
+        // atan2 jumps from 180 to -180 at the seam. Converting that jump to
+        // the shortest signed distance keeps the orbit continuous through 360°.
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+
+        dragRef.current.angle = nextAngle;
+        setRotation((current) => current + delta);
       }}
       onPointerUp={(event) => {
         dragRef.current.active = false;
+        event.currentTarget.classList.remove("is-dragging");
         if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
       }}
-      onPointerCancel={() => { dragRef.current.active = false; }}
+      onPointerCancel={(event) => {
+        dragRef.current.active = false;
+        event.currentTarget.classList.remove("is-dragging");
+      }}
       onWheel={(event) => setRotation((current) => current + (event.deltaY > 0 ? 12 : -12))}
     >
       <div className="hero-wheel-track" aria-hidden="true"><i /><i /><i /></div>

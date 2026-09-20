@@ -10249,6 +10249,11 @@ body.dark-portfolio .footer-orbit-icon {
   transition: transform .18s cubic-bezier(.2, .75, .25, 1);
 }
 
+.hero-nav-wheel.is-dragging .hero-wheel-destination,
+.hero-nav-wheel.is-dragging .hero-wheel-destination > span {
+  transition: none;
+}
+
 .hero-wheel-destination b {
   width: 48px;
   height: 48px;
