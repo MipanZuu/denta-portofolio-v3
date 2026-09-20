@@ -61,7 +61,9 @@ body {
     var(--paper);
   color: var(--ink);
   font-family: Inter, Avenir, "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
+  /* clip prevents horizontal paint from escaping without creating a scroll
+     container, which would break position: sticky in nested page layouts. */
+  overflow-x: clip;
 }
 a {
   color: inherit;
@@ -10836,8 +10838,46 @@ body.dark-portfolio .docs-route-sidebar { background: rgba(17,22,18,.9); box-sha
 .docs-library-card.is-planned { opacity: .72; }
 
 @media (max-width: 1100px) {
+  .docs-route-shell { grid-template-columns: 230px minmax(0, 1fr); gap: 28px; }
+  .docs-route-sidebar { width: auto; }
   .docs-article-grid { grid-template-columns: minmax(0, 1fr); }
-  .docs-article-grid > .docs-page-toc { display: none; }
+  .docs-article-grid > .docs-page-toc {
+    position: sticky;
+    z-index: 18;
+    top: 78px;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 18px;
+    max-height: none;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    border: 1px solid var(--docs-line);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    box-shadow: inset 0 1px rgba(255,255,255,.14), 0 12px 30px rgba(0,0,0,.12);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+  }
+  .docs-article-grid > .docs-page-toc > span,
+  .docs-article-grid > .docs-page-toc > strong { align-self: center; margin: 0; }
+  .docs-article-grid > .docs-page-toc nav {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-left: 0;
+    scrollbar-width: thin;
+  }
+  .docs-article-grid > .docs-page-toc nav a {
+    flex: 0 0 auto;
+    padding: 7px 9px;
+    border: 1px solid var(--docs-line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper) 75%, transparent);
+    white-space: nowrap;
+  }
+  .docs-route-article { grid-row: 2; }
 }
 @media (max-width: 800px) {
   .docs-route-shell { display: block; width: min(100% - 28px, 760px); padding-top: 112px; }
@@ -10846,6 +10886,7 @@ body.dark-portfolio .docs-route-sidebar { background: rgba(17,22,18,.9); box-sha
   .docs-route-sidebar nav { padding-bottom: 28px; }
   .docs-nav-scrim { z-index: 98; }
   .docs-route-content { grid-column: auto; }
+  .docs-article-grid > .docs-page-toc { display: none; }
   .docs-library-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {

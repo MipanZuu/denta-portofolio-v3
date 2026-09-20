@@ -19,7 +19,7 @@
     "title": "Build with Next.js without memorising magic.",
     "description": "A field guide to the decisions that matter: where code runs, what crosses the server-client boundary, how routes are composed, when data is reused, and what actually reaches the browser.",
     "updated": "Updated September 2026",
-    "readingTime": "55 min read"
+    "readingTime": "85 min read"
   },
   "groups": [
     {
@@ -115,6 +115,27 @@
         {
           "id": "deployment",
           "title": "Deployment and observability"
+        }
+      ]
+    },
+    {
+      "label": "Product essentials",
+      "items": [
+        {
+          "id": "forms-validation",
+          "title": "Forms and validation"
+        },
+        {
+          "id": "environment-config",
+          "title": "Environment and configuration"
+        },
+        {
+          "id": "accessibility",
+          "title": "Accessibility"
+        },
+        {
+          "id": "internationalization",
+          "title": "Internationalisation"
         }
       ]
     },
@@ -232,7 +253,7 @@
             "Do not force every piece of state into the pathname. Resource identity usually belongs in segments; sorting, filtering, search, and pagination often fit search parameters better."
           ],
           "codeLabel": "Dynamic route examples",
-          "code": "app/projects/[slug]/page.tsx       // /projects/lokamer\napp/docs/[...segments]/page.tsx      // /docs/react/server\napp/shop/[[...category]]/page.tsx    // /shop or /shop/shoes"
+          "code": "app/projects/[slug]/page.tsx       // /projects/project-a\napp/docs/[...segments]/page.tsx      // /docs/react/server\napp/shop/[[...category]]/page.tsx    // /shop or /shop/shoes"
         },
         {
           "id": "route-groups",
@@ -1130,6 +1151,241 @@
             "The best setup is rarely the one using the most Next.js features. It is the one where the next developer can tell what runs on the server, what reaches the browser, how fresh the data is, who may change it, and what happens when it fails.",
             "If those answers are obvious from the code, the architecture is doing its job."
           ]
+        },
+        {
+          "id": "release-plan",
+          "title": "Deployments need a way back",
+          "paragraphs": [
+            "A green build proves that the code compiled. It does not prove that production data, environment variables, third-party services, and real traffic will behave exactly as expected. Decide how to roll back before pressing deploy.",
+            "For database changes, prefer migrations that are compatible with both the old and new application for a short period. Add a nullable column before requiring it, deploy code that can handle both shapes, backfill the data, and only then tighten the constraint. This avoids turning a code rollback into a database emergency."
+          ],
+          "list": [
+            "Keep the previous healthy deployment available.",
+            "Write down which changes cannot be rolled back safely.",
+            "Use feature flags for risky behaviour changes when possible.",
+            "Separate deployment success from feature release.",
+            "Test the rollback path occasionally, not during the first incident."
+          ]
+        },
+        {
+          "id": "production-smoke-test",
+          "title": "Run a small, real production smoke test",
+          "paragraphs": [
+            "A useful smoke test follows one important journey with production URLs and production configuration. Sign in, load protected data, submit a harmless mutation, refresh the result, and sign out. That short path catches missing cookies, incorrect callback URLs, broken cache invalidation, and absent environment variables better than checking the home page alone.",
+            "Keep this test small enough that a person can run it after an urgent release. Automate it later, but first make sure the steps describe what healthy actually means for the product."
+          ],
+          "note": "A status code of 200 is not the same thing as a working product. Test a journey that matters."
+        }
+      ]
+    },
+    {
+      "id": "forms-validation",
+      "number": "22",
+      "title": "Forms and validation",
+      "summary": "A good form works before JavaScript finishes loading, explains what went wrong, preserves useful input, and never trusts the browser as its security boundary.",
+      "blocks": [
+        {
+          "id": "start-with-html",
+          "title": "Start with the form the browser already understands",
+          "paragraphs": [
+            "HTML forms already know how to collect named fields and submit them. Server Actions fit that model well because a form can call server code through its action prop without building a separate client-side request layer first.",
+            "Use labels, names, sensible input types, autocomplete hints, and native constraints such as required where they help. Native validation is a useful first line of feedback, but the server must still validate every value. A request can be sent without your interface."
+          ],
+          "codeLabel": "A progressively enhanced form",
+          "code": "export default function ContactForm() {\n  return (\n    <form action={sendMessage}>\n      <label htmlFor=\"email\">Email</label>\n      <input id=\"email\" name=\"email\" type=\"email\" autoComplete=\"email\" required />\n\n      <label htmlFor=\"message\">Message</label>\n      <textarea id=\"message\" name=\"message\" minLength={20} required />\n\n      <button type=\"submit\">Send message</button>\n    </form>\n  )\n}"
+        },
+        {
+          "id": "validate-server",
+          "title": "Parse untrusted input once on the server",
+          "paragraphs": [
+            "FormData is intentionally loose. Fields may be missing, repeated, unexpectedly large, or shaped differently from what TypeScript suggests. Convert it into a domain object at the boundary and return clear field errors when parsing fails.",
+            "A schema library is helpful, but the important part is the boundary. The rest of the application should receive a known value such as CreateAccountInput, not raw FormData that gets interpreted differently in three places."
+          ],
+          "list": [
+            "Trim text before checking minimum length.",
+            "Normalise email addresses only where your product rules allow it.",
+            "Reject unknown enum values rather than silently choosing a default.",
+            "Set size limits for text and uploaded files.",
+            "Return field errors for expected mistakes and throw only for unexpected failures."
+          ]
+        },
+        {
+          "id": "pending-state",
+          "title": "Pending state should answer what happens next",
+          "paragraphs": [
+            "When a submission begins, disable only the control that would create an accidental duplicate. Keep the rest of the page readable. A useful pending label says what is happening, such as Saving profile, instead of the vague Loading.",
+            "React form hooks can expose pending state and the result returned by a Server Action. Put status messages in a live region so screen-reader users hear the same feedback that sighted users see."
+          ],
+          "codeLabel": "A submit button that understands its form",
+          "code": "'use client'\n\nimport { useFormStatus } from 'react-dom'\n\nexport function SubmitButton() {\n  const { pending } = useFormStatus()\n  return (\n    <button disabled={pending} aria-disabled={pending}>\n      {pending ? 'Saving profile…' : 'Save profile'}\n    </button>\n  )\n}"
+        },
+        {
+          "id": "optimistic-ui",
+          "title": "Use optimistic UI only when failure is easy to undo",
+          "paragraphs": [
+            "A like button or a small reorder can feel instant with optimistic state. Payment, account deletion, and inventory reservation deserve a confirmed result. The question is not whether optimistic UI looks modern. The question is whether the interface can explain and recover from rejection without misleading the user.",
+            "Always keep a stable identifier for optimistic items, replace them with the server result, and remove or mark them when the write fails. Do not quietly leave invented state on screen."
+          ]
+        },
+        {
+          "id": "form-security",
+          "title": "Validation and permission checks solve different problems",
+          "paragraphs": [
+            "Validation asks whether the input has an acceptable shape. Authorisation asks whether this user may perform the operation on this resource. A perfectly valid project ID is still dangerous if it belongs to somebody else.",
+            "Perform both checks inside the server operation. Then make the write idempotent where retries are possible, especially for payment callbacks, invitation acceptance, and other operations that should happen once."
+          ],
+          "note": "Never use a hidden input as proof that a user owns the record named by that input."
+        }
+      ]
+    },
+    {
+      "id": "environment-config",
+      "number": "23",
+      "title": "Environment and configuration",
+      "summary": "Configuration should fail clearly, keep secrets on the server, and make the differences between local, preview, and production environments deliberate.",
+      "blocks": [
+        {
+          "id": "public-private",
+          "title": "Treat NEXT_PUBLIC values as published values",
+          "paragraphs": [
+            "A variable prefixed with NEXT_PUBLIC can be included in browser JavaScript. Anybody can inspect it. Use that prefix for values that are meant to be public, such as an analytics site ID, never for a database password or a private API token.",
+            "Unprefixed variables are not automatically safe if you pass them into a Client Component or return them from an endpoint. Secrets stay private because your server code chooses not to expose them."
+          ]
+        },
+        {
+          "id": "validate-config",
+          "title": "Fail at startup, not during the first real request",
+          "paragraphs": [
+            "Reading process.env throughout the codebase spreads uncertainty. Create one server-only configuration module, validate required values, and export a typed object. A missing database URL should stop the build or boot process with a useful message.",
+            "This also gives tests a single place to provide controlled configuration and prevents small spelling differences from becoming runtime bugs."
+          ],
+          "codeLabel": "One typed configuration boundary",
+          "code": "import 'server-only'\n\nfunction required(name: string) {\n  const value = process.env[name]\n  if (!value) throw new Error(`Missing environment variable: ${name}`)\n  return value\n}\n\nexport const env = {\n  databaseUrl: required('DATABASE_URL'),\n  authSecret: required('AUTH_SECRET'),\n  appUrl: required('APP_URL'),\n}"
+        },
+        {
+          "id": "build-runtime",
+          "title": "Know whether a value is needed at build time or runtime",
+          "paragraphs": [
+            "A statically generated page may read configuration while the application is building. A Route Handler may read it when a request arrives. That difference matters when one image is promoted through several environments or when secrets are injected only at runtime.",
+            "Document when each required value is consumed. If one build artifact must run in several environments, avoid baking environment-specific public values into that artifact unless that is intentional."
+          ]
+        },
+        {
+          "id": "environment-parity",
+          "title": "Preview should resemble production where it matters",
+          "paragraphs": [
+            "Preview deployments are most useful when they exercise the same authentication flow, database shape, headers, and external integrations as production without sharing production data. A preview that silently disables half the system can only review appearance.",
+            "Use separate credentials and isolated data, but keep the integration boundaries realistic. Record intentional differences so a developer does not spend an afternoon debugging behaviour that was disabled by configuration."
+          ]
+        },
+        {
+          "id": "rotation",
+          "title": "Plan for secret rotation",
+          "paragraphs": [
+            "Secrets eventually expire, leak, or need replacement. Know which deployment or service owns each secret and whether rotating it interrupts active sessions or callbacks.",
+            "When a provider supports overlapping keys, accept the old and new value during a short migration window. Rotate, verify traffic on the new key, then remove the old one."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "accessibility",
+      "number": "24",
+      "title": "Accessibility in a routed application",
+      "summary": "Accessibility is part of navigation, loading, forms, and error recovery. It works best when it is built into the component contract instead of checked at the end.",
+      "blocks": [
+        {
+          "id": "semantic-first",
+          "title": "Use the element that already has the behaviour",
+          "paragraphs": [
+            "A button activates an action. A link moves to a location. A heading describes the structure beneath it. Choosing the correct element gives keyboard and assistive-technology behaviour without rebuilding it from div elements and event handlers.",
+            "Use ARIA to add missing context, not to disguise the wrong element. A div with role button still needs keyboard activation, focus styling, disabled behaviour, and every other detail a real button already provides."
+          ]
+        },
+        {
+          "id": "route-focus",
+          "title": "Client navigation still needs a clear new-page experience",
+          "paragraphs": [
+            "App Router navigation can replace content without a full browser load. Check where focus lands and whether the new page has a useful heading. A sighted user notices the content change immediately; a screen-reader user may need an announcement or a predictable focus target.",
+            "Keep a skip link near the beginning of the document and give the main region a stable id. This is especially valuable when a persistent header and documentation sidebar appear on every route."
+          ],
+          "codeLabel": "A small skip-link contract",
+          "code": "<a className=\"skip-link\" href=\"#main-content\">\n  Skip to main content\n</a>\n\n<main id=\"main-content\" tabIndex={-1}>\n  {children}\n</main>"
+        },
+        {
+          "id": "loading-accessibly",
+          "title": "Loading states should be calm and informative",
+          "paragraphs": [
+            "Skeletons should preserve layout rather than flash dramatically. Avoid announcing every small streamed region as busy because a page with several Suspense boundaries can become noisy.",
+            "For an important action, expose a short status message and connect it to the relevant control. Respect reduced-motion preferences for orbital, parallax, and 3D effects. The experience should still make sense when animation is removed."
+          ]
+        },
+        {
+          "id": "dialogs-drawers",
+          "title": "Drawers and dialogs must manage focus",
+          "paragraphs": [
+            "When a mobile documentation drawer opens, focus should move into it. While it is open, keyboard focus should not disappear behind the overlay. Closing it should return focus to the button that opened it.",
+            "Escape should close a temporary overlay. Give the control an accessible name and expose its expanded state with aria-expanded. These details are small, but they decide whether the navigation can be used without a pointer."
+          ]
+        },
+        {
+          "id": "accessibility-testing",
+          "title": "Automated checks find only part of the problem",
+          "paragraphs": [
+            "Lint rules and browser audits catch missing labels, invalid roles, and some contrast problems. They cannot tell whether the tab order is sensible or whether an error message is understandable.",
+            "Use the whole site with a keyboard. Zoom to 200 percent. Try a narrow viewport. Turn on reduced motion. Run at least one screen reader through the main journey. Fixing these problems usually improves the interface for everybody."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "internationalization",
+      "number": "25",
+      "title": "Internationalisation and locale routing",
+      "summary": "Internationalisation affects URLs, metadata, formatting, caching, and layout. Decide the URL model before translating the first page.",
+      "blocks": [
+        {
+          "id": "locale-url",
+          "title": "Give each language a stable URL",
+          "paragraphs": [
+            "A common App Router structure uses a dynamic locale segment such as app/[lang]. That makes language part of the URL, which helps links remain shareable and lets search engines understand each version as a distinct page.",
+            "Choose the supported locale list centrally. Reject unknown values with notFound instead of rendering a partly translated fallback under a URL that looks valid."
+          ],
+          "codeLabel": "A locale segment at the root",
+          "code": "const locales = ['en', 'id', 'nl'] as const\n\nexport function generateStaticParams() {\n  return locales.map((lang) => ({ lang }))\n}\n\nexport default async function Layout({ children, params }) {\n  const { lang } = await params\n  if (!locales.includes(lang)) notFound()\n  return <html lang={lang}><body>{children}</body></html>\n}"
+        },
+        {
+          "id": "locale-detection",
+          "title": "Detection should help, not trap the visitor",
+          "paragraphs": [
+            "The Accept-Language header can suggest a first language, but it should not override an explicit locale already present in the URL. Once a visitor chooses a language, remember the choice and keep the language switcher available.",
+            "Avoid redirect loops between a platform-level redirect and application locale detection. Pick one layer to own the initial decision and test requests with and without locale cookies."
+          ]
+        },
+        {
+          "id": "messages-formatting",
+          "title": "Translate messages, but format values with locale-aware APIs",
+          "paragraphs": [
+            "Dates, numbers, currencies, and plural rules should not be assembled with string concatenation. Intl.DateTimeFormat, Intl.NumberFormat, and Intl.PluralRules encode conventions that are easy to miss.",
+            "Keep raw values in data and format them near the presentation layer. A stored date should not become 09/10/2026 until the application knows which locale is reading it."
+          ]
+        },
+        {
+          "id": "translated-metadata",
+          "title": "Metadata needs the same translation care as the page",
+          "paragraphs": [
+            "Generate a translated title and description for every locale. Add alternate language URLs so search engines can connect equivalent pages, and make the canonical URL point to the current language version rather than always pointing to the default language.",
+            "Open Graph images may need translated text too. If one image is shared across languages, avoid embedding copy that contradicts the page title."
+          ]
+        },
+        {
+          "id": "layout-pressure",
+          "title": "Design for text that changes shape",
+          "paragraphs": [
+            "Translations are rarely the same length. Navigation labels grow, buttons wrap, and headings may need different line breaks. Test with long realistic strings rather than a made-up Lorem ipsum paragraph.",
+            "If right-to-left languages are supported, use logical CSS properties such as margin-inline and inset-inline. Check icons that imply direction, because an arrow that means next may need to flip while a familiar media-control icon may not."
+          ],
+          "note": "Internationalisation is not a final translation pass. It is a routing and interface decision made early."
         }
       ]
     }
@@ -1155,7 +1411,11 @@
     "testing": [0, 11],
     "deployment": [11, 19],
     "mistakes": [0, 11],
-    "production": [11, 16, 19]
+    "production": [11, 16, 19],
+    "forms-validation": [13, 20],
+    "environment-config": [21, 22],
+    "accessibility": [23, 24],
+    "internationalization": [25, 26]
   },
   "sources": [
     {
@@ -1237,6 +1497,34 @@
     {
       "label": "Vercel Next.js Documentation",
       "href": "https://vercel.com/docs/frameworks/nextjs"
+    },
+    {
+      "label": "Next.js Forms Guide",
+      "href": "https://nextjs.org/docs/app/guides/forms"
+    },
+    {
+      "label": "Next.js Environment Variables",
+      "href": "https://nextjs.org/docs/app/guides/environment-variables"
+    },
+    {
+      "label": "Next.js Self-Hosting",
+      "href": "https://nextjs.org/docs/app/guides/self-hosting"
+    },
+    {
+      "label": "Next.js Accessibility",
+      "href": "https://nextjs.org/docs/architecture/accessibility"
+    },
+    {
+      "label": "WAI Forms Tutorial",
+      "href": "https://www.w3.org/WAI/tutorials/forms/"
+    },
+    {
+      "label": "Next.js Internationalization Guide",
+      "href": "https://nextjs.org/docs/app/guides/internationalization"
+    },
+    {
+      "label": "Google Localized Versions Guidance",
+      "href": "https://developers.google.com/search/docs/specialty/international/localized-versions"
     }
   ]
 }

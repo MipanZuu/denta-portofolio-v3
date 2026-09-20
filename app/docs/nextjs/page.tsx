@@ -11,7 +11,8 @@ const learningSteps = [
   { icon: Layers3, label: "Architecture", copy: "Separate server work, browser interaction, and streamed data.", ids: ["server-component", "data-fetching"] },
   { icon: Database, label: "State and data", copy: "Control freshness, mutations, APIs, and recovery.", ids: ["cache", "server-actions", "route-handlers", "error-handling"] },
   { icon: ShieldCheck, label: "Trust", copy: "Protect data and describe public pages correctly.", ids: ["authentication", "metadata-seo"] },
-  { icon: Rocket, label: "Ship", copy: "Test behaviour and operate the production build.", ids: ["testing", "production"] }
+  { icon: Rocket, label: "Product essentials", copy: "Build forms, configuration, accessibility, and locale support into the product.", ids: ["forms-validation", "environment-config", "accessibility", "internationalization"] },
+  { icon: Rocket, label: "Ship", copy: "Test behaviour and operate the production build.", ids: ["testing", "deployment", "mistakes", "production"] }
 ];
 
 export default function NextjsGuidePage() {
