@@ -2,6 +2,7 @@
   "name": "denta-portofolio-v3",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "pnpm db:migrate && next build",
