@@ -27,6 +27,7 @@ const routes = [
   ...monorepoDocs.sections.map((section) => ({ path: `/docs/monorepo/${section.id}`, priority: 0.7, changeFrequency: "monthly" as const, lastModified: "2026-09-25" })),
   { path: "/playground", priority: 0.7, changeFrequency: "monthly" as const },
   ...playgroundItems.map((item) => ({ path: item.href, priority: 0.6, changeFrequency: "monthly" as const })),
+  { path: "/observatory", priority: 0.8, changeFrequency: "weekly" as const },
   { path: "/space", priority: 0.7, changeFrequency: "yearly" as const },
   { path: "/contact", priority: 0.6, changeFrequency: "yearly" as const },
 ];

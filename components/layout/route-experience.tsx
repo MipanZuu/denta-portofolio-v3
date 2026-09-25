@@ -20,7 +20,7 @@ export function RouteExperience() {
 
   useEffect(() => {
     const segment = pathname.split("/").filter(Boolean)[0] ?? "home";
-    const atmosphere = ["about", "projects", "journey", "docs", "playground", "space"].includes(segment) ? segment : "home";
+    const atmosphere = ["about", "projects", "journey", "docs", "playground", "observatory", "space"].includes(segment) ? segment : "home";
     document.documentElement.dataset.routeAtmosphere = atmosphere;
 
     const reducedMotion = window.matchMedia(
@@ -29,7 +29,6 @@ export function RouteExperience() {
     const tiltElements = Array.from(
       document.querySelectorAll<HTMLElement>(tiltSelector),
     );
-
     const removeTiltListeners = tiltElements.map((element) => {
       const move = (event: PointerEvent) => {
         if (event.pointerType !== "mouse" || reducedMotion) return;

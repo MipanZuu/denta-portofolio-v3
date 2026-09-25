@@ -46,6 +46,7 @@ const routeAliases: Record<string, string[]> = {
   "/blog": ["blog", "articles", "writing", "posts"],
   "/docs": ["docs", "documentation", "learn", "guides", "tutorials", "microservices", "microservice", "monorepo"],
   "/playground": ["playground", "games", "experiments", "interactive tools"],
+  "/observatory": ["observatory", "site stats", "performance", "architecture map", "changelog", "updates"],
   "/space": ["space", "universe", "black hole"],
   "/contact": ["contact", "email", "hire", "collaborate", "get in touch"],
 };

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, Gauge, GitBranch, Home, Info, Mail, Milestone, Moon, Orbit, PanelsTopLeft, Rocket, Sun, X } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, Gauge, GitBranch, Home, Info, Mail, Milestone, Moon, Orbit, PanelsTopLeft, RadioTower, Rocket, Sun, X } from "lucide-react";
 import { contact } from "@/statics/contact";
 import { navigation } from "@/statics/navigation";
 import { useVisualQuality, type VisualQualityPreference } from "@/components/layout/visual-quality";
@@ -19,11 +19,12 @@ const navigationDescriptions: Record<string, string> = {
   blog: "Notes on engineering, products, and craft",
   docs: "A guide to the portfolio, experiments, and decisions",
   playground: "Small games and useful tools you can try",
+  observatory: "Projects, docs, performance, and site architecture in one view",
   space: "An interactive journey around a black hole",
 };
 
 function RouteIcon({ route, className }: { route: string; className?: string }) {
-  const icons = { home: Home, about: Info, journey: Milestone, projects: BriefcaseBusiness, experience: BriefcaseBusiness, technologies: Code2, blog: PanelsTopLeft, docs: FileText, playground: FlaskConical, space: Orbit, contact: Mail };
+  const icons = { home: Home, about: Info, journey: Milestone, projects: BriefcaseBusiness, experience: BriefcaseBusiness, technologies: Code2, blog: PanelsTopLeft, docs: FileText, playground: FlaskConical, observatory: RadioTower, space: Orbit, contact: Mail };
   const Icon = icons[route as keyof typeof icons] ?? Home;
   return <Icon className={className} aria-hidden="true" />;
 }
@@ -42,7 +43,7 @@ export function Header() {
     ["home", "about", "projects"].includes(item.section),
   );
   const featuredNavigation = navigation.filter((item) =>
-    ["journey", "playground", "space"].includes(item.section),
+    ["journey", "playground", "observatory", "space"].includes(item.section),
   );
   const directoryNavigation = navigation.filter((item) =>
     ["experience", "technologies", "blog", "docs", "contact"].includes(item.section),
