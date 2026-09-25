@@ -89,7 +89,17 @@ export function createWebPageJsonLd(
   path: string,
   type = "WebPage",
 ) {
-  const page = {
+  const profileMainEntity = {
+    "@type": "Person",
+    "@id": `${seo.siteUrl}/#person`,
+    name: personal.fullName,
+    alternateName: personal.name,
+    url: seo.siteUrl,
+    image: `${seo.siteUrl}${personal.portrait}`,
+    jobTitle: "Software Engineer",
+    sameAs: contact.socials.map((social) => social.href),
+  };
+  const page: Record<string, unknown> = {
     "@type": type,
     "@id": `${seo.siteUrl}${path}/#webpage`,
     url: `${seo.siteUrl}${path}`,
@@ -99,6 +109,9 @@ export function createWebPageJsonLd(
     about: { "@id": `${seo.siteUrl}/#person` },
     inLanguage: "en",
   };
+  if (type === "ProfilePage") {
+    page.mainEntity = profileMainEntity;
+  }
   if (!path) return { "@context": "https://schema.org", ...page };
   return {
     "@context": "https://schema.org",

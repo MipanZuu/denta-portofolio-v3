@@ -17,7 +17,7 @@ function PreviewImage({ image, title }: { image: string; title: string }) {
 }
 
 export function ShareSnap() {
-  const [url, setUrl] = useState("https://dentabramasta.com/blog/a-good-post");
+  const [url, setUrl] = useState("https://www.dentabramasta.com/blog/a-good-post");
   const [title, setTitle] = useState("A clear title people will want to open");
   const [description, setDescription] = useState("Add one useful sentence that explains what waits behind the click.");
   const [image, setImage] = useState("");

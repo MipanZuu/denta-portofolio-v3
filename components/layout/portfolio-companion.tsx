@@ -50,10 +50,8 @@ const routeAliases: Record<string, string[]> = {
   "/contact": ["contact", "email", "hire", "collaborate", "get in touch"],
 };
 
-function normalizeText(value?: string | null) {
-  if (!value) return "";
-
-  return value
+function normalizeText(value: unknown) {
+  return String(value ?? "")
     .toLowerCase()
     .normalize("NFKD")
     .replace(/[^\p{L}\p{N}\s-]/gu, " ")

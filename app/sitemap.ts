@@ -3,6 +3,7 @@ import { getBlogMedia } from "@/lib/blog/presentation";
 import { listPublishedBlogPagesForSitemap } from "@/lib/blog/queries";
 import { seo } from "@/statics/seo";
 import { projects } from "@/statics/projects";
+import { playgroundItems } from "@/statics/playground";
 import docs from "@/statics/docs-next.json";
 
 export const dynamic = "force-dynamic";
@@ -19,15 +20,7 @@ const routes = [
   { path: "/docs/nextjs", priority: 0.8, changeFrequency: "monthly" as const, lastModified: "2026-09-20" },
   ...docs.sections.map((section) => ({ path: `/docs/nextjs/${section.id}`, priority: 0.7, changeFrequency: "monthly" as const, lastModified: "2026-09-20" })),
   { path: "/playground", priority: 0.7, changeFrequency: "monthly" as const },
-  { path: "/playground/quick-signal", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/memory-match", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/number-rush", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/text-pocket", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/json-toolkit", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/percentage-helper", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/image-lab", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/sharesnap", priority: 0.6, changeFrequency: "monthly" as const },
-  { path: "/playground/preset-studio", priority: 0.6, changeFrequency: "monthly" as const },
+  ...playgroundItems.map((item) => ({ path: item.href, priority: 0.6, changeFrequency: "monthly" as const })),
   { path: "/space", priority: 0.7, changeFrequency: "yearly" as const },
   { path: "/contact", priority: 0.6, changeFrequency: "yearly" as const },
 ];
