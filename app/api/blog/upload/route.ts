@@ -1,7 +1,7 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { getAuth } from "@/lib/auth/server";
-import { contact } from "@/statics/contact";
+import { isAdminUser } from "@/lib/auth/policy";
 
 const responseHeaders = {
   "Cache-Control": "no-store",
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       if (!session?.user) {
         return NextResponse.json({ error: "Authentication required." }, { status: 401, headers: responseHeaders });
       }
-      if (session.user.email.toLowerCase() !== contact.email.toLowerCase()) {
+      if (!isAdminUser(session.user)) {
         return NextResponse.json({ error: "You are not allowed to upload blog images." }, { status: 403, headers: responseHeaders });
       }
     }
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       request,
       onBeforeGenerateToken: async (pathname) => {
         const { data: session } = await getAuth().getSession();
-        if (!session?.user || session.user.email.toLowerCase() !== contact.email.toLowerCase()) {
+        if (!session?.user || !isAdminUser(session.user)) {
           throw new Error("You are not allowed to upload blog images.");
         }
         if (!pathname.startsWith("portfolio-blog/")) throw new Error("Invalid upload destination.");

@@ -66,6 +66,10 @@ const nextConfig: NextConfig = {
             key: "X-Robots-Tag",
             value: "noindex, nofollow, noarchive, nosnippet",
           },
+          {
+            key: "Cache-Control",
+            value: "private, no-store, max-age=0",
+          },
         ],
       },
       {
@@ -74,6 +78,10 @@ const nextConfig: NextConfig = {
           {
             key: "X-Robots-Tag",
             value: "noindex, nofollow, noarchive, nosnippet",
+          },
+          {
+            key: "Cache-Control",
+            value: "private, no-store, max-age=0",
           },
         ],
       },

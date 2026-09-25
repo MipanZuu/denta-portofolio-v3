@@ -1,7 +1,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
-import { contact } from "@/statics/contact";
 import { getAuth } from "./server";
+import { isAdminUser } from "./policy";
 
 export async function requireAdmin(returnTo = "/dashboard") {
   const { data: session } = await getAuth().getSession();
@@ -10,7 +10,7 @@ export async function requireAdmin(returnTo = "/dashboard") {
     redirect(`/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}`);
   }
 
-  if (session.user.email.toLowerCase() !== contact.email.toLowerCase()) {
+  if (!isAdminUser(session.user)) {
     redirect("/auth/not-authorized");
   }
 

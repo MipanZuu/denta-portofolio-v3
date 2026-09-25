@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getAuth } from "@/lib/auth/server";
-import { contact } from "@/statics/contact";
+import { isAdminEmail, isAdminSignUpEnabled } from "@/lib/auth/policy";
 import { personal } from "@/statics/personal";
 
 export type AuthFormState = { error?: string };
@@ -27,8 +27,8 @@ export async function signInAction(
 ): Promise<AuthFormState> {
   const { email, password } = credentials(formData);
   if (!email || !password) return { error: "Enter your email and password." };
-  if (email !== contact.email.toLowerCase())
-    return { error: "This account cannot access the portfolio dashboard." };
+  if (!isAdminEmail(email))
+    return { error: "The email or password is incorrect." };
 
   try {
     const result = await getAuth().signIn.email({ email, password });
@@ -51,12 +51,14 @@ export async function signUpAction(
   formData: FormData,
 ): Promise<AuthFormState> {
   const { email, password } = credentials(formData);
-  if (email !== contact.email.toLowerCase())
+  if (!isAdminSignUpEnabled())
+    return { error: "Admin account creation is currently disabled." };
+  if (!isAdminEmail(email))
     return {
       error: "Use the portfolio owner email to create the admin account.",
     };
-  if (password.length < 8)
-    return { error: "Use at least 8 characters for your password." };
+  if (password.length < 12)
+    return { error: "Use at least 12 characters for your password." };
 
   try {
     const result = await getAuth().signUp.email({

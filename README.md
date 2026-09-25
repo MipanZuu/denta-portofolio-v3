@@ -64,18 +64,29 @@ The complete template is available in [`.env.example`](./.env.example). It inclu
 
 Never commit `.env.local` or production credentials.
 
+### Dashboard security
+
+The dashboard uses Neon Auth's secure session cookies and refresh-aware Next.js proxy. Authentication is only the first gate: every dashboard layout, mutation, upload, and private integration also checks the server-side admin allow-list.
+
+For production, set `PORTFOLIO_ADMIN_USER_IDS` to the immutable Neon Auth user ID that owns the dashboard. `PORTFOLIO_ADMIN_EMAILS` is available as a setup/migration fallback. Public registration is disabled by default; temporarily set `AUTH_ALLOW_ADMIN_SIGN_UP=true` only while creating the initial owner account, then disable it again.
+
 ## Useful commands
 
 ```bash
 pnpm dev          # Start the development server
 pnpm lint         # Run ESLint
 pnpm exec tsc --noEmit
+pnpm commit       # Create a guided Conventional Commit
 pnpm db:generate  # Generate Drizzle migrations
 pnpm db:migrate   # Apply database migrations
 pnpm db:studio    # Open Drizzle Studio
 pnpm build        # Migrate the database and create a production build
 pnpm start        # Run the production build
 ```
+
+## Commit convention
+
+Run `pnpm commit` instead of composing a commit message manually. Commitizen will guide you through a [Conventional Commits](https://www.conventionalcommits.org/) message (`feat`, `fix`, `docs`, `refactor`, and so on), starting directly with the short description after selecting a type. It also supports breaking changes and issue references without asking for a scope. This keeps the history readable and ready for automated changelogs.
 
 ## Project structure
 

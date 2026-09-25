@@ -13,7 +13,13 @@ export function getAuth() {
 
   authInstance ??= createNeonAuth({
     baseUrl,
-    cookies: { secret, sessionDataTtl: 300 },
+    cookies: {
+      secret,
+      // This is the signed session-data cache lifetime, not the login lifetime.
+      // Neon Auth's middleware refreshes it from the secure session token.
+      sessionDataTtl: 300,
+      sameSite: "lax",
+    },
   });
 
   return authInstance;
