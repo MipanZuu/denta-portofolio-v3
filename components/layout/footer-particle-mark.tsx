@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 type Particle = {
   x: number;
@@ -22,6 +23,7 @@ export function FooterParticleMark() {
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerRef = useRef({ x: 0, y: 0, active: false });
+  const { quality } = useVisualQuality();
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -35,7 +37,7 @@ export function FooterParticleMark() {
     let stars: Star[] = [];
     let width = 0;
     let height = 0;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || quality === "low";
 
     const seededRandom = (() => {
       let seed = 90210;
@@ -163,7 +165,7 @@ export function FooterParticleMark() {
       resizeObserver.disconnect();
       observer.disconnect();
     };
-  }, []);
+  }, [quality]);
 
   return (
     <div

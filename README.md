@@ -13,6 +13,9 @@ This is more than a collection of project cards. The website combines a space-in
 - Browser-only Playground tools and games
 - Mizu, a local portfolio guide with typo-tolerant commands, navigation, theme controls, and pet animations
 - Light and dark themes with persistent preference
+- Adaptive visual-quality modes with automatic device detection and a persistent override
+- Optional guided orbit, launched from the navigation menu
+- Local documentation progress, continue-reading state, reading estimates, and checkpoints
 - Custom route transitions, global planet field, and responsive liquid-glass UI
 - Dynamic blog studio backed by Neon, Drizzle ORM, and Vercel Blob
 - Metadata, canonical URLs, JSON-LD, sitemap, and robots configuration for public routes

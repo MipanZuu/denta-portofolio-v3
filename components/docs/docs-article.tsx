@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowDown, Check, Copy, ExternalLink, GitBranch } from "lucide-react";
+import { ArrowDown, Check, CheckCircle2, Copy, ExternalLink, GitBranch } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Block = { id: string; title: string; paragraphs?: string[]; list?: string[]; note?: string; codeLabel?: string; code?: string };
 type Source = { label: string; href: string };
@@ -64,9 +64,55 @@ export function DocsArticle({ section, sources, previous, next, guideName = "Nex
   guideName?: string;
   basePath?: string;
 }) {
+  const [complete, setComplete] = useState(false);
+  const [checkpointOpen, setCheckpointOpen] = useState(false);
+  const guideSlug = basePath.split("/").filter(Boolean).at(-1) ?? "nextjs";
+  const storageKey = `docs-progress:${guideSlug}`;
+  const readingMinutes = useMemo(() => {
+    const words = [section.summary, ...section.blocks.flatMap((block) => [block.title, ...(block.paragraphs ?? []), ...(block.list ?? []), block.note ?? ""])].join(" ").trim().split(/\s+/).length;
+    return Math.max(5, Math.ceil(words / 180));
+  }, [section]);
+
+  function saveProgress(markComplete: boolean, updateState = true) {
+    let saved: { completed?: string[]; lastRead?: string } = {};
+    try { saved = JSON.parse(window.localStorage.getItem(storageKey) ?? "{}"); } catch {}
+    const completed = new Set(Array.isArray(saved.completed) ? saved.completed : []);
+    if (markComplete) completed.add(section.id);
+    window.localStorage.setItem(storageKey, JSON.stringify({ completed: [...completed], lastRead: section.id, updatedAt: Date.now() }));
+    if (updateState) setComplete(completed.has(section.id));
+    window.dispatchEvent(new Event("docs-progress-change"));
+  }
+
+  useEffect(() => {
+    let saved: { completed?: string[] } = {};
+    try { saved = JSON.parse(window.localStorage.getItem(storageKey) ?? "{}"); } catch {}
+    let autoCompleted = Array.isArray(saved.completed) && saved.completed.includes(section.id);
+    const stateFrame = window.requestAnimationFrame(() => {
+      setComplete(autoCompleted);
+      saveProgress(false, false);
+    });
+    const onScroll = () => {
+      const article = document.querySelector<HTMLElement>(".docs-route-article");
+      if (!article) return;
+      const bounds = article.getBoundingClientRect();
+      const travelled = window.innerHeight - bounds.top;
+      if (!autoCompleted && travelled / Math.max(article.offsetHeight, 1) >= .9) {
+        autoCompleted = true;
+        saveProgress(true);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(stateFrame);
+      window.removeEventListener("scroll", onScroll);
+    };
+    // The chapter ID is the persistence boundary; saveProgress intentionally stays local.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section.id, storageKey]);
+
   return <div className="docs-article-grid">
     <article className="docs-route-article">
-      <header className="docs-route-hero"><span>Chapter {section.number} / {guideName}</span><h1>{section.title}</h1><p>{section.summary}</p></header>
+      <header className="docs-route-hero"><span>Chapter {section.number} / {guideName}</span><h1>{section.title}</h1><p>{section.summary}</p><div className="docs-chapter-meta"><small>{readingMinutes} min focused read</small><button type="button" className={complete ? "is-complete" : ""} onClick={() => saveProgress(true)}><CheckCircle2 />{complete ? "Completed" : "Mark complete"}</button></div></header>
       {section.blocks.map((block) => <section className="docs-topic" id={block.id} key={block.id}>
         <h2>{block.title}</h2>
         {block.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
@@ -76,6 +122,12 @@ export function DocsArticle({ section, sources, previous, next, guideName = "Nex
           : <CodeBlock label={block.codeLabel ?? "Example"} code={block.code} />)}
         {block.note && <aside className="docs-note"><strong>Keep in orbit</strong><p>{block.note}</p></aside>}
       </section>)}
+      <section className="docs-checkpoint">
+        <span>Chapter checkpoint</span><h2>Can you explain “{section.title}” without reaching for the API reference?</h2>
+        <p>Describe the main trade-off, one failure mode, and the decision you would make in a real project.</p>
+        <button type="button" onClick={() => setCheckpointOpen((value) => !value)}>{checkpointOpen ? "Hide reflection" : "Reveal reflection prompt"}</button>
+        {checkpointOpen && <aside><strong>Try this:</strong> explain the idea to a teammate in three sentences, then connect it to one system you have already built. If the trade-off is still vague, revisit the chapter before continuing.</aside>}
+      </section>
       <nav className="docs-chapter-pagination" aria-label="Adjacent chapters">
         {previous ? <Link href={`${basePath}/${previous.id}`}><small>Previous</small><strong>{previous.title}</strong></Link> : <span />}
         {next ? <Link href={`${basePath}/${next.id}`}><small>Next</small><strong>{next.title}</strong></Link> : <span />}

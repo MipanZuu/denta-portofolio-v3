@@ -7,6 +7,8 @@ import { EasterEgg } from "@/components/layout/easter-egg";
 import { RouteExperience } from "@/components/layout/route-experience";
 import { RouteTransitionLoader } from "@/components/layout/route-transition-loader";
 import { PortfolioCompanion } from "@/components/layout/portfolio-companion";
+import { FirstOrbitTour } from "@/components/layout/first-orbit-tour";
+import { VisualQualityProvider } from "@/components/layout/visual-quality";
 import { JsonLd } from "@/components/seo/json-ld";
 import { rootJsonLd, seo } from "@/statics/seo";
 import "./globals.css";
@@ -67,16 +69,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             __html: `try{var t=localStorage.getItem("portfolio-theme");document.body.classList.toggle("dark-portfolio",t!=="light");document.documentElement.style.colorScheme=t==="light"?"light":"dark"}catch(e){document.documentElement.style.colorScheme="dark"}`,
           }}
         />
-        <GlobalPlanetField />
-        <JsonLd data={rootJsonLd} />
-        <RouteTransitionLoader />
-        <RouteExperience />
-        <EasterEgg />
-        <Header />
-        {children}
-        <Footer />
-        <PortfolioCompanion />
-        <Analytics />
+        <VisualQualityProvider>
+          <GlobalPlanetField />
+          <JsonLd data={rootJsonLd} />
+          <RouteTransitionLoader />
+          <RouteExperience />
+          <EasterEgg />
+          <Header />
+          {children}
+          <Footer />
+          <PortfolioCompanion />
+          <FirstOrbitTour />
+          <Analytics />
+        </VisualQualityProvider>
       </body>
     </html>
   );

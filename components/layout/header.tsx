@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, GitBranch, Home, Info, Mail, Milestone, Moon, Orbit, PanelsTopLeft, Sun, X } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, ChevronUp, Code2, Contact, Download, FileText, FlaskConical, Gauge, GitBranch, Home, Info, Mail, Milestone, Moon, Orbit, PanelsTopLeft, Rocket, Sun, X } from "lucide-react";
 import { contact } from "@/statics/contact";
 import { navigation } from "@/statics/navigation";
+import { useVisualQuality, type VisualQualityPreference } from "@/components/layout/visual-quality";
 
 const navigationDescriptions: Record<string, string> = {
   home: "A quick introduction and selected work",
@@ -32,7 +33,9 @@ export function Header() {
   const [dark, setDark] = useState(true);
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const active = pathname === "/" ? "home" : pathname.split("/")[1];
+  const { preference, quality, setPreference } = useVisualQuality();
   const activeLabel =
     navigation.find((item) => item.section === active)?.label ?? "Home";
   const primaryNavigation = navigation.filter((item) =>
@@ -221,6 +224,27 @@ export function Header() {
           <button type="button" onClick={toggleTheme}>
             <span>{dark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}</span>
             {dark ? "Light mode" : "Dark mode"}
+          </button>
+          <label className="apple-quality-control">
+            <span><Gauge aria-hidden="true" /></span>
+            <b>Visual quality<small>{preference === "auto" ? `Auto · ${quality}` : preference}</small></b>
+            <select value={preference} onChange={(event) => setPreference(event.target.value as VisualQualityPreference)} aria-label="Visual quality">
+              <option value="auto">Auto</option>
+              <option value="high">High</option>
+              <option value="balanced">Balanced</option>
+              <option value="low">Low power</option>
+            </select>
+          </label>
+          <button type="button" onClick={() => {
+            setOpen(false);
+            if (pathname === "/") window.dispatchEvent(new Event("portfolio-replay-tour"));
+            else {
+              window.sessionStorage.setItem("portfolio-launch-tour", "true");
+              router.push("/");
+            }
+          }}>
+            <span><Rocket aria-hidden="true" /></span>
+            Replay first orbit
           </button>
         </div>
       </div>

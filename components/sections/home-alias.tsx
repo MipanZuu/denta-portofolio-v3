@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 export function HomeAlias() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
+  const { quality } = useVisualQuality();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,7 +20,7 @@ export function HomeAlias() {
     import("three").then((THREE) => {
       if (disposed) return;
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.65 : quality === "balanced" ? 1.15 : 1));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.2;
@@ -188,10 +190,14 @@ export function HomeAlias() {
       resizeObserver.observe(stage);
       resize();
       const clock = new THREE.Clock();
-      const animate = () => {
+      let lastRender = 0;
+      const animate = (timestamp = 0) => {
         if (disposed) return;
         frame = requestAnimationFrame(animate);
         if (!visible) return;
+        const minimumFrameTime = quality === "high" ? 0 : quality === "balanced" ? 30 : 70;
+        if (timestamp - lastRender < minimumFrameTime) return;
+        lastRender = timestamp;
         const time = clock.getElapsedTime();
         grainMaterial.uniforms.time.value = time;
         logo.rotation.x += (pointerRef.current.y * .13 - logo.rotation.x) * .035;
@@ -225,7 +231,7 @@ export function HomeAlias() {
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "180px" });
     observer.observe(stage);
     return () => { disposed = true; observer.disconnect(); cleanup(); };
-  }, []);
+  }, [quality]);
 
   return <section className="home-alias page-shell" aria-labelledby="home-alias-title">
     <div className="home-alias-stage" onPointerMove={(event) => { const bounds = event.currentTarget.getBoundingClientRect(); pointerRef.current = { x: ((event.clientX - bounds.left) / bounds.width - .5) * 2, y: ((event.clientY - bounds.top) / bounds.height - .5) * 2 }; }} onPointerLeave={() => { pointerRef.current = { x: 0, y: 0 }; }}>

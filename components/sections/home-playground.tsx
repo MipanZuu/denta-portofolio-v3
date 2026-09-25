@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "@/components/ui/icons";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 const modes = [
   {
@@ -33,6 +34,7 @@ export function HomePlayground() {
   const activeModeRef = useRef(0);
   const applyModeRef = useRef<((index: number) => void) | null>(null);
   const [activeMode, setActiveMode] = useState(0);
+  const { quality } = useVisualQuality();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -55,7 +57,7 @@ export function HomePlayground() {
         alpha: true,
         antialias: true,
       });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.75 : quality === "balanced" ? 1.15 : 1));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.08;
 
@@ -151,7 +153,7 @@ export function HomePlayground() {
       const startedAt = performance.now();
       const animate = (now: number) => {
         if (disposed) return;
-        animationFrame = requestAnimationFrame(animate);
+        if (quality !== "low") animationFrame = requestAnimationFrame(animate);
         const time = (now - startedAt) / 1000;
         const targetX = pointerRef.current.y * 0.18 + scrollRef.current * 0.16;
         const targetY = pointerRef.current.x * 0.26 + scrollRef.current * 0.24;
@@ -198,7 +200,7 @@ export function HomePlayground() {
       window.removeEventListener("scroll", updateScroll);
       cleanupScene();
     };
-  }, []);
+  }, [quality]);
 
   useEffect(() => {
     activeModeRef.current = activeMode;

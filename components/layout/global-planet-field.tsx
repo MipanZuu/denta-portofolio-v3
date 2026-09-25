@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 function randomSource(seedValue: number) {
   let seed = seedValue;
@@ -11,6 +12,7 @@ function randomSource(seedValue: number) {
 export function GlobalPlanetField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pathname = usePathname();
+  const { quality } = useVisualQuality();
   const immersiveRoute = pathname === "/journey" || pathname === "/space";
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export function GlobalPlanetField() {
     import("three").then((THREE) => {
       if (disposed) return;
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.2 : 1));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.05;
@@ -85,9 +87,10 @@ export function GlobalPlanetField() {
         starLayers.add(points);
         return points;
       };
-      const farStars = makeStarLayer(720, 34, -20, .035, .42, 4201);
-      const middleStars = makeStarLayer(360, 27, -10, .052, .5, 7331);
-      const nearStars = makeStarLayer(130, 23, -2, .075, .4, 9109);
+      const density = quality === "high" ? 1 : quality === "balanced" ? .58 : .25;
+      const farStars = makeStarLayer(Math.round(720 * density), 34, -20, .035, .42, 4201);
+      const middleStars = makeStarLayer(Math.round(360 * density), 27, -10, .052, .5, 7331);
+      const nearStars = makeStarLayer(Math.round(130 * density), 23, -2, .075, .4, 9109);
 
       const textures: InstanceType<typeof THREE.CanvasTexture>[] = [];
       const makeTexture = (seed: number, colors: [string, string, string], rocky: boolean) => {
@@ -127,21 +130,22 @@ export function GlobalPlanetField() {
 
       const makePlanet = (radius: number, texture: ReturnType<typeof makeTexture>, ringed = false) => {
         const group = new THREE.Group();
+        const detail = quality === "high" ? [48, 36] : quality === "balanced" ? [32, 24] : [20, 14];
         const sphere = new THREE.Mesh(
-          new THREE.SphereGeometry(radius, 48, 36),
+          new THREE.SphereGeometry(radius, detail[0], detail[1]),
           new THREE.MeshStandardMaterial({ map: texture, roughness: .76, metalness: .02 }),
         );
         group.add(sphere);
         const atmosphere = new THREE.Mesh(
-          new THREE.SphereGeometry(radius * 1.035, 40, 30),
+          new THREE.SphereGeometry(radius * 1.035, Math.max(16, detail[0] - 8), Math.max(12, detail[1] - 6)),
           new THREE.MeshPhysicalMaterial({ color: 0xbfe7df, transparent: true, opacity: .1, transmission: .7, side: THREE.BackSide, depthWrite: false }),
         );
         group.add(atmosphere);
         if (ringed) {
-          for (let band = 0; band < 7; band += 1) {
+          for (let band = 0; band < (quality === "low" ? 3 : 7); band += 1) {
             const inner = radius * (1.34 + band * .08);
             const ring = new THREE.Mesh(
-              new THREE.RingGeometry(inner, inner + radius * .035, 112),
+              new THREE.RingGeometry(inner, inner + radius * .035, quality === "high" ? 112 : 56),
               new THREE.MeshBasicMaterial({ color: band % 2 ? 0xc9ff57 : 0xe5cfa8, transparent: true, opacity: .14 + band * .025, side: THREE.DoubleSide, depthWrite: false }),
             );
             ring.rotation.x = Math.PI * .62;
@@ -222,7 +226,7 @@ export function GlobalPlanetField() {
       document.addEventListener("visibilitychange", resume);
       window.addEventListener("pageshow", resume);
       window.addEventListener("resize", resize);
-      window.addEventListener("pointermove", pointer, { passive: true });
+      if (quality !== "low") window.addEventListener("pointermove", pointer, { passive: true });
       window.addEventListener("scroll", scroll, { passive: true });
       resize();
       cleanup = () => {
@@ -250,7 +254,7 @@ export function GlobalPlanetField() {
       };
     });
     return () => { disposed = true; cleanup(); };
-  }, [immersiveRoute, pathname]);
+  }, [immersiveRoute, pathname, quality]);
 
   if (immersiveRoute) return null;
   return <canvas key={pathname} className="global-planet-field" ref={canvasRef} aria-hidden="true" />;

@@ -6,6 +6,7 @@ import { CurrentMood } from "@/components/spotify/current-mood";
 import { HeroOrbitNavigation } from "@/components/sections/hero-orbit-navigation";
 import { ArrowUpRight, DownloadIcon } from "@/components/ui/icons";
 import { personal } from "@/statics/personal";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 const disciplines = ["PRODUCT THINKING", "FRONTEND CRAFT", "FULL-STACK SYSTEMS", "INTERACTIVE WEB"];
 
@@ -14,6 +15,7 @@ export function InteractiveHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
+  const { quality } = useVisualQuality();
 
   useEffect(() => {
     const interval = window.setInterval(() => setDiscipline((current) => (current + 1) % disciplines.length), 2100);
@@ -32,7 +34,7 @@ export function InteractiveHero() {
     import("three").then((THREE) => {
       if (disposed) return;
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.5 : quality === "balanced" ? 1.15 : 1));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.08;
@@ -44,7 +46,7 @@ export function InteractiveHero() {
       scene.add(system);
 
       const globe = new THREE.Mesh(
-        new THREE.SphereGeometry(1.47, 64, 48),
+        new THREE.SphereGeometry(1.47, quality === "high" ? 64 : quality === "balanced" ? 40 : 24, quality === "high" ? 48 : quality === "balanced" ? 30 : 18),
         new THREE.MeshPhysicalMaterial({
           color: 0xe7dcc4,
           roughness: 0.08,
@@ -64,13 +66,13 @@ export function InteractiveHero() {
       system.add(globe);
 
       const mineralCore = new THREE.Mesh(
-        new THREE.SphereGeometry(1.12, 48, 36),
+        new THREE.SphereGeometry(1.12, quality === "high" ? 48 : 28, quality === "high" ? 36 : 20),
         new THREE.MeshStandardMaterial({ color: 0x284f47, emissive: 0x102d2c, emissiveIntensity: 0.58, roughness: 0.38, metalness: 0.08 }),
       );
       system.add(mineralCore);
 
       const atmosphere = new THREE.Mesh(
-        new THREE.SphereGeometry(1.58, 56, 42),
+        new THREE.SphereGeometry(1.58, quality === "high" ? 56 : 30, quality === "high" ? 42 : 22),
         new THREE.MeshPhysicalMaterial({ color: 0xffe7c2, roughness: 0, transmission: 0.96, transparent: true, opacity: 0.13, side: THREE.BackSide, depthWrite: false }),
       );
       system.add(atmosphere);
@@ -83,7 +85,7 @@ export function InteractiveHero() {
         opacity: 0.5,
       });
       const rings = [2.15, 2.72].map((radius, index) => {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(radius, 0.025 + index * 0.012, 12, 150), ringMaterial);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(radius, 0.025 + index * 0.012, quality === "high" ? 12 : 8, quality === "high" ? 150 : 72), ringMaterial);
         ring.rotation.set(1.05 + index * 0.35, index * 0.18, index ? -0.25 : 0.28);
         system.add(ring);
         return ring;
@@ -123,8 +125,14 @@ export function InteractiveHero() {
       resize();
       const clock = new THREE.Clock();
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const animate = () => {
+      let lastRender = 0;
+      const animate = (timestamp = 0) => {
         if (disposed) return;
+        if (quality === "balanced" && timestamp - lastRender < 30) {
+          frame = requestAnimationFrame(animate);
+          return;
+        }
+        lastRender = timestamp;
         const time = clock.getElapsedTime();
         system.rotation.x += (pointerRef.current.y * 0.16 - system.rotation.x) * 0.035;
         system.rotation.y += (pointerRef.current.x * 0.22 - system.rotation.y) * 0.035;
@@ -136,7 +144,7 @@ export function InteractiveHero() {
         rings[1].rotation.z -= 0.0011;
         satellites.forEach((pivot, index) => { pivot.rotation.z = time * (0.2 + index * 0.055) + index * 2; });
         renderer.render(scene, camera);
-        if (!reduceMotion) frame = requestAnimationFrame(animate);
+        if (!reduceMotion && quality !== "low") frame = requestAnimationFrame(animate);
       };
       animate();
       cleanup = () => {
@@ -154,7 +162,7 @@ export function InteractiveHero() {
     });
 
     return () => { disposed = true; cleanup(); };
-  }, []);
+  }, [quality]);
 
   return <section className="landing-hero page-shell">
     <div className="landing-copy">

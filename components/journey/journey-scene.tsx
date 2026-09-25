@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, Mouse } from "lucide-react";
 import * as THREE from "three";
 import { journeyChapters } from "@/statics/journey";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 function seededRandom(seedValue: number) {
   let seed = seedValue;
@@ -316,6 +317,7 @@ export function JourneyScene() {
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState(0);
   const chapter = journeyChapters[active];
+  const { quality } = useVisualQuality();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -326,7 +328,7 @@ export function JourneyScene() {
       antialias: true,
       powerPreference: "high-performance",
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.7 : quality === "balanced" ? 1.15 : 1));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
@@ -419,8 +421,12 @@ export function JourneyScene() {
 
     let frame = 0;
     const clock = new THREE.Clock();
-    const render = () => {
+    let lastRender = 0;
+    const render = (timestamp = 0) => {
       frame = requestAnimationFrame(render);
+      const minimumFrameTime = quality === "high" ? 0 : quality === "balanced" ? 30 : 65;
+      if (timestamp - lastRender < minimumFrameTime) return;
+      lastRender = timestamp;
       const time = clock.getElapsedTime();
       const chapterPosition =
         progressRef.current * (journeyChapters.length - 1);
@@ -487,7 +493,7 @@ export function JourneyScene() {
       nebulaMaterial.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [quality]);
 
   return (
     <section className="journey-experience" ref={sectionRef}>

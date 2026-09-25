@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Camera, Compass, Sparkles } from "lucide-react";
+import { useVisualQuality } from "@/components/layout/visual-quality";
 
 const coordinates = [
   {
@@ -41,6 +42,7 @@ const coordinates = [
 ] as const;
 
 export function HomeOrbit() {
+  const { quality } = useVisualQuality();
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointerRef = useRef({ x: 0, y: 0 });
@@ -60,7 +62,7 @@ export function HomeOrbit() {
     import("three").then((THREE) => {
       if (disposed) return;
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === "high" ? 1.6 : quality === "balanced" ? 1.15 : 1));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.12;
@@ -113,10 +115,14 @@ export function HomeOrbit() {
       resizeObserver.observe(stage);
       resize();
       const clock = new THREE.Clock();
-      const animate = () => {
+      let lastRender = 0;
+      const animate = (timestamp = 0) => {
         if (disposed) return;
         frame = requestAnimationFrame(animate);
         if (!visible) return;
+        const minimumFrameTime = quality === "high" ? 0 : quality === "balanced" ? 30 : 70;
+        if (timestamp - lastRender < minimumFrameTime) return;
+        lastRender = timestamp;
         const time = clock.getElapsedTime();
         system.rotation.x += (pointerRef.current.y * 0.16 - system.rotation.x) * 0.035;
         system.rotation.y += (pointerRef.current.x * 0.22 - system.rotation.y) * 0.035;
@@ -149,7 +155,7 @@ export function HomeOrbit() {
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "200px" });
     observer.observe(stage);
     return () => { disposed = true; observer.disconnect(); applyColorRef.current = null; cleanup(); };
-  }, []);
+  }, [quality]);
 
   useEffect(() => {
     applyColorRef.current?.(coordinates[active].color);
