@@ -44,7 +44,7 @@ const routeAliases: Record<string, string[]> = {
   "/technologies": ["technologies", "technology", "tech", "stack", "tools"],
   "/projects": ["projects", "portfolio", "work", "case studies"],
   "/blog": ["blog", "articles", "writing", "posts"],
-  "/docs": ["docs", "documentation", "learn", "guides", "tutorials"],
+  "/docs": ["docs", "documentation", "learn", "guides", "tutorials", "microservices", "microservice", "monorepo"],
   "/playground": ["playground", "games", "experiments", "interactive tools"],
   "/space": ["space", "universe", "black hole"],
   "/contact": ["contact", "email", "hire", "collaborate", "get in touch"],
@@ -324,6 +324,20 @@ export function PortfolioCompanion() {
           { label: "Dark mode", command: "dark" },
           { label: "Light mode", command: "light" },
         ],
+      };
+
+    if (matches(value, ["microservices", "microservice", "distributed services"]))
+      return {
+        role: "companion",
+        text: "The Microservices guide moves from boundaries and communication through data consistency, failure handling, observability, security, and production ownership.",
+        actions: [{ label: "Learn Microservices", href: "/docs/microservices" }],
+      };
+
+    if (matches(value, ["monorepo", "monorepos", "workspace architecture"]))
+      return {
+        role: "companion",
+        text: "The Monorepo guide covers workspace design, dependency graphs, build caching, affected CI, testing, ownership, versioning, and migration.",
+        actions: [{ label: "Learn Monorepos", href: "/docs/monorepo" }],
       };
 
     const doc = findDoc(value);

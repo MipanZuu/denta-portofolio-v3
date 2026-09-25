@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Monorepo Engineering Guide",
+    "description": "A detailed guide to monorepo architecture: workspace boundaries, dependency graphs, builds, caching, testing, versioning, CI, ownership, and migrations.",
+    "keywords": ["monorepo guide", "monorepo architecture", "pnpm workspace", "Turborepo", "Nx", "monorepo CI", "workspace dependencies"]
+  },
+  "hero": {
+    "eyebrow": "MZ Docs / Repository architecture",
+    "title": "One repository, many products, clear boundaries.",
+    "description": "Learn how to share code without creating a ball of mud, model the dependency graph, speed up builds, protect ownership, and migrate teams without stopping delivery.",
+    "updated": "Updated September 2026",
+    "readingTime": "65 min read"
+  },
+  "groups": [
+    { "label": "Foundations", "items": [{ "id": "mental-model", "title": "The monorepo mental model" }, { "id": "workspace-design", "title": "Workspace and package design" }] },
+    { "label": "Build system", "items": [{ "id": "dependency-graph", "title": "Dependency graph and tasks" }, { "id": "testing-ci", "title": "Testing and CI at scale" }] },
+    { "label": "Team operations", "items": [{ "id": "versioning-ownership", "title": "Versioning and ownership" }, { "id": "migration", "title": "Migration and production practices" }] }
+  ],
+  "sections": [
+    {
+      "id": "mental-model", "number": "01", "title": "The monorepo mental model", "summary": "A monorepo is a source-control strategy supported by a dependency-aware build system; it is not permission for every package to depend on everything else.",
+      "blocks": [
+        { "id": "definition", "title": "Separate repository shape from deployment shape", "paragraphs": ["A monorepo stores multiple applications and packages in one version-control repository. Those applications may deploy together or independently. A monolith can live in many repositories, and many microservices can live in one monorepo.", "The repository gives atomic changes, shared tooling, discoverability, and a global dependency graph. It does not remove the need for API boundaries, ownership, release discipline, or service isolation." ] },
+        { "id": "why", "title": "Know which problem you are solving", "list": ["Change an application and its shared library atomically", "Standardise linting, testing, TypeScript, and build conventions", "Discover and refactor code across product boundaries", "Reuse components and domain packages deliberately", "Run only tasks affected by a change", "Make ownership and dependency direction visible"] },
+        { "id": "cost", "title": "The costs arrive with scale", "paragraphs": ["A naive checkout, install, test, and build of everything becomes slow. Broad permissions expose more code than some teams require. An unstable shared package can fan failures across many products.", "The answer is not a larger CI machine alone. You need package boundaries, deterministic tasks, caching, affected-change calculation, ownership rules, and tooling that works locally and in CI." ] },
+        { "id": "shape", "title": "Repository and deployment are different graphs", "codeLabel": "Mermaid — monorepo shape", "code": "flowchart LR\n    A[apps/web] --> D[packages/ui]\n    B[apps/admin] --> D\n    A --> E[packages/domain]\n    C[services/api] --> E\n    C --> F[packages/config]\n    A --> G[Web deployment]\n    C --> H[API deployment]" },
+        { "id": "fit", "title": "Choose deliberately", "paragraphs": ["A monorepo fits when teams benefit from coordinated changes and can agree on a shared engineering platform. Multiple repositories may be better when access boundaries are strict, products are unrelated, or independent ecosystems make shared tooling artificial.", "Repository strategy is reversible but expensive to change. Record the decision, expected benefits, and signals that would cause a reassessment." ] }
+      ]
+    },
+    {
+      "id": "workspace-design", "number": "02", "title": "Workspace and package design", "summary": "Packages should expose intentional contracts, declare exact dependencies, and follow a directory structure that communicates product and platform ownership.",
+      "blocks": [
+        { "id": "layout", "title": "Make applications and reusable packages obvious", "paragraphs": ["A common layout separates deployable applications from reusable packages. Names should communicate purpose rather than implementation: checkout-domain is clearer than utils-two.", "Keep application-specific code close to the application until reuse is real. Premature shared packages become dependency magnets with unclear owners."], "codeLabel": "Workspace layout", "code": "apps/\n  web/\n  admin/\n  docs/\nservices/\n  api/\npackages/\n  ui/\n  domain/\n  observability/\n  typescript-config/" },
+        { "id": "contracts", "title": "Treat every internal package like a public API", "paragraphs": ["Export through a deliberate package entry point. Do not let consumers import arbitrary source files, because those deep imports turn folder structure into an accidental contract.", "Use package export maps and boundary lint rules. A consumer should know what a package promises without knowing how its internals are arranged." ] },
+        { "id": "dependencies", "title": "Declare dependencies where they are used", "paragraphs": ["Each workspace package should declare its runtime, peer, and development dependencies. Relying on a dependency merely because it is hoisted at the repository root creates installations that work accidentally.", "Use the workspace protocol when the package manager supports it. Lockfile changes should be reviewed like source because they change the resolved software supply chain." ] },
+        { "id": "direction", "title": "Enforce dependency direction", "list": ["Applications may depend on feature and platform packages", "Feature packages may depend on domain and platform contracts", "Domain packages should avoid application and UI dependencies", "Low-level utilities must not import product features", "Circular package dependencies are architectural errors, not bundler puzzles"] },
+        { "id": "config", "title": "Share configuration without hiding decisions", "paragraphs": ["Central ESLint and TypeScript presets reduce drift. Allow applications to extend them where their runtime differs. A browser app, Node service, and library should not be forced into one inaccurate compiler configuration.", "Pin tool versions centrally and automate updates, but document why rules exist. A shared configuration package should be understandable without tribal knowledge." ] }
+      ]
+    },
+    {
+      "id": "dependency-graph", "number": "03", "title": "Dependency graph and tasks", "summary": "The dependency graph determines safe task order, cache reuse, and which applications are affected by a change.",
+      "blocks": [
+        { "id": "graph", "title": "The graph is the real architecture", "paragraphs": ["Workspace manifests define nodes and edges. Build tools use those edges to run a package only after its dependencies, invalidate downstream work, and detect cycles.", "Review graph changes explicitly. Adding one shared import can cause an expensive application to become affected by nearly every pull request." ] },
+        { "id": "tasks", "title": "Describe inputs, outputs, and dependencies", "paragraphs": ["A task is cacheable only when its result is determined by declared inputs. Include source files, relevant configuration, environment variables, generated schemas, and dependency outputs. Declare build directories and generated files as outputs.", "Tasks that access time, random values, undeclared network data, or mutable global state are not deterministic and should not pretend to be safely cacheable." ] },
+        { "id": "pipeline", "title": "Run work in dependency order", "codeLabel": "Mermaid — task graph", "code": "flowchart LR\n    A[domain:build] --> B[api:build]\n    A --> C[web:typecheck]\n    D[ui:build] --> E[web:build]\n    C --> E\n    B --> F[integration:test]\n    E --> F" },
+        { "id": "cache", "title": "Cache by content, not by hope", "paragraphs": ["A cache key should represent task code, inputs, dependency outputs, command, toolchain, and meaningful environment. Identical keys should produce identical outputs on a laptop and in CI.", "Remote caching lets teammates and CI reuse verified work. Protect cache integrity, avoid uploading secrets inside artifacts, and provide a way to bypass or inspect a suspicious hit." ] },
+        { "id": "affected", "title": "Calculate affected work conservatively", "paragraphs": ["Start with changed files, map them to owning projects, then walk downstream dependencies. Global configuration or lockfile changes may invalidate most of the graph.", "Optimisation must not trade away correctness. Periodically run broader builds to detect missing graph edges and cache inputs." ] }
+      ]
+    },
+    {
+      "id": "testing-ci", "number": "04", "title": "Testing and CI at scale", "summary": "Fast monorepo CI combines affected tasks and caching with layered tests, while preserving a trustworthy path for repository-wide validation.",
+      "blocks": [
+        { "id": "layers", "title": "Keep most feedback close to the package", "paragraphs": ["Unit tests and static checks should run where code lives. Contract tests protect package APIs. Application integration and end-to-end tests validate assembled behaviour.", "A shared library needs tests for its own contract, while critical consumers provide a smaller compatibility suite. Avoid making every package test depend on a full deployed environment." ] },
+        { "id": "ci", "title": "Build once and promote outputs", "paragraphs": ["CI should install from the lockfile, calculate affected projects, restore trustworthy cache entries, run checks, and produce immutable artifacts. Deployment should promote those artifacts rather than rebuilding with different inputs.", "Record the commit, dependency lock, build tool version, and relevant environment used for every artifact." ] },
+        { "id": "flow", "title": "A pull request pipeline", "codeLabel": "Mermaid — CI pipeline", "code": "flowchart LR\n    A[Changed files] --> B[Affected graph]\n    B --> C[Lint and typecheck]\n    B --> D[Unit tests]\n    B --> E[Build packages]\n    E --> F[Integration tests]\n    F --> G[Preview / artifact]" },
+        { "id": "flaky", "title": "Treat flaky tests as production defects", "paragraphs": ["A large repository magnifies flaky tests because many teams encounter them. Quarantine only with an owner, issue, and deadline. Track retry rate and time lost.", "Tests should isolate state, control time and randomness, await asynchronous work, and avoid relying on execution order." ] },
+        { "id": "fallback", "title": "Keep a complete validation path", "paragraphs": ["Affected-only CI depends on an accurate graph. Schedule full repository verification and run it for changes to root tooling, lockfiles, generators, or boundary rules.", "Optimise the common path while preserving a slower source of truth." ] }
+      ]
+    },
+    {
+      "id": "versioning-ownership", "number": "05", "title": "Versioning and ownership", "summary": "Internal packages still need compatibility and accountable owners, even when atomic commits make coordinated changes easier.",
+      "blocks": [
+        { "id": "versions", "title": "Choose fixed or independent release versions", "paragraphs": ["Fixed versioning releases a group of packages with one version and suits tightly coordinated libraries. Independent versioning publishes only changed packages and suits packages with distinct consumers.", "Applications that are never published may use workspace versions internally, but deployments still need an immutable release identifier." ] },
+        { "id": "changes", "title": "Record user-visible changes near the code", "paragraphs": ["Changesets or equivalent metadata let contributors state which packages changed and whether the release is major, minor, or patch. Automation can assemble changelogs and versions later.", "Semantic versioning only helps when package contracts and compatibility expectations are documented." ] },
+        { "id": "ownership", "title": "Make ownership executable", "paragraphs": ["CODEOWNERS can request reviewers, but ownership also needs service catalog metadata, maintainers, support expectations, and a deprecation policy.", "Avoid one platform team becoming the required reviewer for every shared package. Push ownership to teams closest to the domain while maintaining repository-wide standards." ] },
+        { "id": "boundaries", "title": "Govern dependencies automatically", "list": ["Tag projects by domain, layer, and runtime", "Express allowed dependency directions", "Fail pull requests on forbidden edges", "Detect cycles and deep imports", "Track packages without active owners", "Review exceptions with an expiry date"] },
+        { "id": "deprecation", "title": "Deprecate before deleting", "paragraphs": ["Mark the replacement, publish migration instructions, identify consumers from the graph, and set a removal window. Codemods can turn a repository-wide API migration into a reviewable mechanical change.", "Atomic refactoring is powerful, but independent deployment means old and new behaviour may coexist in production. Preserve runtime compatibility for the actual rollout window." ] }
+      ]
+    },
+    {
+      "id": "migration", "number": "06", "title": "Migration and production practices", "summary": "A successful monorepo migration preserves delivery, proves its build graph, and gives teams a paved road before enforcing new rules.",
+      "blocks": [
+        { "id": "inventory", "title": "Inventory before moving files", "paragraphs": ["List repositories, owners, runtimes, build commands, deployment targets, dependency relationships, secrets, and compliance boundaries. Identify duplicate libraries and conflicting package names.", "Choose a small representative application first. It should exercise the proposed tooling without being the company’s most critical deployment." ] },
+        { "id": "sequence", "title": "Migrate in controlled stages", "list": ["Create the workspace and common toolchain", "Import history where its value justifies the complexity", "Move one application without redesigning it", "Declare and verify package boundaries", "Reproduce the existing build and deployment", "Enable graph-aware caching and affected CI", "Document the path, then migrate additional teams"] },
+        { "id": "supply", "title": "Protect the software supply chain", "paragraphs": ["Limit who can change root build configuration, publishing credentials, lockfiles, and CI workflows. Use protected branches, provenance where supported, dependency scanning, and least-privilege automation tokens.", "A monorepo increases blast radius for privileged configuration. It also makes consistent controls easier to apply when ownership is explicit." ] },
+        { "id": "developer", "title": "Design the local developer experience", "paragraphs": ["A contributor should be able to clone, install, discover relevant commands, run one application, and test one package without learning the whole repository. Provide task aliases and documentation generated from the same configuration CI uses.", "Watch mode should scope work. Local services should have predictable ports and optional dependencies. Avoid scripts that silently modify unrelated packages." ] },
+        { "id": "measure", "title": "Measure whether the monorepo is paying off", "list": ["Cold and cached CI duration", "Local feedback time", "Cache hit rate", "Change failure rate", "Cross-package change lead time", "Boundary violations and dependency cycles", "Time required to onboard a contributor"], "note": "A successful migration improves the flow of safe changes; moving every repository into one folder is only the beginning." }
+      ]
+    }
+  ],
+  "sources": [
+    { "label": "pnpm — Workspaces", "href": "https://pnpm.io/workspaces" },
+    { "label": "Turborepo documentation", "href": "https://turborepo.com/docs" },
+    { "label": "Nx — Concepts", "href": "https://nx.dev/concepts" },
+    { "label": "TypeScript — Project References", "href": "https://www.typescriptlang.org/docs/handbook/project-references.html" },
+    { "label": "GitHub — About code owners", "href": "https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners" }
+  ],
+  "sourceMap": { "mental-model": [1, 2], "workspace-design": [0, 3], "dependency-graph": [1, 2], "testing-ci": [1, 2], "versioning-ownership": [4, 1], "migration": [0, 1, 2, 4] }
+}

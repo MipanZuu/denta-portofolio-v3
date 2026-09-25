@@ -7,6 +7,15 @@
   --lime: #c9ff57;
   --orange: #ff6543;
   --blue: #a9c3ff;
+  --accent: #6a8f24;
+  --green: #6f9a39;
+  --muted: #626a63;
+  --line: rgba(53, 63, 55, 0.14);
+  --hover-surface: rgba(255, 255, 255, 0.58);
+  --control-surface: rgba(255, 255, 255, 0.24);
+  --primary-control: #101411;
+  --primary-control-hover: #292f29;
+  --on-primary-control: #f8f7f1;
   --glass: rgba(255, 255, 255, 0.025);
   --glass-strong: rgba(255, 255, 255, 0.055);
   --glass-border: rgba(255, 255, 255, 0.58);
@@ -15,6 +24,8 @@
     0 20px 48px rgba(44, 57, 47, 0.09), 0 4px 12px rgba(44, 57, 47, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.78);
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-mono: var(--mono);
+  --sans: Inter, Avenir, "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
@@ -419,6 +430,19 @@ body.dark-portfolio .apple-quick-actions > span {
 }
 
 body.dark-portfolio {
+  --ink: #eff1e9;
+  --paper: #161916;
+  --soft: #292e29;
+  --muted: #aeb5ad;
+  --line: rgba(255, 255, 255, 0.12);
+  --hover-surface: rgba(255, 255, 255, 0.09);
+  --control-surface: rgba(255, 255, 255, 0.06);
+  --primary-control: #eff1e9;
+  --primary-control-hover: #d9dfd7;
+  --on-primary-control: #111511;
+  --accent: #c9ff57;
+  --green: #a4d455;
+  color-scheme: dark;
   --glass: rgba(255, 255, 255, 0.012);
   --glass-strong: rgba(255, 255, 255, 0.028);
   --glass-border: rgba(255, 255, 255, 0.09);
@@ -2780,7 +2804,7 @@ body.dark-portfolio .home-explorer-links small {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  border: 1px solid #1b1f1b;
+  border: 1px solid color-mix(in srgb, var(--ink) 78%, transparent);
   border-radius: 30px;
   font-family: var(--mono);
   font-size: 11px;
@@ -2797,14 +2821,16 @@ body.dark-portfolio .home-explorer-links small {
   transform: translateY(-3px);
 }
 .button-primary {
-  color: #f8f7f1;
-  background: var(--ink);
+  color: var(--on-primary-control);
+  background: var(--primary-control);
 }
 .button-primary:hover {
-  background: #292f29;
+  color: var(--on-primary-control);
+  background: var(--primary-control-hover);
 }
 .button-ghost:hover {
-  background: #fff;
+  color: var(--ink);
+  background: var(--hover-surface);
 }
 .button.resume-disabled:disabled,
 .apple-quick-actions .resume-disabled:disabled {
@@ -10424,6 +10450,42 @@ body.dark-portfolio .text-pocket-actions button.is-primary {
   background: var(--lime);
 }
 
+/* Theme-safe interactive states. Keep hover/focus surfaces inside the active palette. */
+body.dark-portfolio .home-explorer-tabs button:hover,
+body.dark-portfolio .home-orbit-tabs button:hover,
+body.dark-portfolio .constellation-node:hover,
+body.dark-portfolio .playground-sidebar a:hover,
+body.dark-portfolio .docs-page-toc nav a:hover,
+body.dark-portfolio .docs-sources a:hover,
+body.dark-portfolio .docs-library-card:hover {
+  color: var(--ink);
+}
+body.dark-portfolio .home-explorer-links a > span:last-child,
+body.dark-portfolio .dashboard-comment-pagination a,
+body.dark-portfolio .preset-export select,
+body.dark-portfolio .preset-export button.is-secondary,
+body.dark-portfolio .preset-honesty {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--control-surface);
+}
+body.dark-portfolio .dashboard-comment-pagination a:hover,
+body.dark-portfolio .button-ghost:hover {
+  color: var(--ink);
+  background: var(--hover-surface);
+}
+body.dark-portfolio .docs-library-card {
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.1),
+    0 22px 50px rgba(0, 0, 0, 0.2);
+}
+body.dark-portfolio .docs-library-card:hover {
+  background: color-mix(in srgb, var(--paper) 72%, white 7%);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.13),
+    0 28px 58px rgba(0, 0, 0, 0.28);
+}
+
 .preset-stage {
   position: relative;
   overflow: hidden;
@@ -13436,6 +13498,21 @@ body.docs-reading-mode .docs-guide-intro {
   box-shadow:
     inset 0 1px rgba(255, 255, 255, 0.5),
     0 22px 50px rgba(17, 23, 19, 0.08);
+  transition:
+    color 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+.docs-library-card:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--docs-line, var(--line)));
+  background: color-mix(in srgb, var(--paper) 68%, var(--hover-surface));
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.28),
+    0 28px 58px rgba(17, 23, 19, 0.13);
+  transform: translateY(-5px);
 }
 .docs-library-card.is-featured::after {
   content: "";

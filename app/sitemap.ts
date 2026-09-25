@@ -5,6 +5,8 @@ import { seo } from "@/statics/seo";
 import { projects } from "@/statics/projects";
 import { playgroundItems } from "@/statics/playground";
 import docs from "@/statics/docs-next.json";
+import microservicesDocs from "@/statics/docs-microservices.json";
+import monorepoDocs from "@/statics/docs-monorepo.json";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,10 @@ const routes = [
   { path: "/docs", priority: 0.8, changeFrequency: "monthly" as const, lastModified: "2026-09-20" },
   { path: "/docs/nextjs", priority: 0.8, changeFrequency: "monthly" as const, lastModified: "2026-09-20" },
   ...docs.sections.map((section) => ({ path: `/docs/nextjs/${section.id}`, priority: 0.7, changeFrequency: "monthly" as const, lastModified: "2026-09-20" })),
+  { path: "/docs/microservices", priority: 0.8, changeFrequency: "monthly" as const, lastModified: "2026-09-25" },
+  ...microservicesDocs.sections.map((section) => ({ path: `/docs/microservices/${section.id}`, priority: 0.7, changeFrequency: "monthly" as const, lastModified: "2026-09-25" })),
+  { path: "/docs/monorepo", priority: 0.8, changeFrequency: "monthly" as const, lastModified: "2026-09-25" },
+  ...monorepoDocs.sections.map((section) => ({ path: `/docs/monorepo/${section.id}`, priority: 0.7, changeFrequency: "monthly" as const, lastModified: "2026-09-25" })),
   { path: "/playground", priority: 0.7, changeFrequency: "monthly" as const },
   ...playgroundItems.map((item) => ({ path: item.href, priority: 0.6, changeFrequency: "monthly" as const })),
   { path: "/space", priority: 0.7, changeFrequency: "yearly" as const },

@@ -7,7 +7,7 @@ import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 type Group = { label: string; items: Array<{ id: string; title: string }> };
 
-export function DocsShell({ groups, children }: { groups: Group[]; children: ReactNode }) {
+export function DocsShell({ groups, children, guideSlug = "nextjs", guideTitle = "Next.js guide", guideLevel = "Beginner to advanced" }: { groups: Group[]; children: ReactNode; guideSlug?: string; guideTitle?: string; guideLevel?: string }) {
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -54,16 +54,16 @@ export function DocsShell({ groups, children }: { groups: Group[]; children: Rea
           <Link href="/docs"><span>MZ / DOCS</span><strong>Documentation home</strong></Link>
           <button type="button" onClick={() => setOpen(false)} aria-label="Close documentation navigation"><X /></button>
         </div>
-        <Link className={pathname === "/docs/nextjs" ? "docs-guide-home is-active" : "docs-guide-home"} href="/docs/nextjs" onClick={() => setOpen(false)}>
-          <BookOpen /><span><strong>Next.js guide</strong><small>Beginner to advanced</small></span><ChevronRight />
+        <Link className={pathname === `/docs/${guideSlug}` ? "docs-guide-home is-active" : "docs-guide-home"} href={`/docs/${guideSlug}`} onClick={() => setOpen(false)}>
+          <BookOpen /><span><strong>{guideTitle}</strong><small>{guideLevel}</small></span><ChevronRight />
         </Link>
         <label className="docs-search"><Search /><input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search chapters" /><kbd>⌘K</kbd></label>
-        <nav aria-label="Next.js guide chapters">
+        <nav aria-label={`${guideTitle} chapters`}>
           {filtered.map((group) => (
             <div className="docs-nav-group" key={group.label}>
               <span>{group.label}</span>
               {group.items.map((item) => {
-                const href = `/docs/nextjs/${item.id}`;
+                const href = `/docs/${guideSlug}/${item.id}`;
                 return <Link className={pathname === href ? "is-active" : ""} href={href} key={item.id} onClick={() => setOpen(false)}>{item.title}<ChevronRight /></Link>;
               })}
             </div>

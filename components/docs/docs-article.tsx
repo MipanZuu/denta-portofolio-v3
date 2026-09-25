@@ -56,15 +56,17 @@ function DiagramBlock({ label, code }: { label: string; code: string }) {
   </figure>;
 }
 
-export function DocsArticle({ section, sources, previous, next }: {
+export function DocsArticle({ section, sources, previous, next, guideName = "Next.js", basePath = "/docs/nextjs" }: {
   section: { id: string; number: string; title: string; summary: string; blocks: Block[] };
   sources: Source[];
   previous?: { id: string; title: string };
   next?: { id: string; title: string };
+  guideName?: string;
+  basePath?: string;
 }) {
   return <div className="docs-article-grid">
     <article className="docs-route-article">
-      <header className="docs-route-hero"><span>Chapter {section.number} / Next.js</span><h1>{section.title}</h1><p>{section.summary}</p></header>
+      <header className="docs-route-hero"><span>Chapter {section.number} / {guideName}</span><h1>{section.title}</h1><p>{section.summary}</p></header>
       {section.blocks.map((block) => <section className="docs-topic" id={block.id} key={block.id}>
         <h2>{block.title}</h2>
         {block.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
@@ -75,8 +77,8 @@ export function DocsArticle({ section, sources, previous, next }: {
         {block.note && <aside className="docs-note"><strong>Keep in orbit</strong><p>{block.note}</p></aside>}
       </section>)}
       <nav className="docs-chapter-pagination" aria-label="Adjacent chapters">
-        {previous ? <Link href={`/docs/nextjs/${previous.id}`}><small>Previous</small><strong>{previous.title}</strong></Link> : <span />}
-        {next ? <Link href={`/docs/nextjs/${next.id}`}><small>Next</small><strong>{next.title}</strong></Link> : <span />}
+        {previous ? <Link href={`${basePath}/${previous.id}`}><small>Previous</small><strong>{previous.title}</strong></Link> : <span />}
+        {next ? <Link href={`${basePath}/${next.id}`}><small>Next</small><strong>{next.title}</strong></Link> : <span />}
       </nav>
       <footer className="docs-sources"><span>Resources</span><h2>Go deeper with the official documentation</h2><div>{sources.map((source) => <a href={source.href} target="_blank" rel="noreferrer" key={source.href}>{source.label}<ExternalLink /></a>)}</div></footer>
     </article>
