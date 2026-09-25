@@ -113,8 +113,90 @@ function createGasGiantTexture() {
   return texture;
 }
 
+function createPlanetTexture(seedValue, palette, options = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 256;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+
+  let seed = seedValue;
+  const random = () => {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+  const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+  palette.forEach((color, index) => {
+    gradient.addColorStop(index / Math.max(palette.length - 1, 1), color);
+  });
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  const bands = options.gas ? 62 : 34;
+  for (let index = 0; index < bands; index += 1) {
+    const y = random() * canvas.height;
+    const height = options.gas ? 1 + random() * 7 : 1 + random() * 3;
+    const wave = Math.sin(y * 0.12 + seedValue) * 20;
+    context.fillStyle = `rgba(${random() > 0.45 ? "255,255,255" : "8,13,22"},${options.gas ? 0.025 + random() * 0.1 : 0.025 + random() * 0.055})`;
+    context.fillRect(wave - 24, y, canvas.width + 48, height);
+  }
+
+  const details = options.gas ? 26 : 115;
+  for (let index = 0; index < details; index += 1) {
+    const x = random() * canvas.width;
+    const y = random() * canvas.height;
+    const radius = options.gas ? 4 + random() * 24 : 1.5 + random() * 10;
+    context.beginPath();
+    context.ellipse(
+      x,
+      y,
+      radius * (options.gas ? 2.8 : 1.15),
+      radius,
+      (random() - 0.5) * 0.45,
+      0,
+      Math.PI * 2,
+    );
+    context.fillStyle = options.gas
+      ? `rgba(255,225,190,${0.025 + random() * 0.08})`
+      : `rgba(5,9,14,${0.035 + random() * 0.13})`;
+    context.fill();
+  }
+
+  if (options.clouds) {
+    for (let index = 0; index < 34; index += 1) {
+      context.beginPath();
+      context.ellipse(
+        random() * canvas.width,
+        random() * canvas.height,
+        12 + random() * 42,
+        2 + random() * 7,
+        0,
+        0,
+        Math.PI * 2,
+      );
+      context.fillStyle = `rgba(225,244,245,${0.035 + random() * 0.12})`;
+      context.fill();
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.anisotropy = 4;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 function createStarField() {
-  const positions = new Float32Array(2400 * 3);
+  const count = 5200;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const starColors = [
+    new THREE.Color(0xf7fbff),
+    new THREE.Color(0xa9cfff),
+    new THREE.Color(0xffd39a),
+    new THREE.Color(0xbfffd9),
+  ];
   let seed = 928371;
   const random = () => {
     seed = (seed * 16807) % 2147483647;
@@ -128,16 +210,23 @@ function createStarField() {
     positions[index] = radius * Math.sin(phi) * Math.cos(theta);
     positions[index + 1] = radius * Math.cos(phi);
     positions[index + 2] = radius * Math.sin(phi) * Math.sin(theta);
+    const color = starColors[Math.floor(random() * starColors.length)];
+    const brightness = 0.55 + random() * 0.45;
+    colors[index] = color.r * brightness;
+    colors[index + 1] = color.g * brightness;
+    colors[index + 2] = color.b * brightness;
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   const material = new THREE.PointsMaterial({
-    color: 0xdde9ff,
-    size: 0.18,
+    vertexColors: true,
+    size: 0.16,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.88,
+    opacity: 0.94,
+    depthWrite: false,
   });
   return new THREE.Points(geometry, material);
 }
@@ -207,20 +296,33 @@ function createSolarSystem() {
   const group = new THREE.Group();
   const orbiters = [];
   const planetData = [
-    { radius: 2.0, size: 0.17, color: 0x9c9288, speed: 1.6 },
-    { radius: 2.75, size: 0.25, color: 0xd9a665, speed: 1.15 },
-    { radius: 3.65, size: 0.28, color: 0x3d82d6, speed: 0.9 },
-    { radius: 4.55, size: 0.21, color: 0xc75c39, speed: 0.72 },
-    { radius: 6.05, size: 0.68, color: 0xd2a674, speed: 0.39 },
-    { radius: 7.7, size: 0.58, color: 0xdac48e, speed: 0.29, ringed: true },
-    { radius: 9.15, size: 0.4, color: 0x7bc7cf, speed: 0.2 },
-    { radius: 10.45, size: 0.38, color: 0x426bd6, speed: 0.16 },
+    { radius: 2.0, size: 0.17, speed: 1.6, palette: ["#302a2c", "#9d8879", "#463b3b"] },
+    { radius: 2.75, size: 0.25, speed: 1.15, palette: ["#482a24", "#d49355", "#5e3225"], gas: true },
+    { radius: 3.65, size: 0.28, speed: 0.9, palette: ["#071b45", "#237d9a", "#163568"], clouds: true, atmosphere: 0x74d9ff },
+    { radius: 4.55, size: 0.21, speed: 0.72, palette: ["#351414", "#b34d32", "#48201c"] },
+    { radius: 6.05, size: 0.68, speed: 0.39, palette: ["#3c241f", "#c88751", "#49302b"], gas: true },
+    { radius: 7.7, size: 0.58, speed: 0.29, palette: ["#493a2d", "#c7a774", "#4b4035"], gas: true, ringed: true },
+    { radius: 9.15, size: 0.4, speed: 0.2, palette: ["#12363c", "#55a9a8", "#173d4a"], gas: true, atmosphere: 0x8cf7ea },
+    { radius: 10.45, size: 0.38, speed: 0.16, palette: ["#101d4b", "#315caa", "#131b3f"], gas: true, atmosphere: 0x7ea9ff },
   ];
 
   const sunGeometry = new THREE.SphereGeometry(1.12, 48, 32);
-  const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffc44d });
+  const sunTexture = createPlanetTexture(91, ["#6f180c", "#ffc245", "#8e2713"], { gas: true });
+  const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture, color: 0xffdd8b });
   const sun = new THREE.Mesh(sunGeometry, sunMaterial);
   group.add(sun);
+  const corona = new THREE.Mesh(
+    new THREE.SphereGeometry(1.2, 36, 24),
+    new THREE.MeshBasicMaterial({
+      color: 0xffa63d,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }),
+  );
+  group.add(corona);
   const sunLight = new THREE.PointLight(0xffd59a, 35, 36, 1.35);
   group.add(sunLight);
 
@@ -247,30 +349,53 @@ function createSolarSystem() {
     const pivot = new THREE.Group();
     pivot.rotation.y = index * 0.82;
     const planetGeometry = new THREE.SphereGeometry(data.size, 32, 24);
+    const texture = createPlanetTexture(317 + index * 811, data.palette, {
+      gas: data.gas,
+      clouds: data.clouds,
+    });
     const planetMaterial = new THREE.MeshStandardMaterial({
-      color: data.color,
-      roughness: 0.82,
+      map: texture,
+      bumpMap: texture,
+      bumpScale: data.gas ? 0.008 : 0.022,
+      roughness: data.gas ? 0.72 : 0.9,
+      metalness: 0.01,
     });
     const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
     planetMesh.position.x = data.radius;
     pivot.add(planetMesh);
 
-    if (data.ringed) {
-      const ringGeometry = new THREE.RingGeometry(
-        data.size * 1.35,
-        data.size * 2.05,
-        64,
+    if (data.atmosphere) {
+      const atmosphere = new THREE.Mesh(
+        new THREE.SphereGeometry(data.size * 1.055, 28, 20),
+        new THREE.MeshBasicMaterial({
+          color: data.atmosphere,
+          transparent: true,
+          opacity: 0.13,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        }),
       );
-      const ringMaterial = new THREE.MeshBasicMaterial({
-        color: 0xcdb98e,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.7,
-      });
-      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-      ring.position.x = data.radius;
-      ring.rotation.x = Math.PI / 2.45;
-      pivot.add(ring);
+      planetMesh.add(atmosphere);
+    }
+
+    if (data.ringed) {
+      for (let band = 0; band < 7; band += 1) {
+        const inner = data.size * (1.35 + band * 0.105);
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(inner, inner + data.size * 0.045, 80),
+          new THREE.MeshBasicMaterial({
+            color: band % 2 ? 0xe0c99b : 0x8f7b63,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.32 + band * 0.045,
+            depthWrite: false,
+          }),
+        );
+        ring.position.x = data.radius;
+        ring.rotation.x = Math.PI / 2.45;
+        pivot.add(ring);
+      }
     }
 
     orbiters.push({ pivot, planet: planetMesh, speed: data.speed });
