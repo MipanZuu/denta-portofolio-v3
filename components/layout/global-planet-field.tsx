@@ -9,11 +9,36 @@ function randomSource(seedValue: number) {
   return () => { seed = seed * 16807 % 2147483647; return (seed - 1) / 2147483646; };
 }
 
+type PlanetPalette = [string, string, string];
+type EnvironmentKey = "home" | "about" | "projects" | "docs" | "playground";
+
+const environments: Record<EnvironmentKey, {
+  near: PlanetPalette;
+  middle: PlanetPalette;
+  far: PlanetPalette;
+  light: number;
+  starScale: number;
+}> = {
+  home: { near: ["#27151b", "#9d4735", "#291822"], middle: ["#162b29", "#5d8c58", "#152625"], far: ["#111a38", "#4969a2", "#12162d"], light: 0xbfe7df, starScale: 1.12 },
+  about: { near: ["#2c1717", "#b56845", "#351b24"], middle: ["#34241d", "#d39a63", "#2d1d1c"], far: ["#261a31", "#87648f", "#171326"], light: 0xffc89d, starScale: .82 },
+  projects: { near: ["#111d2e", "#315a78", "#0d1524"], middle: ["#102b2b", "#55a28e", "#0a2020"], far: ["#20223d", "#7180c2", "#11152c"], light: 0x9fd9ff, starScale: 1.28 },
+  docs: { near: ["#171d19", "#48564b", "#111512"], middle: ["#253127", "#77906d", "#172019"], far: ["#1b2430", "#53677b", "#10161e"], light: 0xdde8d8, starScale: .5 },
+  playground: { near: ["#23132d", "#7a3b87", "#161022"], middle: ["#0d3031", "#33a99d", "#081c22"], far: ["#2a1931", "#d35d79", "#15101f"], light: 0xb8fff0, starScale: 1.45 },
+};
+
+function environmentFor(pathname: string): EnvironmentKey {
+  const route = pathname.split("/").filter(Boolean)[0];
+  if (route === "about" || route === "projects" || route === "docs" || route === "playground") return route;
+  return "home";
+}
+
 export function GlobalPlanetField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pathname = usePathname();
   const { quality } = useVisualQuality();
   const immersiveRoute = pathname === "/journey" || pathname === "/space";
+  const environmentKey = environmentFor(pathname);
+  const environment = environments[environmentKey];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -34,7 +59,7 @@ export function GlobalPlanetField() {
       camera.position.z = 13;
       const system = new THREE.Group();
       scene.add(system);
-      scene.add(new THREE.HemisphereLight(0xb8d2ff, 0x1a0e13, 1.35));
+      scene.add(new THREE.HemisphereLight(environment.light, 0x1a0e13, 1.35));
       const sun = new THREE.DirectionalLight(0xfff3df, 3.4);
       sun.position.set(-7, 9, 12);
       scene.add(sun);
@@ -87,7 +112,7 @@ export function GlobalPlanetField() {
         starLayers.add(points);
         return points;
       };
-      const density = quality === "high" ? 1 : quality === "balanced" ? .58 : .25;
+      const density = (quality === "high" ? 1 : quality === "balanced" ? .58 : .25) * environment.starScale;
       const farStars = makeStarLayer(Math.round(720 * density), 34, -20, .035, .42, 4201);
       const middleStars = makeStarLayer(Math.round(360 * density), 27, -10, .052, .5, 7331);
       const nearStars = makeStarLayer(Math.round(130 * density), 23, -2, .075, .4, 9109);
@@ -157,15 +182,75 @@ export function GlobalPlanetField() {
         return group;
       };
 
-      const near = makePlanet(3.9, makeTexture(113, ["#27151b", "#9d4735", "#291822"], true));
+      const near = makePlanet(3.9, makeTexture(113, environment.near, true));
       near.position.set(-8.8, -6.1, -1.5);
       near.rotation.z = -.16;
-      const middle = makePlanet(1.85, makeTexture(271, ["#162b29", "#5d8c58", "#152625"], false), true);
+      const middle = makePlanet(1.85, makeTexture(271, environment.middle, false), true);
       middle.position.set(7.5, -.8, -3.8);
       middle.rotation.set(.18, -.45, .1);
-      const far = makePlanet(.72, makeTexture(811, ["#111a38", "#4969a2", "#12162d"], false));
+      const far = makePlanet(.72, makeTexture(811, environment.far, false));
       far.position.set(-5.5, 4.2, -8.5);
       system.add(near, middle, far);
+
+      let updateConstellation: (() => void) | null = null;
+
+      if (environmentKey === "about") {
+        [
+          { radius: .17, distance: 2.55, color: 0xffc78f, phase: .35 },
+          { radius: .1, distance: 3.05, color: 0xeaa6b8, phase: 2.4 },
+        ].forEach(({ radius, distance, color, phase }) => {
+          const moon = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 20, 14),
+            new THREE.MeshStandardMaterial({ color, roughness: .72 }),
+          );
+          moon.position.set(Math.cos(phase) * distance, Math.sin(phase) * distance * .34, .5);
+          middle.add(moon);
+        });
+      }
+
+      if (environmentKey === "projects") {
+        const points = [near.position, middle.position, far.position, new THREE.Vector3(1.2, 3.1, -6.2)];
+        const constellationGeometry = new THREE.BufferGeometry().setFromPoints([points[0], points[3], points[3], points[1], points[3], points[2]]);
+        const constellation = new THREE.LineSegments(
+          constellationGeometry,
+          new THREE.LineBasicMaterial({ color: 0xa9c3ff, transparent: true, opacity: .2 }),
+        );
+        system.add(constellation);
+        updateConstellation = () => {
+          const mobile = window.innerWidth < 700;
+          const junction = new THREE.Vector3(mobile ? .2 : 1.2, mobile ? 2.5 : 3.1, -6.2);
+          constellationGeometry.setFromPoints([
+            near.position,
+            junction,
+            junction,
+            middle.position,
+            junction,
+            far.position,
+          ]);
+        };
+      }
+
+      if (environmentKey === "docs") {
+        [1.05, 1.28, 1.55].forEach((radius, index) => {
+          const reticle = new THREE.Mesh(
+            new THREE.RingGeometry(radius, radius + .012, 72),
+            new THREE.MeshBasicMaterial({ color: 0xdde8d8, transparent: true, opacity: .13 - index * .025, side: THREE.DoubleSide }),
+          );
+          reticle.rotation.x = Math.PI * .52;
+          far.add(reticle);
+        });
+      }
+
+      if (environmentKey === "playground") {
+        [4.6, 5.35, 6.1].forEach((radius, index) => {
+          const laboratoryOrbit = new THREE.Mesh(
+            new THREE.TorusGeometry(radius, .012, 6, 96),
+            new THREE.MeshBasicMaterial({ color: index === 1 ? 0xc9ff57 : 0x8ce6e6, transparent: true, opacity: .12 }),
+          );
+          laboratoryOrbit.rotation.set(1.1 + index * .17, .2, index * .38);
+          middle.add(laboratoryOrbit);
+        });
+      }
 
       const render = () => {
         scheduled = 0;
@@ -185,6 +270,7 @@ export function GlobalPlanetField() {
         near.position.set(mobile ? -3.7 : -8.8, nearBaseY, mobile ? -2.7 : -1.5);
         middle.position.set(mobile ? 2.45 : 7.5, middleBaseY, mobile ? -4.8 : -3.8);
         far.position.set(mobile ? -1.9 : -5.5, farBaseY, mobile ? -8 : -8.5);
+        updateConstellation?.();
         camera.aspect = width / Math.max(height, 1);
         camera.updateProjectionMatrix();
         renderer.setSize(width, height, false);
@@ -239,7 +325,7 @@ export function GlobalPlanetField() {
         window.removeEventListener("pointermove", pointer);
         window.removeEventListener("scroll", scroll);
         scene.traverse((object) => {
-          if (object instanceof THREE.Mesh) {
+          if (object instanceof THREE.Mesh || object instanceof THREE.LineSegments) {
             object.geometry.dispose();
             const materials = Array.isArray(object.material) ? object.material : [object.material];
             materials.forEach((material) => material.dispose());
@@ -254,8 +340,8 @@ export function GlobalPlanetField() {
       };
     });
     return () => { disposed = true; cleanup(); };
-  }, [immersiveRoute, pathname, quality]);
+  }, [environment, environmentKey, immersiveRoute, pathname, quality]);
 
   if (immersiveRoute) return null;
-  return <canvas key={pathname} className="global-planet-field" ref={canvasRef} aria-hidden="true" />;
+  return <canvas key={pathname} className={`global-planet-field environment-${environmentKey}`} ref={canvasRef} aria-hidden="true" />;
 }

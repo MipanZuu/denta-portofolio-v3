@@ -12164,6 +12164,100 @@ body.dark-portfolio .global-planet-field {
   opacity: 0.7;
 }
 
+/* One solar system, six destinations. The route changes the atmosphere rather
+   than swapping to an unrelated visual language. */
+html[data-route-atmosphere="home"] body {
+  background:
+    radial-gradient(ellipse 46rem 30rem at 78% 22%, rgba(114, 84, 183, 0.12), transparent 70%),
+    radial-gradient(ellipse 56rem 24rem at 22% 68%, rgba(255, 101, 67, 0.1), transparent 72%),
+    radial-gradient(circle at 52% 38%, rgba(201, 255, 87, 0.08), transparent 24rem),
+    var(--paper);
+}
+
+html[data-route-atmosphere="home"] body.dark-portfolio {
+  background:
+    radial-gradient(ellipse 48rem 34rem at 78% 19%, rgba(101, 78, 174, 0.2), transparent 70%),
+    radial-gradient(ellipse 60rem 27rem at 17% 72%, rgba(168, 55, 42, 0.15), transparent 72%),
+    radial-gradient(circle at 52% 38%, rgba(91, 129, 67, 0.12), transparent 26rem),
+    #111511;
+}
+
+html[data-route-atmosphere="about"] body {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 169, 119, 0.2), transparent 28rem),
+    radial-gradient(circle at 82% 68%, rgba(211, 143, 156, 0.14), transparent 30rem),
+    linear-gradient(118deg, rgba(255, 244, 226, 0.34), transparent 56%),
+    var(--paper);
+}
+
+html[data-route-atmosphere="about"] body.dark-portfolio {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(184, 96, 62, 0.2), transparent 29rem),
+    radial-gradient(circle at 82% 68%, rgba(122, 67, 91, 0.17), transparent 31rem),
+    linear-gradient(118deg, rgba(62, 34, 25, 0.18), transparent 56%),
+    #171411;
+}
+
+html[data-route-atmosphere="projects"] body {
+  background:
+    linear-gradient(30deg, transparent 49.85%, rgba(77, 113, 142, 0.055) 50%, transparent 50.15%) 0 0 / 180px 180px,
+    linear-gradient(150deg, transparent 49.85%, rgba(77, 113, 142, 0.045) 50%, transparent 50.15%) 0 0 / 220px 220px,
+    radial-gradient(circle at 78% 25%, rgba(80, 178, 171, 0.14), transparent 30rem),
+    var(--paper);
+}
+
+html[data-route-atmosphere="projects"] body.dark-portfolio {
+  background:
+    linear-gradient(30deg, transparent 49.82%, rgba(137, 196, 226, 0.05) 50%, transparent 50.18%) 0 0 / 180px 180px,
+    linear-gradient(150deg, transparent 49.82%, rgba(137, 196, 226, 0.04) 50%, transparent 50.18%) 0 0 / 220px 220px,
+    radial-gradient(circle at 78% 25%, rgba(42, 122, 126, 0.17), transparent 31rem),
+    #101619;
+}
+
+html[data-route-atmosphere="docs"] body {
+  background:
+    linear-gradient(rgba(74, 93, 77, 0.035) 1px, transparent 1px) 0 0 / 54px 54px,
+    linear-gradient(90deg, rgba(74, 93, 77, 0.035) 1px, transparent 1px) 0 0 / 54px 54px,
+    radial-gradient(circle at 78% 24%, rgba(117, 145, 118, 0.1), transparent 34rem),
+    var(--paper);
+}
+
+html[data-route-atmosphere="docs"] body.dark-portfolio {
+  background:
+    linear-gradient(rgba(205, 224, 205, 0.018) 1px, transparent 1px) 0 0 / 54px 54px,
+    linear-gradient(90deg, rgba(205, 224, 205, 0.018) 1px, transparent 1px) 0 0 / 54px 54px,
+    radial-gradient(circle at 78% 24%, rgba(67, 94, 67, 0.12), transparent 35rem),
+    #121713;
+}
+
+html[data-route-atmosphere="playground"] body {
+  background:
+    linear-gradient(rgba(65, 141, 139, 0.035) 1px, transparent 1px) 0 0 / 36px 36px,
+    linear-gradient(90deg, rgba(65, 141, 139, 0.035) 1px, transparent 1px) 0 0 / 36px 36px,
+    radial-gradient(circle at 18% 28%, rgba(121, 69, 151, 0.16), transparent 29rem),
+    radial-gradient(circle at 84% 72%, rgba(33, 180, 170, 0.13), transparent 30rem),
+    var(--paper);
+}
+
+html[data-route-atmosphere="playground"] body.dark-portfolio {
+  background:
+    linear-gradient(rgba(91, 210, 202, 0.027) 1px, transparent 1px) 0 0 / 36px 36px,
+    linear-gradient(90deg, rgba(91, 210, 202, 0.027) 1px, transparent 1px) 0 0 / 36px 36px,
+    radial-gradient(circle at 18% 28%, rgba(95, 38, 124, 0.2), transparent 30rem),
+    radial-gradient(circle at 84% 72%, rgba(20, 115, 111, 0.18), transparent 31rem),
+    #0e1417;
+}
+
+html[data-route-atmosphere="journey"] body,
+html[data-route-atmosphere="space"] body {
+  background: #02060b;
+}
+
+html[data-route-atmosphere="docs"] .global-planet-field { opacity: 0.24; }
+html[data-route-atmosphere="docs"] body.dark-portfolio .global-planet-field { opacity: 0.48; }
+html[data-route-atmosphere="playground"] .global-planet-field { opacity: 0.44; }
+html[data-route-atmosphere="playground"] body.dark-portfolio .global-planet-field { opacity: 0.76; }
+
 body > main,
 body > header,
 body > footer {

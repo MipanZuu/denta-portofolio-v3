@@ -19,6 +19,10 @@ export function RouteExperience() {
   const pathname = usePathname();
 
   useEffect(() => {
+    const segment = pathname.split("/").filter(Boolean)[0] ?? "home";
+    const atmosphere = ["about", "projects", "journey", "docs", "playground", "space"].includes(segment) ? segment : "home";
+    document.documentElement.dataset.routeAtmosphere = atmosphere;
+
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
