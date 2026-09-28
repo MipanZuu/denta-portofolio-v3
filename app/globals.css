@@ -8063,19 +8063,36 @@ body.dark-portfolio .easter-egg-console strong {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #656b65;
-  background: rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(45, 89, 61, 0.2);
+  color: #174c37;
+  background: rgba(201, 255, 87, 0.72);
+  box-shadow:
+    0 5px 14px rgba(44, 74, 48, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
   font-weight: 400;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 .apple-feature-card > b svg {
-  width: 15px;
-  height: 15px;
-  stroke-width: 1.7;
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.4;
 }
 .apple-feature-card:hover,
 .apple-feature-card.is-active {
   background: rgba(255, 255, 252, 0.9);
   transform: translateY(-2px);
+}
+.apple-feature-card:hover > b,
+.apple-feature-card:focus-visible > b,
+.apple-feature-card.is-active > b {
+  color: #efffd0;
+  border-color: #087b55;
+  background: #087b55;
+  transform: translateX(2px);
 }
 .apple-directory-list {
   display: grid;
@@ -8106,19 +8123,32 @@ body.dark-portfolio .easter-egg-console strong {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #747a74;
-  background: rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(8, 123, 85, 0.24);
+  color: #087b55;
+  background: rgba(201, 255, 87, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
   font-weight: 400;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 .apple-directory-link > b svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 1.7;
+  width: 15px;
+  height: 15px;
+  stroke-width: 2.35;
 }
 .apple-directory-link:hover,
 .apple-directory-link.is-active {
   padding-left: 12px;
   background: rgba(255, 255, 255, 0.32);
+}
+.apple-directory-link:hover > b,
+.apple-directory-link:focus-visible > b,
+.apple-directory-link.is-active > b {
+  color: #f7ffe8;
+  background: #087b55;
+  transform: translateX(2px);
 }
 .apple-directory-mobile-only {
   display: none;
@@ -8139,6 +8169,72 @@ body.dark-portfolio .apple-directory-link.is-active {
 }
 body.dark-portfolio .apple-feature-card small {
   color: #aeb4ae;
+}
+body.dark-portfolio .apple-feature-card > b,
+body.dark-portfolio .apple-directory-link > b {
+  color: #dfffa2;
+  border-color: rgba(201, 255, 87, 0.35);
+  background: rgba(201, 255, 87, 0.12);
+  box-shadow:
+    0 0 18px rgba(201, 255, 87, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+body.dark-portfolio .apple-feature-card:hover > b,
+body.dark-portfolio .apple-feature-card:focus-visible > b,
+body.dark-portfolio .apple-feature-card.is-active > b,
+body.dark-portfolio .apple-directory-link:hover > b,
+body.dark-portfolio .apple-directory-link:focus-visible > b,
+body.dark-portfolio .apple-directory-link.is-active > b {
+  color: #13200c;
+  border-color: #c9ff57;
+  background: #c9ff57;
+}
+
+.apple-mega-heading button {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(8, 123, 85, 0.2);
+  color: #174c37;
+  background: rgba(201, 255, 87, 0.34);
+  transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.apple-mega-heading button svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.4;
+}
+.apple-mega-heading button:hover,
+.apple-mega-heading button:focus-visible {
+  color: #fff;
+  background: #087b55;
+  transform: rotate(4deg) scale(1.05);
+}
+body.dark-portfolio .apple-mega-heading button {
+  color: #edffd0;
+  border-color: rgba(201, 255, 87, 0.3);
+  background: rgba(201, 255, 87, 0.12);
+}
+
+.apple-feature-card:focus-visible,
+.apple-directory-link:focus-visible,
+.apple-mega-heading button:focus-visible,
+.apple-quick-actions a:focus-visible,
+.apple-quick-actions button:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.apple-quick-actions a > svg,
+.apple-quick-actions button > span > svg,
+.apple-quality-control > span > svg {
+  flex: 0 0 auto;
+  color: #087b55;
+  stroke-width: 2.2;
+}
+body.dark-portfolio .apple-quick-actions a > svg,
+body.dark-portfolio .apple-quick-actions button > span > svg,
+body.dark-portfolio .apple-quality-control > span > svg {
+  color: #c9ff57;
 }
 body.dark-portfolio .apple-directory-list,
 body.dark-portfolio .apple-directory-link {
