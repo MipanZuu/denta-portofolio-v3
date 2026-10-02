@@ -808,6 +808,7 @@ function createBlackHoleScene(container) {
   let postProcessing = null;
   let bloomPass = null;
   let lastFrameTime = performance.now();
+  let rendering = false;
   const setObject = (object) => {
     const showPlanet = object === "planet";
     const showNebula = object === "nebula";
@@ -871,7 +872,11 @@ function createBlackHoleScene(container) {
   resizeObserver.observe(container);
   updateSize();
   const animate = () => {
-    if (stopped) return;
+    if (stopped || document.hidden) {
+      rendering = false;
+      return;
+    }
+    rendering = true;
     animationFrame = requestAnimationFrame(animate);
     const now = performance.now();
     const delta = Math.min((now - lastFrameTime) / 1000, 0.033);
@@ -903,6 +908,16 @@ function createBlackHoleScene(container) {
     if (postProcessing) postProcessing.render();
     else renderer.render(scene, camera);
   };
+  const handleVisibility = () => {
+    if (document.hidden) {
+      cancelAnimationFrame(animationFrame);
+      rendering = false;
+      return;
+    }
+    lastFrameTime = performance.now();
+    if (!rendering) animate();
+  };
+  document.addEventListener("visibilitychange", handleVisibility);
 
   const ready = renderer.init().then(() => {
     if (stopped) return;
@@ -924,6 +939,7 @@ function createBlackHoleScene(container) {
       stopped = true;
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
       controls.dispose();
       geometry.dispose();
       material.dispose();

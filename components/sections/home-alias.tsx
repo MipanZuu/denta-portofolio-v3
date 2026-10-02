@@ -15,6 +15,7 @@ export function HomeAlias() {
     let disposed = false;
     let frame = 0;
     let visible = false;
+    let resume = () => {};
     let cleanup = () => {};
 
     import("three").then((THREE) => {
@@ -192,9 +193,12 @@ export function HomeAlias() {
       const clock = new THREE.Clock();
       let lastRender = 0;
       const animate = (timestamp = 0) => {
-        if (disposed) return;
+        if (disposed || !visible || document.hidden) {
+          frame = 0;
+          return;
+        }
+        frame = 0;
         frame = requestAnimationFrame(animate);
-        if (!visible) return;
         const minimumFrameTime = quality === "high" ? 0 : quality === "balanced" ? 30 : 70;
         if (timestamp - lastRender < minimumFrameTime) return;
         lastRender = timestamp;
@@ -210,6 +214,9 @@ export function HomeAlias() {
           nebula.material.opacity = .18 + Math.sin(time * .11 + index * 1.4) * .035;
         });
         renderer.render(scene, camera);
+      };
+      resume = () => {
+        if (!frame && visible && !document.hidden) frame = requestAnimationFrame(animate);
       };
       animate();
       cleanup = () => {
@@ -228,9 +235,18 @@ export function HomeAlias() {
       };
     });
 
-    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "180px" });
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) resume();
+      else { cancelAnimationFrame(frame); frame = 0; }
+    }, { rootMargin: "180px" });
     observer.observe(stage);
-    return () => { disposed = true; observer.disconnect(); cleanup(); };
+    const handleVisibility = () => {
+      if (document.hidden) { cancelAnimationFrame(frame); frame = 0; }
+      else if (visible) resume();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => { disposed = true; observer.disconnect(); document.removeEventListener("visibilitychange", handleVisibility); cleanup(); };
   }, [quality]);
 
   return <section className="home-alias page-shell" aria-labelledby="home-alias-title">

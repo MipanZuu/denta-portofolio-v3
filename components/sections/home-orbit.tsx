@@ -57,6 +57,7 @@ export function HomeOrbit() {
     let disposed = false;
     let frame = 0;
     let visible = false;
+    let resume = () => {};
     let cleanup = () => {};
 
     import("three").then((THREE) => {
@@ -117,9 +118,12 @@ export function HomeOrbit() {
       const clock = new THREE.Clock();
       let lastRender = 0;
       const animate = (timestamp = 0) => {
-        if (disposed) return;
+        if (disposed || !visible || document.hidden) {
+          frame = 0;
+          return;
+        }
+        frame = 0;
         frame = requestAnimationFrame(animate);
-        if (!visible) return;
         const minimumFrameTime = quality === "high" ? 0 : quality === "balanced" ? 30 : 70;
         if (timestamp - lastRender < minimumFrameTime) return;
         lastRender = timestamp;
@@ -133,6 +137,9 @@ export function HomeOrbit() {
         satellitePivot.rotation.z = time * 0.3;
         system.position.y = Math.sin(time * 0.55) * 0.12;
         renderer.render(scene, camera);
+      };
+      resume = () => {
+        if (!frame && visible && !document.hidden) frame = requestAnimationFrame(animate);
       };
       animate();
       cleanup = () => {
@@ -152,9 +159,18 @@ export function HomeOrbit() {
       };
     });
 
-    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: "200px" });
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) resume();
+      else { cancelAnimationFrame(frame); frame = 0; }
+    }, { rootMargin: "200px" });
     observer.observe(stage);
-    return () => { disposed = true; observer.disconnect(); applyColorRef.current = null; cleanup(); };
+    const handleVisibility = () => {
+      if (document.hidden) { cancelAnimationFrame(frame); frame = 0; }
+      else if (visible) resume();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => { disposed = true; observer.disconnect(); document.removeEventListener("visibilitychange", handleVisibility); applyColorRef.current = null; cleanup(); };
   }, [quality]);
 
   useEffect(() => {

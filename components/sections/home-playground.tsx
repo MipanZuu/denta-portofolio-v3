@@ -44,9 +44,15 @@ export function HomePlayground() {
 
     let disposed = false;
     let animationFrame = 0;
+    let visible = false;
+    let initialized = false;
+    let resumeScene = () => {};
     let cleanupScene = () => {};
 
-    Promise.all([
+    const initializeScene = () => {
+      if (initialized || disposed) return;
+      initialized = true;
+      Promise.all([
       import("three"),
       import("three/addons/environments/RoomEnvironment.js"),
     ]).then(([THREE, { RoomEnvironment }]) => {
@@ -152,7 +158,8 @@ export function HomePlayground() {
 
       const startedAt = performance.now();
       const animate = (now: number) => {
-        if (disposed) return;
+        if (disposed || !visible || document.hidden) return;
+        animationFrame = 0;
         if (quality !== "low") animationFrame = requestAnimationFrame(animate);
         const time = (now - startedAt) / 1000;
         const targetX = pointerRef.current.y * 0.18 + scrollRef.current * 0.16;
@@ -169,7 +176,11 @@ export function HomePlayground() {
         ring.rotation.z += 0.0014;
         renderer.render(scene, camera);
       };
-      animationFrame = requestAnimationFrame(animate);
+      resumeScene = () => {
+        if (!animationFrame && visible && !document.hidden)
+          animationFrame = requestAnimationFrame(animate);
+      };
+      resumeScene();
 
       cleanupScene = () => {
         cancelAnimationFrame(animationFrame);
@@ -184,6 +195,26 @@ export function HomePlayground() {
         renderer.dispose();
       };
     });
+    };
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) {
+        initializeScene();
+        resumeScene();
+      } else {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      }
+    }, { rootMargin: "400px" });
+    visibilityObserver.observe(section);
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      } else if (visible) resumeScene();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
 
     const updateScroll = () => {
       const bounds = section.getBoundingClientRect();
@@ -197,6 +228,8 @@ export function HomePlayground() {
 
     return () => {
       disposed = true;
+      visibilityObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("scroll", updateScroll);
       cleanupScene();
     };

@@ -12493,6 +12493,29 @@ body > footer {
   z-index: 1;
 }
 
+/* Skip layout and paint for distant sections until they approach the viewport.
+   This does not change their rendered quality once visible. */
+.home-snapshot,
+.home-projects,
+.home-playground,
+.home-orbit,
+.home-alias,
+.home-explorer,
+.home-contact,
+.observatory-panel {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+.toolkit-group,
+.project-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+.docs-content-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}
+
 @media (max-width: 700px) {
   .global-planet-field {
     opacity: 0.25;

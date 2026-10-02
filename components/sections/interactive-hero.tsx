@@ -29,6 +29,8 @@ export function InteractiveHero() {
 
     let disposed = false;
     let frame = 0;
+    let visible = true;
+    let resume = () => {};
     let cleanup = () => {};
 
     import("three").then((THREE) => {
@@ -127,7 +129,8 @@ export function InteractiveHero() {
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let lastRender = 0;
       const animate = (timestamp = 0) => {
-        if (disposed) return;
+        if (disposed || !visible || document.hidden) return;
+        frame = 0;
         if (quality === "balanced" && timestamp - lastRender < 30) {
           frame = requestAnimationFrame(animate);
           return;
@@ -146,6 +149,9 @@ export function InteractiveHero() {
         renderer.render(scene, camera);
         if (!reduceMotion && quality !== "low") frame = requestAnimationFrame(animate);
       };
+      resume = () => {
+        if (!frame && visible && !document.hidden) frame = requestAnimationFrame(animate);
+      };
       animate();
       cleanup = () => {
         cancelAnimationFrame(frame);
@@ -161,7 +167,29 @@ export function InteractiveHero() {
       };
     });
 
-    return () => { disposed = true; cleanup(); };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) resume();
+      else {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    }, { rootMargin: "120px" });
+    observer.observe(stage);
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      } else if (visible) resume();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      disposed = true;
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      cleanup();
+    };
   }, [quality]);
 
   return <section className="landing-hero page-shell">
